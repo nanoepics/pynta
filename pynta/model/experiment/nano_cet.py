@@ -11,9 +11,15 @@
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: AGPLv3, see LICENSE for more details
 """
+import importlib
+
+import yaml
+from multiprocessing import Queue
+
 from .base_experiment import BaseExperiment
 from pynta.tools import WorkerThread
-from multiprocessing import Queue
+from pynta.util import get_logger
+
 
 
 class NanoCET(BaseExperiment):
@@ -23,21 +29,39 @@ class NanoCET(BaseExperiment):
 
         self.acquiring = False  # Status of the acquisition
         self.config = None  # Dictionary holding all the configuration parameters
+        self.camera = None # This will hold the model for the camera
 
-        self.load_configuration(filename)
+        self.logger = get_logger(name=__name__)
 
-    def load_configuration(self, filename):
-        """ Loads the configuration file in YAML format.
-
-        :param str filename: full path to where the configuration file is located.
-        :raises FileNotFoundError: if the file does not exist.
-        """
-        pass
 
     def initialize_camera(self):
         """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the
-        configuration file and loaded with :meth:`~self.load_configuration`. """
-        pass
+        configuration file and loaded with :meth:`~self.load_configuration`. It will load the camera assuming
+        it is located in pynta/model/cameras/[model].
+
+        .. todo:: Define how to load models from outside of pynta. E.g. from a user-specified folder.
+        """
+        try:
+            self.logger.debug('Importing camera model {}'.format(self.config['Camera']['model']))
+            camera_model_to_import = 'pynta.model.cameras.' + self.config['Camera']['model']
+            cam_module = importlib.import_module(camera_model_to_import)
+        except ModuleNotFoundError:
+            self.logger.error('The model {} for the camera was not found'.format(self.config['Camera']['model']))
+            raise
+        except:
+            self.logger.exception('Unhandled exception')
+            raise
+
+        cam_init_arguments = self.config['Camera']['init']
+
+        if 'extra_args' in self.config['Camera']:
+            self.logger.info('Initializing camera with extra arguments')
+            self.logger.debug('cam_module.camera({}, {})'.format(cam_init_arguments, self.config['Camera']['extra_args']))
+            self.camera = cam_module.camera(cam_init_arguments, *self.config['Camera']['extra_args'])
+        else:
+            self.logger.info('Initializing camera without extra arguments')
+            self.logger.debug('cam_module.camera({})'.format(cam_init_arguments))
+            self.camera = cam_module.camera(cam_init_arguments)
 
     def set_roi(self, x, y, width, height):
         """ Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities

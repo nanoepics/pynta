@@ -8,6 +8,9 @@
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: AGPLv3, see LICENSE for more details
 """
+import yaml
+
+from pynta.util import get_logger
 
 
 class BaseExperiment:
@@ -16,6 +19,23 @@ class BaseExperiment:
     """
     def __init__(self):
         self.config = {}  # Dictionary storing the configuration of the experiment
+        self.logger = get_logger(name=__name__)
+
+    def load_configuration(self, filename):
+        """ Loads the configuration file in YAML format.
+
+        :param str filename: full path to where the configuration file is located.
+        :raises FileNotFoundError: if the file does not exist.
+        """
+        try:
+            with open(filename, 'r') as f:
+                self.config = yaml.load(f)
+        except FileNotFoundError:
+            self.logger.error('The specified file {} could not be found'.format(filename))
+            raise
+        except Exception as e:
+            self.logger.exception('Unhandled exception')
+            raise
 
     def set_up(self):
         """ Needs to be overridden by child classes.

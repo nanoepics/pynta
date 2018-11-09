@@ -9,9 +9,9 @@
 """
 import time
 import numpy as np
-from .SimulateBrownian import SimBrownian
-from lantz import Q_
-from ._skeleton import cameraBase
+from .simulate_brownian import SimBrownian
+# from lantz import Q_
+from .skeleton import cameraBase
 
 
 class camera(cameraBase):
