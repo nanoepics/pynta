@@ -6,7 +6,7 @@
 User:
   name: Aquiles
 
-Saving:
+saving:
   auto_save: False
   auto_save_waterfall: True
   directory: C:\data\nanoCET
@@ -21,7 +21,7 @@ GUI:
   length_waterfall: 20 # Total length of the Waterfall (lines)
   refresh_time: 100 # Refresh rate of the GUI (in ms)
 
-Camera:
+camera:
   model: hamamatsu # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
@@ -36,6 +36,8 @@ Camera:
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
 
+movie:
+  buffer_length: 1000 # Frames
 
 Tracking: # Not yet implemented, will show up in the config window
   param_1: 0.
