@@ -295,7 +295,6 @@ class NanoCET(BaseExperiment):
         self.stream_saving_process.start()
         self.stream_saving_running = True
 
-
     def stop_save_stream(self):
         """ Stops saving to a movie.
         """
