@@ -94,7 +94,7 @@ def worker_saver(file_path, meta, q):
     logger.info('Finished writing to disk')
 
 
-def clearQueue(q):
+def clear_queue(q):
     """Clears the queue by reading it.
 
     :params q: Queue to be cleaned.

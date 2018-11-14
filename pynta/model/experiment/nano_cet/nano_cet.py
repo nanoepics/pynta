@@ -14,6 +14,8 @@
 import importlib
 import json
 import os
+from threading import Thread
+
 import time
 from datetime import datetime
 
@@ -26,6 +28,7 @@ from multiprocessing import Queue, Process
 from pynta.model.experiment.base_experiment import BaseExperiment
 from pynta.model.experiment.nano_cet.decorators import check_camera, check_not_acquiring
 from pynta.model.experiment.nano_cet import worker_saver
+from pynta.model.experiment.nano_cet.exceptions import StreamSavingRunning
 from pynta.util import get_logger
 
 
@@ -48,6 +51,8 @@ class NanoCET(BaseExperiment):
         self.last_index = 0  # Last index used for storing to the movie buffer
         self.queue = Queue(0)  # Queue where streaming data is going to be stored
         self.stream_saving_running = False
+        self.async_threads = []  # List holding all the threads spawn
+        self.stream_saving_process = None
 
         self.logger = get_logger(name=__name__)
 
@@ -284,6 +289,10 @@ class NanoCET(BaseExperiment):
         """ Saves the queue to a file continuously. This is an async function, that can be triggered before starting
         the stream. It relies on the multiprocess library.
         """
+        if self.save_stream_running:
+            self.logger.warning('Tried to start a new instance of save stream')
+            raise StreamSavingRunning('You tried to start a new process for stream saving')
+
         self.logger.info('Starting to save the stream')
         file_name = self.config['saving']['filename_video'] + '.hdf5'
         file_dir = self.config['saving']['directory']
@@ -293,12 +302,20 @@ class NanoCET(BaseExperiment):
         file_path = os.path.join(file_dir, file_name)
         self.stream_saving_process = Process(target=worker_saver, args=(file_path, json.dumps(self.config), self.queue))
         self.stream_saving_process.start()
-        self.stream_saving_running = True
+        self.logger.debug('Started the stream saving process')
 
     def stop_save_stream(self):
         """ Stops saving to a movie.
         """
-        pass
+        self.logger.info('Stopping the saving stream process')
+        if not self.save_stream_running:
+            self.logger.warning('The saving stream is not running. Nothing will be done.')
+            return
+        self.queue.put('Exit')
+
+    @property
+    def save_stream_running(self):
+        return self.stream_saving_process.is_alive()
 
     def empty_queue(self):
         """ Empties the queue where the data from the movie is being stored.

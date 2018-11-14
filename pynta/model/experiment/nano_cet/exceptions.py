@@ -8,3 +8,6 @@
 
 class CameraNotInitialized(Exception):
     pass
+
+class StreamSavingRunning(Exception):
+    pass
