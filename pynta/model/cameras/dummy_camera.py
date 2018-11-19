@@ -9,7 +9,7 @@
 """
 import time
 import numpy as np
-from .simulate_brownian import SimBrownian
+from pynta.model.cameras.simulate_brownian import SimBrownian
 # from lantz import Q_
 from .skeleton import cameraBase
 
@@ -63,7 +63,7 @@ class camera(cameraBase):
     def setExposure(self, exposure):
         """Sets the exposure of the camera.
         """
-        self.exposure = exposure * Q_('s')
+        self.exposure = exposure
         return exposure
 
     def getExposure(self):

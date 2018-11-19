@@ -34,6 +34,9 @@ from pynta.util import get_logger
 
 class NanoCET(BaseExperiment):
     """ Experiment class for performing a nanoCET measurement."""
+    BACKGROUND_NO_CORRECTION = 0  # No backround correction
+    BACKGROUND_SINGLE_SNAP = 1
+
     def __init__(self, filename=None):
         super().__init__()  # Initialize base class
 
@@ -46,13 +49,16 @@ class NanoCET(BaseExperiment):
         self.current_width = None
         self.max_width = None
         self.max_height = None
+        self.background = None
         self.temp_image = None  # Temporary image, used to quickly have access to 'some' data and display it to the user
+        self.movie_buffer = None  # Holds few frames of the movie in order to be able to do some analysis, save later, etc.
         self.last_index = 0  # Last index used for storing to the movie buffer
         self.queue = Queue(0)  # Queue where streaming data is going to be stored
         self.stream_saving_running = False
         self.async_threads = []  # List holding all the threads spawn
         self.stream_saving_process = None
-
+        self.do_background_correction = False
+        self.background_method = self.BACKGROUND_SINGLE_SNAP
         self.logger = get_logger(name=__name__)
 
     def initialize_camera(self):
@@ -89,6 +95,17 @@ class NanoCET(BaseExperiment):
             self.max_height = self.camera.GetCCDHeight()
             self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
+    @check_not_acquiring
+    @check_camera
+    def snap_background(self):
+        """ Snaps an image that will be stored as background.
+        """
+        self.logger.info('Acquiring background image')
+        self.camera.configure(self.config['camera'])
+        self.camera.setAcquisitionMode(self.camera.MODE_SINGLE_SHOT)
+        self.camera.triggerCamera()
+        self.background = self.camera.readCamera()[-1]
+        self.logger.debug('Got an image of {} pixels'.format(self.backgound.shape))
 
     @check_not_acquiring
     @check_camera
@@ -125,12 +142,12 @@ class NanoCET(BaseExperiment):
         """ Snap a single frame. It is not an asynchronous method. To make it async, it should be placed within
         a different thread.
         """
-
         self.logger.info('Snapping a picture')
         self.camera.configure(self.config['camera'])
         self.camera.setAcquisitionMode(self.camera.MODE_SINGLE_SHOT)
         self.camera.triggerCamera()
-        self.temp_image = self.camera.readCamera()
+        self.check_background()
+        self.temp_image = self.camera.readCamera()[-1]
         self.logger.debug('Got an image of {} pixels'.format(self.temp_image.shape))
 
 
@@ -182,6 +199,9 @@ class NanoCET(BaseExperiment):
 
         i = 0
         self.last_index = 0
+
+        self.check_background()
+
         while self.keep_acquiring:
             if first:
                 self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
@@ -190,9 +210,11 @@ class NanoCET(BaseExperiment):
 
             data = self.camera.readCamera()
             for img in data:
+                if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
+                    img -= self.background
                 self.last_index = i%self.config['movie']['buffer_length']
-                self.movie_buffer[:,:, self.last_index] = img
-                self.time_buffer[self.last_index] = time.time()
+                self.movie_buffer[:, :, self.last_index] = img
+                self.time_buffer[self.last_index] = time.time()  # Not very reliable for time-sensitive measurements
                 i += 1
 
             self.temp_image = data[-1]
@@ -214,6 +236,9 @@ class NanoCET(BaseExperiment):
         self.camera.configure(self.config['camera'])
         self.dropped_frames = 0
         i = 0
+
+        self.check_background()
+
         while self.keep_acquiring:
             if first:
                 self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
@@ -222,6 +247,10 @@ class NanoCET(BaseExperiment):
 
             data = self.camera.readCamera() # May read more frames at once
             for img in data:
+
+                if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
+                    img = img - self.background
+
                 queue_size = float(self.queue.qsize()) * int(img.nbytes) / 1024 / 1024
                 if queue_size <= self.config['saving']['max_memory']:
                     self.queue.put(img)
@@ -332,4 +361,18 @@ class NanoCET(BaseExperiment):
         camera.
         This method will work either with 1D arrays or with 2D arrays and will generate a stack of lines.
         """
+        pass
+
+    def check_background(self):
+        """ Checks whether the background is set.
+        """
+
+        if self.do_background_correction:
+            self.logger.info('Setting up the background corretion')
+            if self.background_method == self.BACKGROUND_SINGLE_SNAP:
+                self.logger.debug('Bacground single snap')
+                if self.background is None or self.background.shape != [self.current_width, self.current_height]:
+                    self.logger.warning('Background not set. Defaulting to no background...')
+                    self.background = None
+                    self.do_background_correction = False
 

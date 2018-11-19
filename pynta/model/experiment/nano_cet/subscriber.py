@@ -18,7 +18,7 @@ def subscriber():
     """ General subscriber which only listens on a specific port.
     Designed to check performance.
     """
-    port = "5556"
+    port = "5558"
 
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
@@ -96,9 +96,10 @@ def consume_queue2(queue):
         if type(img) == str:
             break
 
+
 p_subscriber = Process(target=subscriber, args=[])
 p_subscriber.start()
-p_subscriber.join()
+# p_subscriber.join()
 
 # queue = Queue()
 # p1 = Process(target=consume_queue, args=[queue])
