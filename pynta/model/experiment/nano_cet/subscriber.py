@@ -27,7 +27,7 @@ def subscriber(port=5555):
     print("tcp://localhost:%s" % port)
     socket.connect("tcp://localhost:%s" % port)
 
-    topicfilter = b""
+    topicfilter = b"image"
     socket.setsockopt(zmq.SUBSCRIBE, topicfilter)
     # socket.subscribe(b'')
     sleep(1)
@@ -41,7 +41,6 @@ def subscriber(port=5555):
         # if 'stop' in md:
         #     break
         # img = np.frombuffer(msg, dtype=md['dtype'])
-        print('here')
         topic = socket.recv_string()
         print(topic)
         img = socket.recv_pyobj() #flags=0, copy=True, track=False)

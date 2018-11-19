@@ -9,7 +9,9 @@
     :license: AGPLv3, see LICENSE for more details
 """
 from multiprocessing import Queue, Process
+from time import sleep
 
+import numpy as np
 import zmq
 import yaml
 from threading import Thread
@@ -29,21 +31,61 @@ class BaseExperiment:
         self._publisher = Process(target=self.start_publisher)
         self._publisher.start()
 
+        self._connections = []
+
     def start_publisher(self):
         port_pub = 5555
         context = zmq.Context()
         socket = context.socket(zmq.PUB)
         socket.bind("tcp://*:%s" % port_pub)
+        sleep(1)
         while True:
             if not self.queue.empty():
                 data = self.queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
+                print('Sending {} on {}'.format(data['data'], data['topic']))
                 socket.send_string(data['topic'], zmq.SNDMORE)
                 socket.send_pyobj(data['data'])
                 if 'stop' in data:
                     break
 
     def stop_publisher(self):
-        self.queue.put({'stop': True, 'topic': '', 'data':None})
+        self.queue.put({'stop': True, 'topic': 'image', 'data': 'stop'})
+
+    def connect(self, method, topic):
+        """ Async method that connects the running publisher to the given method on a specific topic.
+        """
+        def subscriber(method=method, topic=topic, port=5555):
+            port = port
+
+            context = zmq.Context()
+            socket = context.socket(zmq.SUB)
+            socket.connect("tcp://localhost:%s" % port)
+
+            topic_filter = topic.encode('ascii')
+            socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
+            sleep(1)
+            print('Subscribing {} to {}'.format(method.__name__, topic))
+            while True:
+                topic = socket.recv_string()
+                print(topic)
+                img = socket.recv_pyobj()  # flags=0, copy=True, track=False)
+                method(img)
+                if type(img) == str:
+                    if img == 'stop':
+                        break
+
+        self._connections.append({
+            'method':method.__name__,
+            'topic': topic,
+            'process': Process(target=subscriber),
+        })
+        self._connections[-1]['process'].start()
+
+    def print_me(self, me):
+        print('me')
+
+    def also_print_me(self, also_me):
+        print('Also me')
 
     def load_configuration(self, filename):
         """ Loads the configuration file in YAML format.
@@ -85,6 +127,10 @@ class BaseExperiment:
         return len(self.async_threads)
 
     @property
+    def connections(self):
+        return self._connections
+
+    @property
     def alive_threads(self):
         alive_threads = 0
         for thread in self.async_threads:
@@ -118,11 +164,25 @@ class BaseExperiment:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.stop_publisher()
         self.finalize()
+        self._publisher.join(timeout=5)
+        for conn in self.connections:
+            conn['process'].join()
 
 
 if __name__ == '__main__':
     with BaseExperiment() as exp:
-        print('Success!')
+        exp.connect(exp.print_me, 'image')
+        exp.connect(exp.also_print_me, 'nothing')
+
         exp.update_config(timelapse=2, framerate=4)
-        print(exp.config)
+
+        data = {'topic': 'image', 'data': np.random.random((1000,100))}
+        for i in range(5):
+            exp.queue.put(data)
+            sleep(0.001)
+        data.update({'topic': 'nothing'})
+        for i in range(5):
+            exp.queue.put(data)
+            sleep(0.001)
