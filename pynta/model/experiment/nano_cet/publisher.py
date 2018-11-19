@@ -12,7 +12,7 @@ from time import time, sleep
 
 image = np.random.random((1200, 120))
 
-port = "5556"
+port = 5555
 context = zmq.Context()
 socket = context.socket(zmq.PUB)
 socket.bind("tcp://*:%s" % port)
@@ -20,17 +20,18 @@ sleep(1)
 
 i = 1
 total_time = 0
-while i <= 5000:
+while i <= 500:
     t0 = time()
     try:
-        md = dict(dtype=str(image.dtype),
-                  shape=image.shape)
-        socket.send_json(md, 0 | zmq.SNDMORE)
-        socket.send(image, flags=0, copy=True, track=False)
+        # md = dict(dtype=str(image.dtype),
+        #           shape=image.shape)
+        # socket.send_json(md, 0 | zmq.SNDMORE)
+        # socket.send(image, flags=0, copy=True, track=False)
         # sleep(.1)
+        socket.send_pyobj(image)
         this_time = time() - t0
         total_time += this_time
-        print("Sending time: {:3.4f}ms".format(1000*this_time), end='\r')
+        # print("Sending time: {:3.4f}ms".format(1000*this_time), end='\r')
         i += 1
     except KeyboardInterrupt:
         break

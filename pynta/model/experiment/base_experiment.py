@@ -8,7 +8,11 @@
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: AGPLv3, see LICENSE for more details
 """
+from multiprocessing import Queue, Process
+
+import zmq
 import yaml
+from threading import Thread
 
 from pynta.util import get_logger
 
@@ -21,6 +25,25 @@ class BaseExperiment:
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
         self.async_threads = []
+        self.queue = Queue()
+        self._publisher = Process(target=self.start_publisher)
+        self._publisher.start()
+
+    def start_publisher(self):
+        port_pub = 5555
+        context = zmq.Context()
+        socket = context.socket(zmq.PUB)
+        socket.bind("tcp://*:%s" % port_pub)
+        while True:
+            if not self.queue.empty():
+                data = self.queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
+                socket.send_string(data['topic'], zmq.SNDMORE)
+                socket.send_pyobj(data['data'])
+                if 'stop' in data:
+                    break
+
+    def stop_publisher(self):
+        self.queue.put({'stop': True, 'topic': '', 'data':None})
 
     def load_configuration(self, filename):
         """ Loads the configuration file in YAML format.
@@ -47,7 +70,7 @@ class BaseExperiment:
         .. note:: It is not a different process, but a thread spawn from the main thread.
         """
         self.logger.info('Starting a new thread for {}'.format(func.__name__))
-        self.async_threads.append([func.__name__, Thread(target=self.snap, args=args, kwargs=kwargs)])
+        self.async_threads.append([func.__name__, Thread(target=func, args=args, kwargs=kwargs)])
         self.async_threads[-1][1].start()
         self.logger.debug('Started a new thread for {}'.format(func.__name__))
         self.logger.debug('In total, there are {} threads'.format(len(self.async_threads)))

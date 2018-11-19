@@ -15,7 +15,7 @@ import logging
 DEFAULT_FMT = "[%(levelname)8s]%(asctime)s %(name)s: %(message)s"
 
 def get_logger(name='pynta', add_null_handler=True):
-    logger = logging.getLogger(name, add_null_handler=add_null_handler)
+    logger = logging.getLogger(name) #, add_null_handler=add_null_handler)
     return logger
 
 

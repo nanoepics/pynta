@@ -11,39 +11,47 @@ from multiprocessing import Queue, Process
 
 import zmq
 import numpy as np
-from time import time
+from time import time, sleep
 
 
-def subscriber():
+def subscriber(port=5555):
     """ General subscriber which only listens on a specific port.
     Designed to check performance.
     """
-    port = "5558"
+    port = port
 
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
 
-    print("Collecting images from server...")
+    print("Collecting images from server on port {}...".format(port))
+    print("tcp://localhost:%s" % port)
     socket.connect("tcp://localhost:%s" % port)
 
     topicfilter = b""
     socket.setsockopt(zmq.SUBSCRIBE, topicfilter)
+    # socket.subscribe(b'')
+    sleep(1)
 
     i = 1
     total_time = 0
     while True:
         t0 = time()
-        md = socket.recv_json(flags=0)
-        msg = socket.recv(flags=0, copy=True, track=False)
-        if 'stop' in md:
-            break
-        img = np.frombuffer(msg, dtype=md['dtype'])
+        # md = socket.recv_json(flags=0)
+        # msg = socket.recv(flags=0, copy=True, track=False)
+        # if 'stop' in md:
+        #     break
+        # img = np.frombuffer(msg, dtype=md['dtype'])
+        print('here')
+        topic = socket.recv_string()
+        print(topic)
+        img = socket.recv_pyobj() #flags=0, copy=True, track=False)
         this_time = time() - t0
         total_time += this_time
         print("P: {:3.4f}ms".format(1000 * this_time, end="\r"))
         i += 1
         if type(img) == str:
             break
+
     print('\nAverage time to read: {:3.4f}ms'.format(1000 * total_time / i))
     print('Received {} images in total'.format(i))
 
@@ -97,21 +105,22 @@ def consume_queue2(queue):
             break
 
 
-p_subscriber = Process(target=subscriber, args=[])
-p_subscriber.start()
-# p_subscriber.join()
+if __name__ == "__main__":
+    p_subscriber = Process(target=subscriber, args=[])
+    p_subscriber.start()
+    p_subscriber.join()
 
-# queue = Queue()
-# p1 = Process(target=consume_queue, args=[queue])
-# p1.start()
-# p2 = Process(target=put_to_queue, args=[queue])
-# p2.start()
-# queue2 = Queue()
-# p3 = Process(target=consume_queue2, args=[queue])
-# p4 = Process(target=put_to_queue, args=[queue])
-# p3.start()
-# p4.start()
-# p1.join()
-# p2.join()
-# p3.join()
-# p4.join()
+    # queue = Queue()
+    # p1 = Process(target=consume_queue, args=[queue])
+    # p1.start()
+    # p2 = Process(target=put_to_queue, args=[queue])
+    # p2.start()
+    # queue2 = Queue()
+    # p3 = Process(target=consume_queue2, args=[queue])
+    # p4 = Process(target=put_to_queue, args=[queue])
+    # p3.start()
+    # p4.start()
+    # p1.join()
+    # p2.join()
+    # p3.join()
+    # p4.join()
