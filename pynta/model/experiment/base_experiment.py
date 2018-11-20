@@ -2,11 +2,24 @@
 """
     base_experiment.py
     ~~~~~~~~~~~~~~~~~~
-    Base Class for the experiments. For the time being it is only a convenience class in order to allow context
-    managers. It can evolve into an actually useful strategy to standardize experiments (e.g. how to save data, etc.)
+    Base class for the experiments. ``BaseExperiment`` defines the common patterns that every experiment should have.
+    Importantly, it starts an independent process called publisher, that will be responsible for broadcasting messages
+    that are appended to a queue. The messages rely on the pyZMQ library and should be tested further in order to
+    assess their limitations. The general pattern is that of the PUB/SUB, with one publisher and several subscribers.
+
+    The messages should include a *topic* and data. For this, the elements in the queue should be dictionaries with two
+    keywords: **data** and **topic**. ``data['data']`` will be serialized through the use of cPickle, and is handled
+    automatically by pyZQM through the use of ``send_pyobj``. The subscribers should be aware of this and use either
+    unpickle or ``recv_pyobj``.
+
+    In order to stop the publisher process, the string ``'stop'`` should be placed in ``data['data']``. The message
+    will be broadcast and can be used to stop other processes, such as subscribers.
+
+    .. TODO:: Check whether the serialization of objects with cPickle may be a bottleneck for performance.
+
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
 from multiprocessing import Queue, Process
 from time import sleep
@@ -34,6 +47,11 @@ class BaseExperiment:
         self._connections = []
 
     def start_publisher(self):
+        """ Simple method that starts a publisher on the port 5555.
+
+        .. TODO:: The publisher's port should be determined in a configuration file.
+        """
+
         port_pub = 5555
         context = zmq.Context()
         socket = context.socket(zmq.PUB)
@@ -42,14 +60,23 @@ class BaseExperiment:
         while True:
             if not self.queue.empty():
                 data = self.queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
-                print('Sending {} on {}'.format(data['data'], data['topic']))
+                logger.debug('Sending {} on {}'.format(data['data'], data['topic']))
                 socket.send_string(data['topic'], zmq.SNDMORE)
                 socket.send_pyobj(data['data'])
-                if 'stop' in data:
+                if 'stop_pub' in data:
                     break
 
     def stop_publisher(self):
-        self.queue.put({'stop': True, 'topic': 'image', 'data': 'stop'})
+        """ Puts the proper data to the queue in order to stop the running publisher process"""
+        self.stop_subscribers()
+        self.queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
+
+    def stop_subscribers(self):
+        for connection in self._connections:
+            if connection['process'].is_alive():
+                logger.info('Stopping {}'.format(connection['method']))
+                self.queue.put({'topic': connection['topic'], 'data': 'stop'})
+
 
     def connect(self, method, topic):
         """ Async method that connects the running publisher to the given method on a specific topic.
@@ -64,14 +91,16 @@ class BaseExperiment:
             topic_filter = topic.encode('ascii')
             socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
             sleep(1)
-            print('Subscribing {} to {}'.format(method.__name__, topic))
+            self.logger.info('Subscribing {} to {}'.format(method.__name__, topic))
             while True:
                 topic = socket.recv_string()
-                print(topic)
                 img = socket.recv_pyobj()  # flags=0, copy=True, track=False)
+                logger.debug('Got data of type {} on topic: {}'.format(type(img), topic))
                 method(img)
-                if type(img) == str:
+                if isinstance(img, str):
+                    self.logger.debug('Data: {}'.format(img))
                     if img == 'stop':
+                        self.logger.info('Stopping subscriber on method {}'.format(method.__name__))
                         break
 
         self._connections.append({
@@ -164,21 +193,37 @@ class BaseExperiment:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.stop_publisher()
+        self.logger.info("Exiting the experiment")
         self.finalize()
+        self.stop_publisher()
         self._publisher.join(timeout=5)
         for conn in self.connections:
+            self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
             conn['process'].join()
+        while not self.queue.empty():
+            self.logger.debug('Queue size while exiting: {}'.format(self.queue.qsize()))
+            self.queue.get()
+
 
 
 if __name__ == '__main__':
+    import logging
+
+    logger = get_logger()
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
     with BaseExperiment() as exp:
+        sleep(2)
         exp.connect(exp.print_me, 'image')
         exp.connect(exp.also_print_me, 'nothing')
 
         exp.update_config(timelapse=2, framerate=4)
 
-        data = {'topic': 'image', 'data': np.random.random((1000,100))}
+        data = {'topic': 'image', 'data': np.random.random((1,1))}
         for i in range(5):
             exp.queue.put(data)
             sleep(0.001)
@@ -186,3 +231,5 @@ if __name__ == '__main__':
         for i in range(5):
             exp.queue.put(data)
             sleep(0.001)
+
+    print('exit')
