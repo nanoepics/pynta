@@ -14,7 +14,7 @@
 import importlib
 import json
 import os
-from threading import Thread
+
 
 import time
 from datetime import datetime
@@ -22,12 +22,17 @@ from datetime import datetime
 import h5py as h5py
 import numpy as np
 
-import yaml
+
 from multiprocessing import Queue, Process
 
 from pynta.model.experiment.base_experiment import BaseExperiment
-from pynta.model.experiment.nano_cet.decorators import check_camera, check_not_acquiring
-from pynta.model.experiment.nano_cet import worker_saver
+from pynta.model.experiment.nano_cet.decorators import (check_camera,
+                                                        check_not_acquiring,
+                                                        make_async_thread,
+                                                        make_async_process)
+
+
+from pynta.model.experiment.nano_cet.worker_saver import worker_saver
 from pynta.model.experiment.nano_cet.exceptions import StreamSavingRunning
 from pynta.util import get_logger
 
@@ -39,11 +44,15 @@ class NanoCET(BaseExperiment):
 
     def __init__(self, filename=None):
         super().__init__()  # Initialize base class
+        self.logger = get_logger(name=__name__)
+
+        self.worker_saver_queue = Queue()
+
+        self.load_configuration(filename)
 
         self.dropped_frames = 0
         self.keep_acquiring = True
         self.acquiring = False  # Status of the acquisition
-        self.config = None  # Dictionary holding all the configuration parameters
         self.camera = None  # This will hold the model for the camera
         self.current_height = None
         self.current_width = None
@@ -53,13 +62,13 @@ class NanoCET(BaseExperiment):
         self.temp_image = None  # Temporary image, used to quickly have access to 'some' data and display it to the user
         self.movie_buffer = None  # Holds few frames of the movie in order to be able to do some analysis, save later, etc.
         self.last_index = 0  # Last index used for storing to the movie buffer
-        self.queue = Queue(0)  # Queue where streaming data is going to be stored
         self.stream_saving_running = False
         self.async_threads = []  # List holding all the threads spawn
         self.stream_saving_process = None
         self.do_background_correction = False
         self.background_method = self.BACKGROUND_SINGLE_SNAP
-        self.logger = get_logger(name=__name__)
+
+        # self.connect(self.print_me, 'free_run')
 
     def initialize_camera(self):
         """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the
@@ -69,21 +78,23 @@ class NanoCET(BaseExperiment):
         .. todo:: Define how to load models from outside of pynta. E.g. from a user-specified folder.
         """
         try:
-            self.logger.debug('Importing camera model {}'.format(self.config['Camera']['model']))
-            camera_model_to_import = 'pynta.model.cameras.' + self.config['Camera']['model']
+            self.logger.info('Importing camera model {}'.format(self.config['camera']['model']))
+            self.logger.debug('pynta.model.cameras.' + self.config['camera']['model'])
+
+            camera_model_to_import = 'pynta.model.cameras.' + self.config['camera']['model']
             cam_module = importlib.import_module(camera_model_to_import)
         except ModuleNotFoundError:
-            self.logger.error('The model {} for the camera was not found'.format(self.config['Camera']['model']))
+            self.logger.error('The model {} for the camera was not found'.format(self.config['camera']['model']))
             raise
         except:
             self.logger.exception('Unhandled exception')
             raise
 
-        cam_init_arguments = self.config['Camera']['init']
+        cam_init_arguments = self.config['camera']['init']
 
-        if 'extra_args' in self.config['Camera']:
+        if 'extra_args' in self.config['camera']:
             self.logger.info('Initializing camera with extra arguments')
-            self.logger.debug('cam_module.camera({}, {})'.format(cam_init_arguments, self.config['Camera']['extra_args']))
+            self.logger.debug('cam_module.camera({}, {})'.format(cam_init_arguments, self.config['camera']['extra_args']))
             self.camera = cam_module.camera(cam_init_arguments, *self.config['Camera']['extra_args'])
         else:
             self.logger.info('Initializing camera without extra arguments')
@@ -95,8 +106,10 @@ class NanoCET(BaseExperiment):
             self.max_height = self.camera.GetCCDHeight()
             self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
-    @check_not_acquiring
+        self.camera.initializeCamera()
+
     @check_camera
+    @check_not_acquiring
     def snap_background(self):
         """ Snaps an image that will be stored as background.
         """
@@ -107,8 +120,8 @@ class NanoCET(BaseExperiment):
         self.background = self.camera.readCamera()[-1]
         self.logger.debug('Got an image of {} pixels'.format(self.backgound.shape))
 
-    @check_not_acquiring
     @check_camera
+    @check_not_acquiring
     def set_roi(self, x, y, width, height):
         """ Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
         should be addressed on the camera model, not in this method.
@@ -128,16 +141,17 @@ class NanoCET(BaseExperiment):
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
         self.tempimage = np.zeros((Nx, Ny))
 
-    @check_not_acquiring
     @check_camera
+    @check_not_acquiring
     def clear_roi(self):
         """ Clears the region of interest and returns to the full frame of the camera.
         """
         self.logger.info('Clearing ROI settings')
         self.camera.setROI(1, 1, self.max_width, self.max_height)
 
-    @check_not_acquiring
     @check_camera
+    @check_not_acquiring
+    @make_async_thread
     def snap(self):
         """ Snap a single frame. It is not an asynchronous method. To make it async, it should be placed within
         a different thread.
@@ -150,7 +164,7 @@ class NanoCET(BaseExperiment):
         self.temp_image = self.camera.readCamera()[-1]
         self.logger.debug('Got an image of {} pixels'.format(self.temp_image.shape))
 
-
+    @make_async_thread
     @check_not_acquiring
     @check_camera
     def start_free_run(self):
@@ -166,63 +180,31 @@ class NanoCET(BaseExperiment):
         self.camera.configure(self.config['camera'])
         while self.keep_acquiring:
             if first:
-                self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
-                self.camera.triggerCamera()  # Triggers the camera only once
-                first = False
-            self.temp_image = self.camera.readCamera()
-
-        self.camera.stopAcq()
-
-    @check_not_acquiring
-    @check_camera
-    def start_movie(self):
-        """ Starts the acquisition of a movie. The difference between free run and movie is that in a movie, frames are
-        stored into memory.
-
-        .. TODO:: Replace the basic numpy array by a proper circular (AKA ring) buffer. Check util folder.
-        """
-        self.logger.info('Starting a movie acquisition')
-        first = True
-        self.keep_acquiring = True  # Change this attribute to stop the acquisition
-        self.camera.configure(self.config['camera'])
-
-        try:
-            self.movie_buffer = np.zeros((self.current_width, self.current_height,
-                                          self.config['movie']['buffer_length']), dtype=self.camera.data_type)
-
-            self.time_buffer = np.zeros((self.config['movie']['buffer_length']))
-            self.logger.debug('Created buffer of length {}'.format(self.config['movie']['buffer_length']))
-        except MemoryError:
-            self.logger.error('There is not enough memory for a buffer of {} elements.'\
-                              .format(self.config['movie']['buffer_length']))
-            raise
-
-        i = 0
-        self.last_index = 0
-
-        self.check_background()
-
-        while self.keep_acquiring:
-            if first:
+                self.logger.debug('First frame of a free_run')
                 self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
                 self.camera.triggerCamera()  # Triggers the camera only once
                 first = False
 
             data = self.camera.readCamera()
+            self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
                 if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
                     img -= self.background
-                self.last_index = i%self.config['movie']['buffer_length']
-                self.movie_buffer[:, :, self.last_index] = img
-                self.time_buffer[self.last_index] = time.time()  # Not very reliable for time-sensitive measurements
-                i += 1
+
+
+                # This will broadcast the data just acquired with the current timestamp
+                # The timestamp is very unreliable, especially if the camera has a frame grabber.
+                self.queue.put({'topic':'free_run', 'data': [time.time(), img]})
 
             self.temp_image = data[-1]
 
         self.camera.stopAcq()
 
+
+
     @check_not_acquiring
     @check_camera
+    @make_async_thread
     def start_stream(self):
         """ Starts a stream of data into a queue. It is exactly the same as :meth:`~self.start_movie` but instead of
         creating a numpy-buffer, it puts data into a queue in order to use a separate process to either process or
@@ -312,6 +294,11 @@ class NanoCET(BaseExperiment):
 
             self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
 
+    def add_to_stream_queue(self, data):
+        timestamp = data[0]
+        img = data[1]
+        self.worker_saver_queue.put(img)
+
     def save_stream(self):
         """ Saves the queue to a file continuously. This is an async function, that can be triggered before starting
         the stream. It relies on the multiprocess library.
@@ -327,7 +314,7 @@ class NanoCET(BaseExperiment):
             os.makedirs(file_dir)
             self.logger.debug('Created directory {}'.format(file_dir))
         file_path = os.path.join(file_dir, file_name)
-        self.stream_saving_process = Process(target=worker_saver, args=(file_path, json.dumps(self.config), self.queue))
+        self.stream_saving_process = Process(target=worker_saver, args=(file_path, json.dumps(self.config), self.worker_saver_queue))
         self.stream_saving_process.start()
         self.logger.debug('Started the stream saving process')
 
@@ -338,12 +325,15 @@ class NanoCET(BaseExperiment):
         if not self.save_stream_running:
             self.logger.warning('The saving stream is not running. Nothing will be done.')
             return
-        self.queue.put('Exit')
+        self.worker_saver_queue.put('Exit')
 
 
     @property
     def save_stream_running(self):
-        return self.stream_saving_process.is_alive()
+        if self.stream_saving_process is not None:
+            return self.stream_saving_process.is_alive()
+        else:
+            return False
 
     def empty_queue(self):
         """ Empties the queue where the data from the movie is being stored.
@@ -376,3 +366,10 @@ class NanoCET(BaseExperiment):
                     self.background = None
                     self.do_background_correction = False
 
+    def __exit__(self, *args):
+        super(NanoCET, self).__exit__(*args)
+        if not self.worker_saver_queue.empty():
+            self.logger.info('Emptying the saver queue')
+            self.logger.debug('There are {} elements in the queue'.format(self.worker_saver_queue.qsize()))
+            while not self.worker_saver_queue.empty():
+                self.worker_saver_queue.get()

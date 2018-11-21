@@ -39,49 +39,30 @@ class BaseExperiment:
     def __init__(self):
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
-        self.async_threads = []
+        self._threads = []
         self.queue = Queue()
-        self._publisher = Process(target=self.start_publisher)
+        self._publisher = Process(target=start_publisher, args=[self.queue])
         self._publisher.start()
 
         self._connections = []
 
-    def start_publisher(self):
-        """ Simple method that starts a publisher on the port 5555.
-
-        .. TODO:: The publisher's port should be determined in a configuration file.
-        """
-
-        port_pub = 5555
-        context = zmq.Context()
-        socket = context.socket(zmq.PUB)
-        socket.bind("tcp://*:%s" % port_pub)
-        sleep(1)
-        while True:
-            if not self.queue.empty():
-                data = self.queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
-                logger.debug('Sending {} on {}'.format(data['data'], data['topic']))
-                socket.send_string(data['topic'], zmq.SNDMORE)
-                socket.send_pyobj(data['data'])
-                if 'stop_pub' in data:
-                    break
-
     def stop_publisher(self):
         """ Puts the proper data to the queue in order to stop the running publisher process"""
+        self.logger.info('Stopping the publisher')
         self.stop_subscribers()
         self.queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
 
     def stop_subscribers(self):
+        self.logger.info('Stopping the subscribers')
         for connection in self._connections:
             if connection['process'].is_alive():
-                logger.info('Stopping {}'.format(connection['method']))
+                self.logger.info('Stopping {}'.format(connection['method']))
                 self.queue.put({'topic': connection['topic'], 'data': 'stop'})
-
 
     def connect(self, method, topic):
         """ Async method that connects the running publisher to the given method on a specific topic.
         """
-        def subscriber(method=method, topic=topic, port=5555):
+        def subscriber(method=method, topic=topic, port=5555, logger=self.logger):
             port = port
 
             context = zmq.Context()
@@ -90,17 +71,17 @@ class BaseExperiment:
 
             topic_filter = topic.encode('ascii')
             socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
-            sleep(1)
-            self.logger.info('Subscribing {} to {}'.format(method.__name__, topic))
+            # sleep(1)
+            logger.info('Subscribing {} to {}'.format(method.__name__, topic))
             while True:
                 topic = socket.recv_string()
                 img = socket.recv_pyobj()  # flags=0, copy=True, track=False)
                 logger.debug('Got data of type {} on topic: {}'.format(type(img), topic))
                 method(img)
                 if isinstance(img, str):
-                    self.logger.debug('Data: {}'.format(img))
+                    logger.debug('Data: {}'.format(img))
                     if img == 'stop':
-                        self.logger.info('Stopping subscriber on method {}'.format(method.__name__))
+                        logger.info('Stopping subscriber on method {}'.format(method.__name__))
                         break
 
         self._connections.append({
@@ -110,21 +91,18 @@ class BaseExperiment:
         })
         self._connections[-1]['process'].start()
 
-    def print_me(self, me):
-        print('me')
-
-    def also_print_me(self, also_me):
-        print('Also me')
-
     def load_configuration(self, filename):
         """ Loads the configuration file in YAML format.
 
         :param str filename: full path to where the configuration file is located.
         :raises FileNotFoundError: if the file does not exist.
         """
+        self.logger.info('Loading configuration file {}'.format(filename))
         try:
             with open(filename, 'r') as f:
                 self.config = yaml.load(f)
+                self.logger.debug('Config loaded')
+                self.logger.debug(self.config)
         except FileNotFoundError:
             self.logger.error('The specified file {} could not be found'.format(filename))
             raise
@@ -141,19 +119,19 @@ class BaseExperiment:
         .. note:: It is not a different process, but a thread spawn from the main thread.
         """
         self.logger.info('Starting a new thread for {}'.format(func.__name__))
-        self.async_threads.append([func.__name__, Thread(target=func, args=args, kwargs=kwargs)])
-        self.async_threads[-1][1].start()
+        self._threads.append([func.__name__, Thread(target=func, args=args, kwargs=kwargs)])
+        self._threads[-1][1].start()
         self.logger.debug('Started a new thread for {}'.format(func.__name__))
-        self.logger.debug('In total, there are {} threads'.format(len(self.async_threads)))
+        self.logger.debug('In total, there are {} threads'.format(len(self._threads)))
 
     def clear_threads(self):
         """ Keep only the threads that are alive.
         """
-        self.async_threads = [thread for thread in self.async_threads if thread[1].is_alive()]
+        self._threads = [thread for thread in self._threads if thread[1].is_alive()]
 
     @property
     def num_threads(self):
-        return len(self.async_threads)
+        return len(self._threads)
 
     @property
     def connections(self):
@@ -162,7 +140,7 @@ class BaseExperiment:
     @property
     def alive_threads(self):
         alive_threads = 0
-        for thread in self.async_threads:
+        for thread in self._threads:
             if thread[1].is_alive():
                 alive_threads += 1
         return alive_threads
@@ -170,7 +148,7 @@ class BaseExperiment:
     @property
     def list_alive_threads(self):
         alive_threads = []
-        for thread in self.async_threads:
+        for thread in self._threads:
             if thread[1].is_alive():
                 alive_threads.append(thread)
         return alive_threads
@@ -186,6 +164,8 @@ class BaseExperiment:
         pass
 
     def update_config(self, **kwargs):
+        self.logger.info('Updating config')
+        self.logger.debug('Config params: {}'.format(kwargs))
         self.config.update(**kwargs)
 
     def __enter__(self):
@@ -196,14 +176,37 @@ class BaseExperiment:
         self.logger.info("Exiting the experiment")
         self.finalize()
         self.stop_publisher()
-        self._publisher.join(timeout=5)
+        self._publisher.join()
         for conn in self.connections:
             self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
             conn['process'].join()
         while not self.queue.empty():
             self.logger.debug('Queue size while exiting: {}'.format(self.queue.qsize()))
             self.queue.get()
+        self.logger.info('Finished the experiment')
 
+
+def start_publisher(queue):
+    """ Simple method that starts a publisher on the port 5555.
+
+    .. TODO:: The publisher's port should be determined in a configuration file.
+    """
+    logger = get_logger(name=__name__)
+    port_pub = 5555
+    context = zmq.Context()
+    socket = context.socket(zmq.PUB)
+    socket.bind("tcp://*:%s" % port_pub)
+    logger.info('Bound socket on {}'.format(port_pub))
+    # sleep(1)
+    while True:
+        if not queue.empty():
+            data = queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
+            logger.debug('Sending {} on {}'.format(data['data'], data['topic']))
+            socket.send_string(data['topic'], zmq.SNDMORE)
+            socket.send_pyobj(data['data'])
+            if 'stop_pub' in data:
+                break
+    logger.info('Stopping publisher')
 
 
 if __name__ == '__main__':
@@ -227,6 +230,7 @@ if __name__ == '__main__':
         for i in range(5):
             exp.queue.put(data)
             sleep(0.001)
+
         data.update({'topic': 'nothing'})
         for i in range(5):
             exp.queue.put(data)

@@ -31,6 +31,7 @@
 import h5py
 import numpy as np
 from datetime import datetime
+from pynta.util.log import get_logger
 
 
 def worker_saver(file_path, meta, q):
@@ -42,31 +43,35 @@ def worker_saver(file_path, meta, q):
     :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.
     :param Queue q: Queue that will store all the images to be saved to disk.
     """
+    logger = get_logger(name=__name__)
+    logger.info('Appending data to {}'.format(file_path))
+    allocate_memory = 1  # megabytes of memory to allocate on the hard drive.
 
     with h5py.File(file_path, "a") as f:
         now = str(datetime.now())
         g = f.create_group(now)
-        g.create_dataset('metadata', data=meta)
-
+        g.create_dataset('metadata', data=meta.encode("ascii","ignore"))
         keep_saving = True  # Flag that will stop the worker function if running in a separate thread.
         # Has to be submitted via the queue a string 'exit'
 
         i = 0
         j = 0
         first = True
-        from pynta.util import get_logger
-        logger = get_logger(__name__)
+
         while keep_saving:
             while not q.empty() or q.qsize() > 0:
                 img = q.get()
                 if isinstance(img, str):
                     keep_saving = False
-                elif first:  # First time it runs, creates the dataset
+                    logger.info('Got the signal to stop the saving')
+                    continue
+
+                if first:  # First time it runs, creates the dataset
                     x = img.shape[0]
                     y = img.shape[1]
-                    allocate_memory = 250  # megabytes of memory to allocate on the hard drive.
+                    logger.debug('Image size: {}x{}'.format(x, y))
                     allocate = int(allocate_memory / img.nbytes * 1024 * 1024)
-                    logger.debug('Allocating 250MB to stream to disk')
+                    logger.debug('Allocating {}MB to stream to disk'.format(allocate_memory))
                     logger.debug('Allocate {} frames'.format(allocate))
                     d = np.zeros((x, y, allocate), dtype=img.dtype)
                     dset = g.create_dataset('timelapse', (x, y, allocate), maxshape=(x, y, None),
@@ -77,6 +82,7 @@ def worker_saver(file_path, meta, q):
                     first = False
                 else:
                     if i == allocate:
+                        logger.debug('Allocating more memory')
                         dset[:, :, j:j + allocate] = d
                         dset.resize((x, y, j + 2 * allocate))
                         d = np.zeros((x, y, allocate), dtype=img.dtype)

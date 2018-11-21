@@ -9,7 +9,7 @@ User:
 saving:
   auto_save: False
   auto_save_waterfall: True
-  directory: C:\data\nanoCET
+  directory: /home/aquiles/
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_waterfall: Waterfall
@@ -22,17 +22,17 @@ GUI:
   refresh_time: 100 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: hamamatsu # Should be a python file in model/cameras
+  model: dummy_camera # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
-  exposure_time: 200 # Initial exposure time (in ms)
+  exposure_time: 200ms # Initial exposure time (in ms)
   binning_x: 1 # Binning
   binning_y: 1
-  roi_x1: 0 # Leave at 0 for full camera
-  roi_x2: 0
+  roi_x1: 0
+  roi_x2: 200
   roi_y1: 0
-  roi_y2: 0
+  roi_y2: 200
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
 

@@ -9,8 +9,11 @@
 """
 import warnings
 from functools import wraps
+from multiprocessing import Process
+from threading import Thread
 
 from pynta.model.experiment.nano_cet.exceptions import CameraNotInitialized
+from pynta.util.log import get_logger
 
 
 def check_camera(func):
@@ -20,6 +23,7 @@ def check_camera(func):
     def func_wrapper(cls, *args, **kwargs):
         if hasattr(cls, 'camera'):
             if cls.camera is not None:
+                print(cls.camera)
                 return func(cls, *args, **kwargs)
 
         if hasattr(cls, 'logger'):
@@ -28,6 +32,7 @@ def check_camera(func):
         raise CameraNotInitialized('At least one camera has to be initialized before calling {}'.format(func.__name__))
 
     return func_wrapper
+
 
 def check_not_acquiring(func):
     """Decorator to check that the camera is not acquiring before running the function. This prevents, for example,
@@ -45,3 +50,34 @@ def check_not_acquiring(func):
         return func(cls, *args, **kwargs)
 
     return func_wrapper
+
+
+def make_async_thread(func):
+    """ Simple decorator to make a method run on a separated thread. It requires that the class has a property
+    called ``_threads`` which is a list and holds all the running threads.
+    """
+    @wraps(func)
+    def func_wrapper(*args, **kwargs):
+        logger = get_logger(name=__name__)
+        logger.info('Starting new thread for {}'.format(func.__name__))
+        args[0]._threads.append([func.__name__, Thread(target=func, args=args, kwargs=kwargs)])
+        args[0]._threads[-1][1].start()
+        logger.debug('In total there are {} threads'.format(len(args[0]._threads)))
+
+    return func_wrapper
+
+
+def make_async_process(func):
+    """ Simple decorator to start a method as a separated process. It requires that the class has a property
+    called ``_processes`` which is a list and holds all the running processes.
+    """
+    @wraps(func)
+    def func_wrapper(*args, **kwargs):
+        logger = get_logger(name=__name__)
+        logger.info('Starting a new thread for {}'.format(func.__name__))
+        args[0]._processes.append([func.__name__, Process(target=func, args=args, kwargs=kwargs)])
+        args[0]._processes[-1][1].start()
+        logger.debug('In total there are {} processes'.format(len(args[0]._threads)))
+
+    return func_wrapper
+

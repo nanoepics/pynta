@@ -8,9 +8,11 @@
     .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the cameraBase class. In this way the other models will have access to the method and the program will keep running (perhaps with non intended behavior though).
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
+from pynta.util.log import get_logger
+from pynta import Q_
 
 
 class cameraBase():
@@ -26,13 +28,18 @@ class cameraBase():
         self.config = {}
         self.data_type = np.uint16 # The data type that the camera generates when acquiring images. It is very important to have it available in order to create the buffer and saving to disk.
 
+        self.logger = get_logger(name=__name__)
+
     def configure(self, properties):
+        self.logger.info('Updating config')
         update_cam = False
         update_roi = False
         update_exposure = False
         update_binning = True
         for k in properties:
             new_prop = properties[k]
+            self.logger.debug('Updating {} to {}'.format(k, new_prop))
+
             update_cam = True
             if k in self.config:
                 old_prop = self.config[k]
@@ -51,16 +58,18 @@ class cameraBase():
 
         if update_cam:
             if update_roi:
+
                 X = np.sort([properties['roi_x1'], properties['roi_x2']])
                 Y = np.sort([properties['roi_y1'], properties['roi_y2']])
-                X, Y = self.setROI(X, Y)
+                self.setROI(X, Y)
                 self.config.update({'roi_x1': X[0],
                                     'roi_x2': X[1],
                                     'roi_y1': Y[0],
                                     'roi_y2': Y[1]})
 
             if update_exposure:
-                new_exp = self.setExposure(properties['exposure_time'])
+                exposure = Q_(properties['exposure_time'])
+                new_exp = self.setExposure(exposure)
                 self.config['exposure_time'] = new_exp
 
             if update_binning:
@@ -107,13 +116,11 @@ class cameraBase():
         Sets the exposure of the camera.
         """
         self.exposure = exposure
-        print("Not Implemented")
 
     def getExposure(self):
         """
         Gets the exposure time of the camera.
         """
-        print("Not Implemented")
         return self.exposure
 
     def readCamera(self):
