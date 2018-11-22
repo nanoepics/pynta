@@ -36,6 +36,10 @@ camera:
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
 
+waterfall: # Parameters for calculating the waterfall plot
+  length: 20  # The total length of the waterfall (lines)
+  vertical_bin: 10  # Total number of lines of the CCD to integrate
+
 movie:
   buffer_length: 1000 # Frames
 

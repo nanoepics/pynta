@@ -5,9 +5,14 @@
 
 """
 
-
-class CameraNotInitialized(Exception):
+class NanoCETException(Exception):
     pass
 
-class StreamSavingRunning(Exception):
+class CameraNotInitialized(NanoCETException):
+    pass
+
+class StreamSavingRunning(NanoCETException):
+    pass
+
+class TrackpyNotInstalled(NanoCETException):
     pass
