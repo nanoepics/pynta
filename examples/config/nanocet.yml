@@ -9,7 +9,7 @@ User:
 saving:
   auto_save: False
   auto_save_waterfall: True
-  directory: /home/aquiles/
+  directory: C:\Users\carat002\Data
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_waterfall: Waterfall
@@ -27,6 +27,7 @@ camera:
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
   exposure_time: 200ms # Initial exposure time (in ms)
+  fps: 5  # Frames per second, should either be defined by the camera or within the model based on timing
   binning_x: 1 # Binning
   binning_y: 1
   roi_x1: 0
@@ -43,10 +44,23 @@ waterfall: # Parameters for calculating the waterfall plot
 movie:
   buffer_length: 1000 # Frames
 
-Tracking: # Not yet implemented, will show up in the config window
+tracking:
+  locate:
+    diameter: 33  # Diameter of the particles (in pixels) to track
+    invert: False
+    minmass: 200
+  link:
+    memory: 3
+    search_range: 4
+  filter:  # Filter spurious trajectories
+    min_length: 25
+  process:
+    compute_drift: False
+    um_pixel: 0.01  # Microns per pixel (calibration of the microscope)
   param_1: 0.
   param_2: 0
 
 Debug:
   queue_memory: False
   to_screen: True
+

@@ -23,7 +23,6 @@ def check_camera(func):
     def func_wrapper(cls, *args, **kwargs):
         if hasattr(cls, 'camera'):
             if cls.camera is not None:
-                print(cls.camera)
                 return func(cls, *args, **kwargs)
 
         if hasattr(cls, 'logger'):

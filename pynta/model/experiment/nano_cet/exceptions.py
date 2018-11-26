@@ -16,3 +16,6 @@ class StreamSavingRunning(NanoCETException):
 
 class TrackpyNotInstalled(NanoCETException):
     pass
+
+class DiameterNotDefined(NanoCETException):
+    pass

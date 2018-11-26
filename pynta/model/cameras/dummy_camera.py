@@ -51,7 +51,7 @@ class camera(cameraBase):
 
         :param: int mode: One of self.MODE_CONTINUOUS, self.MODE_SINGLE_SHOT
         """
-        print('Setting acquisition mode')
+        self.logger.debug('Setting acquisition mode')
         return self.getAcquisitionMode()
 
     def getAcquisitionMode(self):

@@ -30,6 +30,8 @@ import yaml
 from threading import Thread
 
 from pynta.util import get_logger
+from pynta.model.experiment.publisher import publisher
+from pynta.model.experiment.subscriber import subscriber
 
 
 class BaseExperiment:
@@ -40,54 +42,39 @@ class BaseExperiment:
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
         self._threads = []
-        self.queue = Queue()
-        self._publisher = Process(target=start_publisher, args=[self.queue])
+        self.publisher_queue = Queue()
+        self._publisher = Process(target=publisher, args=[self.publisher_queue])
         self._publisher.start()
-
         self._connections = []
 
     def stop_publisher(self):
         """ Puts the proper data to the queue in order to stop the running publisher process"""
         self.logger.info('Stopping the publisher')
         self.stop_subscribers()
-        self.queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
+        self.publisher_queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
 
     def stop_subscribers(self):
         self.logger.info('Stopping the subscribers')
         for connection in self._connections:
             if connection['process'].is_alive():
                 self.logger.info('Stopping {}'.format(connection['method']))
-                self.queue.put({'topic': connection['topic'], 'data': 'stop'})
+                self.publisher_queue.put({'topic': connection['topic'], 'data': 'stop'})
 
-    def connect(self, method, topic):
+    def connect(self, method, topic, *args, **kwargs):
         """ Async method that connects the running publisher to the given method on a specific topic.
         """
-        def subscriber(method=method, topic=topic, port=5555, logger=self.logger):
-            port = port
+        self.logger.debug('Arguments: {}'.format(args))
+        arguments = [method, topic]
+        for arg in args:
+            arguments.append(arg)
 
-            context = zmq.Context()
-            socket = context.socket(zmq.SUB)
-            socket.connect("tcp://localhost:%s" % port)
-
-            topic_filter = topic.encode('ascii')
-            socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
-            # sleep(1)
-            logger.info('Subscribing {} to {}'.format(method.__name__, topic))
-            while True:
-                topic = socket.recv_string()
-                img = socket.recv_pyobj()  # flags=0, copy=True, track=False)
-                logger.debug('Got data of type {} on topic: {}'.format(type(img), topic))
-                method(img)
-                if isinstance(img, str):
-                    logger.debug('Data: {}'.format(img))
-                    if img == 'stop':
-                        logger.info('Stopping subscriber on method {}'.format(method.__name__))
-                        break
-
+        self.logger.info('Connecting {} on topic {}'.format(method.__name__, topic))
+        self.logger.debug('Arguments: {}'.format(args))
+        self.logger.debug('KWarguments: {}'.format(kwargs))
         self._connections.append({
             'method':method.__name__,
             'topic': topic,
-            'process': Process(target=subscriber),
+            'process': Process(target=subscriber, args=arguments, kwargs=kwargs),
         })
         self._connections[-1]['process'].start()
 
@@ -110,20 +97,6 @@ class BaseExperiment:
             self.logger.exception('Unhandled exception')
             raise
 
-    def make_async(self, func, *args, **kwargs):
-        """ Wrapper function for making any function async. It will create a new thread, not a new process.
-        Threads are less delicate and allow to share memory more easily than processes. Every new thread will be
-        stored in a list. This enables the user to trigger more than one thread, for instance for saving data while
-        acquiring, or while analysing, etc.
-
-        .. note:: It is not a different process, but a thread spawn from the main thread.
-        """
-        self.logger.info('Starting a new thread for {}'.format(func.__name__))
-        self._threads.append([func.__name__, Thread(target=func, args=args, kwargs=kwargs)])
-        self._threads[-1][1].start()
-        self.logger.debug('Started a new thread for {}'.format(func.__name__))
-        self.logger.debug('In total, there are {} threads'.format(len(self._threads)))
-
     def clear_threads(self):
         """ Keep only the threads that are alive.
         """
@@ -135,7 +108,7 @@ class BaseExperiment:
 
     @property
     def connections(self):
-        return self._connections
+        return [conn for conn in self._connections if conn['process'].is_alive()]
 
     @property
     def alive_threads(self):
@@ -177,63 +150,14 @@ class BaseExperiment:
         self.finalize()
         self.stop_publisher()
         self._publisher.join()
+
+        self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
         for conn in self.connections:
-            self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
-            conn['process'].join()
-        while not self.queue.empty():
-            self.logger.debug('Queue size while exiting: {}'.format(self.queue.qsize()))
-            self.queue.get()
-        self.logger.info('Finished the experiment')
+            conn['process'].terminate()
 
+        if not self.publisher_queue.empty():
+            self.logger.debug('Queue size while exiting: {}'.format(self.publisher_queue.qsize()))
+            while not self.publisher_queue.empty():
+                self.publisher_queue.get()
+        self.logger.info('Finished the base experiment')
 
-def start_publisher(queue):
-    """ Simple method that starts a publisher on the port 5555.
-
-    .. TODO:: The publisher's port should be determined in a configuration file.
-    """
-    logger = get_logger(name=__name__)
-    port_pub = 5555
-    context = zmq.Context()
-    socket = context.socket(zmq.PUB)
-    socket.bind("tcp://*:%s" % port_pub)
-    logger.info('Bound socket on {}'.format(port_pub))
-    # sleep(1)
-    while True:
-        if not queue.empty():
-            data = queue.get()  # Should be a dictionary {'topic': topic, 'data': data}
-            logger.debug('Sending {} on {}'.format(data['data'], data['topic']))
-            socket.send_string(data['topic'], zmq.SNDMORE)
-            socket.send_pyobj(data['data'])
-            if 'stop_pub' in data:
-                break
-    logger.info('Stopping publisher')
-
-
-if __name__ == '__main__':
-    import logging
-
-    logger = get_logger()
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
-    with BaseExperiment() as exp:
-        sleep(2)
-        exp.connect(exp.print_me, 'image')
-        exp.connect(exp.also_print_me, 'nothing')
-
-        exp.update_config(timelapse=2, framerate=4)
-
-        data = {'topic': 'image', 'data': np.random.random((1,1))}
-        for i in range(5):
-            exp.queue.put(data)
-            sleep(0.001)
-
-        data.update({'topic': 'nothing'})
-        for i in range(5):
-            exp.queue.put(data)
-            sleep(0.001)
-
-    print('exit')

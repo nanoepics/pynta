@@ -1,51 +1,29 @@
-"""
-    pynta.model.experiment.workerSaver
-    =========================
-    When working with multi threading in Python it is important to define the function that will be run in a separate
-    thread. workerSaver is just a function that will be moved to a separate, parallel thread to save data to disk
-    without interrupting the acquisition.
-
-    Since the workerSaver function will be passed to a different Process (via the *multiprocessing* package) the only
-    way for it to receive data from other threads is via a Queue. The workerSaver will run continuously until it finds a
-    string as the next item.
-
-    To understand how the separate process is created, please refer to
-    :meth:`~UUTrack.View.Camera.cameraMain.cameraMain.movieSave`
-
-    The general principle is
-
-        >>> filename = 'name.hdf5'
-        >>> q = Queue()
-        >>> metadata = _session.serialize() # This prints a YAML-ready version of the session.
-        >>> p = Process(target=workerSaver, args=(filename, metaData, q,))
-        >>> p.start()
-        >>> q.put([1, 2, 3])
-        >>> q.put('Stop')
-        >>> p.join()
-
-    :copyright: 2017
-
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
-"""
-
 import h5py
 import numpy as np
 from datetime import datetime
 from pynta.util.log import get_logger
 
 
-def worker_saver(file_path, meta, q):
+def add_to_save_queue(data, queue_saver):
+    """ This method is a buffer between the publisher and the ``save_stream`` method. The idea is that in order
+    to be quick (saving to disk may be slow), whatever the publisher sends will be added to a Queue. Another
+    process will read from the queue and save it to disk on a separate process.
+    """
+    img = data[1]
+    queue_saver.put(img)
+
+
+def worker_saver(file_path, meta, q, max_memory=500):
     """Function that can be run in a separate thread for continuously save data to disk.
 
-    .. TODO:: The memory allocation is fixed inline at 250MB and should be more flexible.
-
-    :param str fileData: the path to the file to use.
+    :param str file_path: the path to the file to use.
     :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.
     :param Queue q: Queue that will store all the images to be saved to disk.
+    :param int max_memory: Maximum memory (in MB) to allocate
     """
     logger = get_logger(name=__name__)
     logger.info('Appending data to {}'.format(file_path))
-    allocate_memory = 1  # megabytes of memory to allocate on the hard drive.
+    allocate_memory = max_memory  # megabytes of memory to allocate on the hard drive.
 
     with h5py.File(file_path, "a") as f:
         now = str(datetime.now())
@@ -93,7 +71,11 @@ def worker_saver(file_path, meta, q):
 
         if j > 0 or i > 0:
             logger.info('Saving last bits of data before stopping.')
-            dset[:, :, j:j + allocate] = d  # Last save before closing
+            logger.debug('Missing values: {}'.format(i))
+            dset[:, :, j:j + i] = d[:, :, :i]  # Last save before closing
+
+        # This last bit is to avoid having a lot of zeros at the end of the timelapses
+        dset.resize((x, y, j+i))
 
         logger.info('Flushing file to disk...')
         f.flush()
