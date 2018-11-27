@@ -35,9 +35,14 @@ from datetime import datetime
 from pynta.util.log import get_logger
 
 
-def worker_listener(file_path, meta, topic, port=5555):
+def worker_listener(file_path, meta, topic, port=5555, max_memory=500):
     """ Function that listens on the specified port for new data and then saves it to disk. It is the same as
     :func:`worker_saver` but implementing a ZMQ socket instead of grabbing data from a queue.
+
+    :param str file_path: the path to the file to use.
+    :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.
+    :param int port: Port on which to listen for publisher data
+    :param int max_memory: Maximum memory (in MB) to allocate
     """
     logger = get_logger(name=__name__)
     logger.info('Starting worker saver for topic {} on port {}'.format(topic, port))
@@ -46,6 +51,62 @@ def worker_listener(file_path, meta, topic, port=5555):
     socket.connect("tcp://localhost:{}".format(port))
     topic_filter = topic.encode('ascii')
     socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
+    allocate_memory = max_memory  # megabytes of memory to allocate on the hard drive.
+
+    with h5py.File(file_path, "a") as f:
+        now = str(datetime.now())
+        g = f.create_group(now)
+        g.create_dataset('metadata', data=meta.encode("ascii","ignore"))
+        # Has to be submitted via the socket a string 'stop'
+
+        i = 0
+        j = 0
+        first = True
+
+        while True:
+            topic = socket.recv_string()
+            data = socket.recv_pyobj()
+            logger.debug('Got data of type {} on the saver topic {}.'.format(type(data), topic))
+            if isinstance(data, str):
+                logger.info('Got the signal to stop the saving')
+                break
+            data = data[1]
+            if first:  # First time it runs, creates the dataset
+                x = data.shape[0]
+                y = data.shape[1]
+                logger.debug('Image size: {}x{}'.format(x, y))
+                allocate = int(allocate_memory / data.nbytes * 1024 * 1024)
+                logger.debug('Allocating {}MB to stream to disk'.format(allocate_memory))
+                logger.debug('Allocate {} frames'.format(allocate))
+                d = np.zeros((x, y, allocate), dtype=data.dtype)
+                dset = g.create_dataset('timelapse', (x, y, allocate), maxshape=(x, y, None),
+                                        compression='gzip', compression_opts=1,
+                                        dtype=data.dtype)  # The images are going to be stacked along the z-axis.
+                d[:, :, i] = data
+                i += 1
+                first = False
+            else:
+                if i == allocate:
+                    logger.debug('Allocating more memory')
+                    dset[:, :, j:j + allocate] = d
+                    dset.resize((x, y, j + 2 * allocate))
+                    d = np.zeros((x, y, allocate), dtype=data.dtype)
+                    i = 0
+                    j += allocate
+                d[:, :, i] = data
+                i += 1
+
+        if j > 0 or i > 0:
+            logger.info('Saving last bits of data before stopping.')
+            logger.debug('Missing values: {}'.format(i))
+            dset[:, :, j:j + i] = d[:, :, :i]  # Last save before closing
+
+        # This last bit is to avoid having a lot of zeros at the end of the timelapses
+        dset.resize((x, y, j+i))
+
+        logger.info('Flushing file to disk...')
+        f.flush()
+        logger.info('Finished writing to disk')
 
 def add_to_save_queue(data, queue_saver):
     """ This method is a buffer between the publisher and the ``save_stream`` method. The idea is that in order

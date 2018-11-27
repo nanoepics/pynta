@@ -32,7 +32,7 @@ from pynta.model.experiment.nano_cet.decorators import (check_camera,
                                                         make_async_thread,)
 from pynta.model.experiment.nano_cet.localization import link_queue
 
-from pynta.model.experiment.nano_cet.saver import worker_saver
+from pynta.model.experiment.nano_cet.saver import worker_saver, worker_listener
 from pynta.model.experiment.nano_cet.exceptions import StreamSavingRunning
 from pynta.util import get_logger
 
@@ -246,8 +246,12 @@ class NanoCET(BaseExperiment):
             self.logger.debug('Created directory {}'.format(file_dir))
         file_path = os.path.join(file_dir, file_name)
         max_memory = self.config['saving']['max_memory']
-        self.stream_saving_process = Process(target=worker_saver,
-                                             args=(file_path, json.dumps(self.config), self.saver_queue),
+        # self.stream_saving_process = Process(target=worker_saver,
+        #                                      args=(file_path, json.dumps(self.config), self.saver_queue),
+        #                                      kwargs={'max_memory': max_memory})
+
+        self.stream_saving_process = Process(target=worker_listener,
+                                             args=(file_path, json.dumps(self.config), 'free_run'),
                                              kwargs={'max_memory': max_memory})
         self.stream_saving_process.start()
         self.logger.debug('Started the stream saving process')
@@ -267,6 +271,7 @@ class NanoCET(BaseExperiment):
         if self.save_stream_running:
             self.logger.info('Stopping the saving stream process')
             self.saver_queue.put('Exit')
+            self.publisher_queue.put({'topic': 'free_run', 'data': 'stop'})
             return
         self.logger.warning('The saving stream is not running. Nothing will be done.')
 
@@ -373,8 +378,6 @@ class NanoCET(BaseExperiment):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        super().__exit__(exc_type, exc_val, exc_tb)
-
         self.empty_saver_queue()
         self.empty_locations_queue()
 
@@ -384,3 +387,5 @@ class NanoCET(BaseExperiment):
 
         if self.link_particles_running:
             self.stop_link_particles()
+
+        super().__exit__(exc_type, exc_val, exc_tb)
