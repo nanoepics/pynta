@@ -1,8 +1,51 @@
+"""
+    pynta.model.experiment.workerSaver
+    =========================
+    When working with multi threading in Python it is important to define the function that will be run in a separate
+    thread. workerSaver is just a function that will be moved to a separate, parallel thread to save data to disk
+    without interrupting the acquisition.
+
+    Since the workerSaver function will be passed to a different Process (via the *multiprocessing* package) the only
+    way for it to receive data from other threads is via a Queue. The workerSaver will run continuously until it finds a
+    string as the next item.
+
+    To understand how the separate process is created, please refer to
+    :meth:`~UUTrack.View.Camera.cameraMain.cameraMain.movieSave`
+
+    The general principle is
+
+        >>> filename = 'name.hdf5'
+        >>> q = Queue()
+        >>> metadata = _session.serialize() # This prints a YAML-ready version of the session.
+        >>> p = Process(target=workerSaver, args=(filename, metaData, q,))
+        >>> p.start()
+        >>> q.put([1, 2, 3])
+        >>> q.put('Stop')
+        >>> p.join()
+
+    :copyright: 2017
+
+    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+"""
+import zmq
 import h5py
 import numpy as np
 from datetime import datetime
+
 from pynta.util.log import get_logger
 
+
+def worker_listener(file_path, meta, topic, port=5555):
+    """ Function that listens on the specified port for new data and then saves it to disk. It is the same as
+    :func:`worker_saver` but implementing a ZMQ socket instead of grabbing data from a queue.
+    """
+    logger = get_logger(name=__name__)
+    logger.info('Starting worker saver for topic {} on port {}'.format(topic, port))
+    context = zmq.Context()
+    socket = context.socket(zmq.SUB)
+    socket.connect("tcp://localhost:{}".format(port))
+    topic_filter = topic.encode('ascii')
+    socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
 
 def add_to_save_queue(data, queue_saver):
     """ This method is a buffer between the publisher and the ``save_stream`` method. The idea is that in order
