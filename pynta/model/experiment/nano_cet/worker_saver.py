@@ -27,6 +27,7 @@
 
     .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
 """
+import zmq
 
 import h5py
 import numpy as np
@@ -34,12 +35,25 @@ from datetime import datetime
 from pynta.util.log import get_logger
 
 
+def worker_listener(file_path, meta, topic, port=5555):
+    """ Function that listens on the specified port for new data and then saves it to disk. It is the same as
+    :func:`worker_saver` but implementing a ZMQ socket instead of grabbing data from a queue.
+    """
+    logger = get_logger(name=__name__)
+    logger.info('Starting worker saver for topic {} on port {}'.format(topic, port))
+    context = zmq.Context()
+    socket = context.socket(zmq.SUB)
+    socket.connect("tcp://localhost:{}".format(port))
+    topic_filter = topic.encode('ascii')
+    socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
+
+
 def worker_saver(file_path, meta, q):
     """Function that can be run in a separate thread for continuously save data to disk.
 
     .. TODO:: The memory allocation is fixed inline at 250MB and should be more flexible.
 
-    :param str fileData: the path to the file to use.
+    :param str file_path: the path to the file to use.
     :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.
     :param Queue q: Queue that will store all the images to be saved to disk.
     """

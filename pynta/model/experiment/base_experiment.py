@@ -48,12 +48,15 @@ class BaseExperiment:
         self._connections = []
 
     def stop_publisher(self):
-        """ Puts the proper data to the queue in order to stop the running publisher process"""
+        """ Puts the proper data to the queue in order to stop the running publisher process
+        """
         self.logger.info('Stopping the publisher')
         self.stop_subscribers()
         self.publisher_queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
 
     def stop_subscribers(self):
+        """ Puts the proper data into every alive subscriber in order to stop it.
+        """
         self.logger.info('Stopping the subscribers')
         for connection in self._connections:
             if connection['process'].is_alive():
@@ -62,6 +65,11 @@ class BaseExperiment:
 
     def connect(self, method, topic, *args, **kwargs):
         """ Async method that connects the running publisher to the given method on a specific topic.
+
+        :param method: method that will be connected on a given topic
+        :param str topic: the topic that will be used by the subscriber to discriminate what information to collect.
+        :param args: extra arguments will be passed to the subscriber, which in turn will pass them to the function
+        :param kwargs: extra keyword arguments will be passed to the subscriber, which in turn will pass them to the function
         """
         self.logger.debug('Arguments: {}'.format(args))
         arguments = [method, topic]

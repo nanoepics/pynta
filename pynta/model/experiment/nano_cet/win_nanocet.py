@@ -369,7 +369,7 @@ class NanoCET(BaseExperiment):
 
 
     def __enter__(self):
-        # self.set_up()
+        super().__enter__()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

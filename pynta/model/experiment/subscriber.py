@@ -11,7 +11,7 @@ import zmq
 from pynta.util import get_logger
 
 
-def subscriber(method, topic, *args, **kwargs):
+def subscriber(func, topic, *args, **kwargs):
     port = 5555
     if 'port' in kwargs:
         port = kwargs['port']
@@ -22,7 +22,7 @@ def subscriber(method, topic, *args, **kwargs):
 
     topic_filter = topic.encode('ascii')
     socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
-    logger.info('Subscribing {} to {}'.format(method.__name__, topic))
+    logger.info('Subscribing {} to {}'.format(func.__name__, topic))
     while True:
         topic = socket.recv_string()
         data = socket.recv_pyobj()  # flags=0, copy=True, track=False)
@@ -30,7 +30,7 @@ def subscriber(method, topic, *args, **kwargs):
         if isinstance(data, str):
             logger.debug('Data: {}'.format(data))
             if data == 'stop':
-                logger.info('Stopping subscriber on method {}'.format(method.__name__))
+                logger.info('Stopping subscriber on method {}'.format(func.__name__))
                 break
-        method(data, *args, **kwargs)
-    logger.debug('Stopped subscriber {}'.format(method.__name__))
+        func(data, *args, **kwargs)
+    logger.debug('Stopped subscriber {}'.format(func.__name__))
