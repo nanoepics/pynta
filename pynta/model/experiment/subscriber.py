@@ -7,6 +7,8 @@
     from a queue with ``Queue.get()`` is particularly slow, much slower than serializing a numpy array with
     cPickle.
 """
+from time import sleep
+
 import zmq
 from pynta.util import get_logger
 
@@ -15,11 +17,13 @@ def subscriber(func, topic, *args, **kwargs):
     port = 5555
     if 'port' in kwargs:
         port = kwargs['port']
+        del kwargs['port']
+
     logger = get_logger(name=__name__)
     context = zmq.Context()
     socket = context.socket(zmq.SUB)
     socket.connect("tcp://localhost:%s" % port)
-
+    sleep(1)  # Takes a while for TCP connections to propagate
     topic_filter = topic.encode('ascii')
     socket.setsockopt(zmq.SUBSCRIBE, topic_filter)
     logger.info('Subscribing {} to {}'.format(func.__name__, topic))
@@ -30,7 +34,10 @@ def subscriber(func, topic, *args, **kwargs):
         if isinstance(data, str):
             logger.debug('Data: {}'.format(data))
             if data == 'stop':
-                logger.info('Stopping subscriber on method {}'.format(func.__name__))
+                logger.debug('Stopping subscriber on method {}'.format(func.__name__))
+                # socket.close()
                 break
+
         func(data, *args, **kwargs)
+    # sleep(1)  # Gives enough time for the publishers to finish sending data before closing the socket
     logger.debug('Stopped subscriber {}'.format(func.__name__))
