@@ -12,3 +12,4 @@ build
 UUTracking.egg-info
 dist
 venv/
+*.egg-info/

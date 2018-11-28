@@ -9,9 +9,10 @@
 """
 import time
 import numpy as np
-from .SimulateBrownian import SimBrownian
-from lantz import Q_
-from ._skeleton import cameraBase
+from pynta.model.cameras.simulate_brownian import SimBrownian
+from pynta.util.log import get_logger
+# from lantz import Q_
+from .skeleton import cameraBase
 
 
 class camera(cameraBase):
@@ -19,7 +20,8 @@ class camera(cameraBase):
     MODE_SINGLE_SHOT = 0
 
     def __init__(self, camera):
-        self.camera = camera
+        super().__init__(camera)
+
         self.running = False
         self.xsize = 600
         self.ysize = 250
@@ -27,10 +29,12 @@ class camera(cameraBase):
         self.maxY = 250
         self.exposure = 0
 
+        self.logger = get_logger(name=__name__)
+
     def initializeCamera(self):
         """Initializes the camera.
         """
-        print('Initializing camera')
+        self.logger.info('Initializing camera')
         self.maxWidth = self.GetCCDWidth()
         self.maxHeight = self.GetCCDHeight()
         self.sb = SimBrownian([self.xsize, self.ysize])
@@ -47,7 +51,7 @@ class camera(cameraBase):
 
         :param: int mode: One of self.MODE_CONTINUOUS, self.MODE_SINGLE_SHOT
         """
-        print('Setting acquisition mode')
+        self.logger.debug('Setting acquisition mode')
         return self.getAcquisitionMode()
 
     def getAcquisitionMode(self):
@@ -63,8 +67,7 @@ class camera(cameraBase):
     def setExposure(self, exposure):
         """Sets the exposure of the camera.
         """
-        self.exposure = exposure * Q_('s')
-        return exposure
+        self.exposure = exposure
 
     def getExposure(self):
         """Gets the exposure time of the camera.
@@ -79,11 +82,12 @@ class camera(cameraBase):
         sample = sample.astype('uint16')
         elapsed = time.time() - moment
         try:
+            self.logger.debug('Sleeping for {}'.format(self.exposure.m_as('s') - elapsed))
             time.sleep(
-                self.exposure.magnitude / 1000 - elapsed)  # to simulate exposure time corrected for data generation delay
+                self.exposure.m_as('s') - elapsed)  # to simulate exposure time corrected for data generation delay
         except:
             time.sleep(0)
-        return sample
+        return [sample]
 
     def setROI(self, X, Y):
         """
