@@ -15,6 +15,7 @@
     .. todo:: How to stream 2048 x 2048 at max frame rate to the flash disk? The Hamamatsu software can do this.
 
     Copyright: Hazen Babcock
+    This file was adapted to Python 3 and documented in the numpy style by Aquiles Carattino <aquiles@aquicarattino.com>
 
 """
 

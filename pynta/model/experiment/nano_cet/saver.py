@@ -1,6 +1,6 @@
 """
     pynta.model.experiment.workerSaver
-    =========================
+    ==================================
     When working with multi threading in Python it is important to define the function that will be run in a separate
     thread. workerSaver is just a function that will be moved to a separate, parallel thread to save data to disk
     without interrupting the acquisition.

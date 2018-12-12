@@ -2,16 +2,26 @@
 """
     dummyCamera.py
     ~~~~~~~~~~~~~~
-    Dummy camera class for testing GUI and other functionality. Based on the skeleton.
+    Dummy camera class for testing GUI and other functionality. This specific version generates randomly diffusing
+    particles. However, the settings are controlled in a different class, SimBrownian.
+
+    .. TODO:: The camera defines plenty of parameters that are not used or that they are confusing later on. Rasing
+    exceptions does not happen even if trying to extend beyond the maximum dimensions of the CCD.
+
+    .. TODO:: The parameters for the simulation of the brownian motion should be made explicitly here, in such a way
+    that can be used from within the config file as well.
+
+    .. TODO:: Some of the methods do not return the same datatype as the real models
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
+
 """
 import time
 import numpy as np
 from pynta.model.cameras.simulate_brownian import SimBrownian
 from pynta.util.log import get_logger
-# from lantz import Q_
+from pynta import Q_
 from .skeleton import cameraBase
 
 
@@ -24,11 +34,12 @@ class camera(cameraBase):
 
         self.running = False
         self.xsize = 600
-        self.ysize = 250
+        self.ysize = 400
         self.maxX = 600
-        self.maxY = 250
-        self.exposure = 0
-
+        self.maxY = 400
+        self.exposure = Q_('10ms')
+        self.X = [0, self.maxX-1]
+        self.Y = [0, self.maxY-1]
         self.logger = get_logger(name=__name__)
 
     def initializeCamera(self):
@@ -37,7 +48,7 @@ class camera(cameraBase):
         self.logger.info('Initializing camera')
         self.maxWidth = self.GetCCDWidth()
         self.maxHeight = self.GetCCDHeight()
-        self.sb = SimBrownian([self.xsize, self.ysize])
+        self.sb = SimBrownian(size=[self.xsize, self.ysize])
         return True
 
     def triggerCamera(self):
@@ -75,18 +86,16 @@ class camera(cameraBase):
         return self.exposure
 
     def readCamera(self):
-        X, Y = self.getSize()
         moment = time.time()
         self.sb.nextRandomStep()  # creates a next random step according to parameters in SimulateBrownian.py
         sample = self.sb.genImage()
-        sample = sample.astype('uint16')
+        sample = sample.astype('uint8')
         elapsed = time.time() - moment
-        try:
+        if elapsed > self.exposure.m_as('s'):
+            self.logger.warning('Generating a frame takes longer than exposure time')
+        else:
             self.logger.debug('Sleeping for {}'.format(self.exposure.m_as('s') - elapsed))
-            time.sleep(
-                self.exposure.m_as('s') - elapsed)  # to simulate exposure time corrected for data generation delay
-        except:
-            time.sleep(0)
+            time.sleep(self.exposure.m_as('s') - elapsed)  # to simulate exposure time corrected for data generation delay
         return [sample]
 
     def setROI(self, X, Y):
@@ -98,9 +107,15 @@ class camera(cameraBase):
         :param Y: array type with the coordinates for the ROI Y[0], Y[1]
         :return:
         """
-        self.xsize = abs(X[1] - X[0])
-        self.ysize = abs(Y[1] - Y[0])
+        X = np.sort(X)
+        Y = np.sort(Y)
+        self.xsize = abs(X[1] - X[0])+1
+        self.ysize = abs(Y[1] - Y[0])+1
         self.sb.resizeView((self.xsize, self.ysize))
+        self.X = X
+        self.Y = Y
+        self.X[1] -= 1
+        self.Y[1] -= 1
         return self.getSize()
 
     def getSize(self):
@@ -135,21 +150,9 @@ class camera(cameraBase):
         """
         self.xbin = xbin
         self.ybin = ybin
-        pass
 
     def stopAcq(self):
-        """ Stops the acquisition
-
-        :return: bool True: returns true
-        """
-        return True
+        pass
 
     def stopCamera(self):
-        """Stops the acquisition and closes the connection with the camera.
-        """
-        try:
-            # Closing the camera
-            return True
-        except:
-            # Monitor failed to close
-            return False
+        pass

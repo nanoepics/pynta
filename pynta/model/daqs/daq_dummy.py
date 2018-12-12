@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-    Pharos.Model.daq.daqDummy.py
+    pynta.model.daqs.daq_dummy.py
     ====================================
     Dummy daq class for testing GUI and other functionalities. Based on the skeleton.
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
-from ._skeleton import DaqBase
+from .skeleton import DaqBase
 
 
-class dummyDaq(DaqBase):
+class DAQDummy(DaqBase):
     def __init__(self, dev_number=None):
         print('Initialized device with number: %s' % dev_number)
         self.test_value = 0

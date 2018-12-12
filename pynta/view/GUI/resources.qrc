@@ -1,0 +1,20 @@
+<RCC>
+  <qresource prefix="icon_">
+    <file>Icons/hatch_enlarge.svg</file>
+    <file>Icons/duotone_edit.svg</file>
+    <file>Icons/pictogram_open.svg</file>
+    <file>Icons/avocado_calibrate.svg</file>
+    <file>Icons/duotone_chart.svg</file>
+    <file>Icons/hatch_ask.svg</file>
+    <file>Icons/hatch_download.svg</file>
+    <file>Icons/pictogram_close.svg</file>
+    <file>Icons/pictogram_crop.svg</file>
+    <file>Icons/pictogram_link.svg</file>
+    <file>Icons/pictogram_play.svg</file>
+    <file>Icons/pictogram_record.svg</file>
+    <file>Icons/pictogram_save.svg</file>
+    <file>Icons/science-and-fiction_capture.svg</file>
+    <file>Icons/science-and-fiction_upload.svg</file>
+    <file>Icons/sketchy_create.svg</file>
+  </qresource>
+</RCC>

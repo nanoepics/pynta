@@ -4,16 +4,16 @@
     ~~~~~~
 
     Model for Photonic Science GEV Cameras. The model just implements the basic methods defined in the
-    :meth:`~UUTrack.Model.Cameras._skeleton.cameraBase` using a Photonic Sicence camera. The controller for this
-    camera is :mod:`~UUTrack.Controller.devices.PhotonicScience`
+    :meth:`~pynta.model.cameras.skeleton.cameraBase` using a Photonic Sicence camera. The controller for this
+    camera is :mod:`~pynta.controller.devices.photonicscience`
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
 
-from UUTrack.Controller.devices.PhotonicScience.scmoscam import GEVSCMOS
-from ._skeleton import cameraBase
+from pynta.controller.devices.photonicscience.scmoscam import GEVSCMOS
+from .skeleton import cameraBase
 
 NUMPY_MODES = {"L": np.uint8, "I;16": np.uint16}
 

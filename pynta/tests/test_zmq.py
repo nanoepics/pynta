@@ -16,7 +16,6 @@
     you have a more limited system, consider lowering the amount of elements or changing the data type.
 
 """
-import logging
 from time import time
 
 import numpy as np
