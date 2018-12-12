@@ -19,7 +19,6 @@ contains the configuration file and that its name is ``config.yml``. To start th
 After a few moments, a screen like the one below will welcome you to the program.
 
 .. figure:: media/screenshot_01.png
-   :scale: 95 %
    :alt: screenshot
 
 The Tools

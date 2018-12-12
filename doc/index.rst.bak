@@ -54,16 +54,19 @@ Organization, under a Vici grant from Prof. Allard Mosk. This work was carried o
 between June 2018 and December 2018.
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
 
    installing
-   example_config
-   getting_started
-   contribute_codebase
-   making_virtual_environment
-   pynta_api
-   list_todo
+   modules
+   config
+   python_working
+   installing
+   starting
+   improving
+   UUTrack
+   todo
 
 
 Indices and tables
