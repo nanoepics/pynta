@@ -21,16 +21,11 @@
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
 """
-from multiprocessing import Queue, Process
-from time import sleep
+from multiprocessing import Process, Event
 
-import numpy as np
-import zmq
 import yaml
-from threading import Thread
-
 from pynta.util import get_logger
-from pynta.model.experiment.publisher import publisher
+from pynta.model.experiment.publisher import Publisher
 from pynta.model.experiment.subscriber import subscriber
 
 
@@ -42,26 +37,29 @@ class BaseExperiment:
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
         self._threads = []
-        self.publisher_queue = Queue()
-        self._publisher = Process(target=publisher, args=[self.publisher_queue])
-        self._publisher.start()
+        self.publisher = Publisher()
+        self.publisher.start()
         self._connections = []
+        self.subscriber_events = []
 
     def stop_publisher(self):
         """ Puts the proper data to the queue in order to stop the running publisher process
         """
         self.logger.info('Stopping the publisher')
+        self.publisher.stop()
         self.stop_subscribers()
-        self.publisher_queue.put({'stop_pub': True, 'topic': '', 'data': 'stop_pub'})
 
     def stop_subscribers(self):
         """ Puts the proper data into every alive subscriber in order to stop it.
         """
         self.logger.info('Stopping the subscribers')
+        for event in self.subscriber_events:
+            event.set()
+
         for connection in self._connections:
             if connection['process'].is_alive():
                 self.logger.info('Stopping {}'.format(connection['method']))
-                self.publisher_queue.put({'topic': connection['topic'], 'data': 'stop'})
+                connection['event'].set()
 
     def connect(self, method, topic, *args, **kwargs):
         """ Async method that connects the running publisher to the given method on a specific topic.
@@ -71,8 +69,9 @@ class BaseExperiment:
         :param args: extra arguments will be passed to the subscriber, which in turn will pass them to the function
         :param kwargs: extra keyword arguments will be passed to the subscriber, which in turn will pass them to the function
         """
+        event = Event()
         self.logger.debug('Arguments: {}'.format(args))
-        arguments = [method, topic]
+        arguments = [method, topic, event]
         for arg in args:
             arguments.append(arg)
 
@@ -83,6 +82,7 @@ class BaseExperiment:
             'method':method.__name__,
             'topic': topic,
             'process': Process(target=subscriber, args=arguments, kwargs=kwargs),
+            'event': event,
         })
         self._connections[-1]['process'].start()
 
@@ -142,7 +142,7 @@ class BaseExperiment:
     def finalize(self):
         """ Needs to be overridden by child classes.
         """
-        pass
+        self.publisher.stop()
 
     def update_config(self, **kwargs):
         self.logger.info('Updating config')
@@ -153,19 +153,22 @@ class BaseExperiment:
         self.set_up()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
         self.logger.info("Exiting the experiment")
         self.finalize()
-        self.stop_publisher()
-        self._publisher.join()
 
         self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
-        for conn in self.connections:
-            conn['process'].terminate()
+        for event in self.subscriber_events:
+            event.set()
 
-        if not self.publisher_queue.empty():
-            self.logger.debug('Queue size while exiting: {}'.format(self.publisher_queue.qsize()))
-            while not self.publisher_queue.empty():
-                self.publisher_queue.get()
+        for conn in self.connections:
+            self.logger.debug('Waiting for {} to finish'.format(conn['method']))
+            conn['process'].join()
+
         self.logger.info('Finished the base experiment')
+
+        self.publisher.stop()
+
+
+
 

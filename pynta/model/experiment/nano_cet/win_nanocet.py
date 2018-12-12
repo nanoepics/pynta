@@ -11,12 +11,13 @@
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
 """
+import sys
+import copy
 import importlib
 import json
 import os
 import time
-import matplotlib.pyplot as plt
-
+from threading import Event
 
 from datetime import datetime
 
@@ -24,17 +25,19 @@ import h5py as h5py
 import numpy as np
 from multiprocessing import Queue, Process
 
-from pandas import DataFrame
-
+from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import BaseExperiment
 from pynta.model.experiment.nano_cet.decorators import (check_camera,
                                                         check_not_acquiring,
-                                                        make_async_thread,)
-from pynta.model.experiment.nano_cet.localization import link_queue
+                                                        make_async_thread)
 
-from pynta.model.experiment.nano_cet.saver import worker_saver, worker_listener
+from pynta.model.experiment.nano_cet.localization import link_queue, calculate_locations_image, \
+    calculate_histogram_sizes, LocateParticles
+
+from pynta.model.experiment.nano_cet.saver import worker_listener
 from pynta.model.experiment.nano_cet.exceptions import StreamSavingRunning
 from pynta.util import get_logger
+import trackpy as tp
 
 
 class NanoCET(BaseExperiment):
@@ -44,6 +47,8 @@ class NanoCET(BaseExperiment):
 
     def __init__(self, filename=None):
         super().__init__()
+        self.free_run_running = False
+        self.saving_location = False
         self.logger = get_logger(name=__name__)
 
         self.load_configuration(filename)
@@ -51,6 +56,7 @@ class NanoCET(BaseExperiment):
         self.dropped_frames = 0
         self.keep_acquiring = True
         self.acquiring = False  # Status of the acquisition
+        self.tracking = False
         self.camera = None  # This will hold the model for the camera
         self.current_height = None
         self.current_width = None
@@ -58,23 +64,32 @@ class NanoCET(BaseExperiment):
         self.max_height = None
         self.background = None
         self.temp_image = None  # Temporary image, used to quickly have access to 'some' data and display it to the user
+        # self.temp_locations = None
         self.movie_buffer = None  # Holds few frames of the movie in order to be able to do some analysis, save later, etc.
         self.last_index = 0  # Last index used for storing to the movie buffer
         self.stream_saving_running = False
         self.async_threads = []  # List holding all the threads spawn
         self.stream_saving_process = None
         self.link_particles_process = None
+        self.calculate_histogram_process = None
         self.do_background_correction = False
         self.background_method = self.BACKGROUND_SINGLE_SNAP
+        self.last_locations = None
 
         self.waterfall_index = 0
 
         self.locations_queue = Queue()
         self.tracks_queue = Queue()
+        self.size_distribution_queue = Queue()
         self.saver_queue = Queue()
-
+        self.keep_locating = True
         self._threads = []
+        self._processes = []
+        self._stop_free_run = Event()
 
+        self.location = LocateParticles(self.publisher, self.config['tracking'])
+        self.fps = 0  # Calculates frames per second based on the number of frames received in a period of time
+        # sys.excepthook = self.sysexcept  # This is very handy in case there are exceptions that force the program to quit.
 
     def initialize_camera(self):
         """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the
@@ -106,13 +121,13 @@ class NanoCET(BaseExperiment):
             self.logger.info('Initializing camera without extra arguments')
             self.logger.debug('cam_module.camera({})'.format(cam_init_arguments))
             self.camera = cam_module.camera(cam_init_arguments)
-            self.current_width, self.current_height = self.camera.getSize()
-            self.logger.info('Camera sensor ROI: {}px X {}px'.format(self.current_width, self.current_height))
-            self.max_width = self.camera.GetCCDWidth()
-            self.max_height = self.camera.GetCCDHeight()
-            self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
         self.camera.initializeCamera()
+        self.current_width, self.current_height = self.camera.getSize()
+        self.logger.info('Camera sensor ROI: {}px X {}px'.format(self.current_width, self.current_height))
+        self.max_width = self.camera.GetCCDWidth()
+        self.max_height = self.camera.GetCCDHeight()
+        self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
     @check_camera
     @check_not_acquiring
@@ -128,24 +143,20 @@ class NanoCET(BaseExperiment):
 
     @check_camera
     @check_not_acquiring
-    def set_roi(self, x, y, width, height):
+    def set_roi(self, X, Y):
         """ Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
         should be addressed on the camera model, not in this method.
 
-        :param int x: horizontal position for the start of the cropping
-        :param int y: vertical position for the start of the cropping
-        :param int width: width in pixels for cropping
-        :param int height: height in pixels for the cropping
+        :param list X: horizontal position for the start and end of the cropping
+        :param list Y: vertical position for the start and end of the cropping
         :raises ValueError: if either dimension of the cropping goes out of the camera total amount of pixels
         :returns: The final cropping dimensions, it may be that the camera limits the user desires
         """
-        X = [x, x+width-1]
-        Y = [y, y+height-1]
+
         self.logger.debug('Setting new camera ROI to x={},y={}'.format(X, Y))
-        Nx, Ny = self.camera.setROI(X, Y)
-        self.current_width, self.current_height = self.camera.getSize()
+        self.current_width, self.current_height = self.camera.setROI(X, Y)
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
-        self.tempimage = np.zeros((Nx, Ny))
+        self.temp_image = None
 
     @check_camera
     @check_not_acquiring
@@ -153,7 +164,9 @@ class NanoCET(BaseExperiment):
         """ Clears the region of interest and returns to the full frame of the camera.
         """
         self.logger.info('Clearing ROI settings')
-        self.camera.setROI(1, 1, self.max_width, self.max_height)
+        X = [0, self.max_width-1]
+        Y = [0, self.max_height-1]
+        self.camera.setROI(X, Y)
 
     @check_camera
     @check_not_acquiring
@@ -168,9 +181,9 @@ class NanoCET(BaseExperiment):
         self.camera.triggerCamera()
         self.check_background()
         data = self.camera.readCamera()[-1]
-        self.publisher_queue.put({'topic': 'snap', 'data': data})
-        self.temp_image = data[-1]
-        self.logger.debug('Got an image of {} pixels'.format(self.temp_image.shape))
+        self.publisher.publish('snap', data)
+        self.temp_image = data
+        self.logger.debug('Got an image of {}x{} pixels'.format(self.temp_image.shape[0], self.temp_image.shape[1]))
 
     @make_async_thread
     @check_not_acquiring
@@ -183,9 +196,12 @@ class NanoCET(BaseExperiment):
 
         self.logger.info('Starting a free run acquisition')
         first = True
-        self.keep_acquiring = True  # Change this attribute to stop the acquisition
+        i = 0  # Used to keep track of the number of frames
         self.camera.configure(self.config['camera'])
-        while self.keep_acquiring:
+        self._stop_free_run.clear()
+        t0 = time.time()
+        self.free_run_running = True
+        while not self._stop_free_run.is_set():
             if first:
                 self.logger.debug('First frame of a free_run')
                 self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
@@ -195,17 +211,29 @@ class NanoCET(BaseExperiment):
             data = self.camera.readCamera()
             self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
+                i += 1
+                self.logger.debug('Number of frames: {}'.format(i))
                 if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
                     img -= self.background
 
-
                 # This will broadcast the data just acquired with the current timestamp
                 # The timestamp is very unreliable, especially if the camera has a frame grabber.
-                self.publisher_queue.put({'topic':'free_run', 'data': [time.time(), img]})
-
+                self.publisher.publish('free_run', [time.time(), img])
+            self.fps = round(i / (time.time() - t0))
             self.temp_image = data[-1]
-
+        self.free_run_running = False
         self.camera.stopAcq()
+
+    @property
+    def temp_locations(self):
+        return self.localize_particles_image(self.temp_image)
+
+    def stop_free_run(self):
+        """ Stops the free run by setting the ``_stop_event``. It is basically a convenience method to avoid
+        having users dealing with somewhat lower level threading options.
+        """
+        self.logger.info('Setting the stop_event')
+        self._stop_free_run.set()
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
@@ -246,9 +274,6 @@ class NanoCET(BaseExperiment):
             self.logger.debug('Created directory {}'.format(file_dir))
         file_path = os.path.join(file_dir, file_name)
         max_memory = self.config['saving']['max_memory']
-        # self.stream_saving_process = Process(target=worker_saver,
-        #                                      args=(file_path, json.dumps(self.config), self.saver_queue),
-        #                                      kwargs={'max_memory': max_memory})
 
         self.stream_saving_process = Process(target=worker_listener,
                                              args=(file_path, json.dumps(self.config), 'free_run'),
@@ -260,7 +285,8 @@ class NanoCET(BaseExperiment):
         """ Starts linking the particles while the acquisition is in progress.
         """
         self.logger.info('Starting to link particles')
-        self.link_particles_process = Process(target=link_queue, args=[self.locations_queue, self.publisher_queue],
+        self.link_particles_process = Process(target=link_queue, args=[self.locations_queue, self.publisher._queue,
+                                                                       self.tracks_queue],
                                               kwargs=self.config['tracking']['link'])
         self.link_particles_process.start()
         self.logger.debug('Started the linking process')
@@ -271,21 +297,71 @@ class NanoCET(BaseExperiment):
         if self.save_stream_running:
             self.logger.info('Stopping the saving stream process')
             self.saver_queue.put('Exit')
-            self.publisher_queue.put({'topic': 'free_run', 'data': 'stop'})
+            self.publisher.publish('free_run', 'stop')
             return
-        self.logger.warning('The saving stream is not running. Nothing will be done.')
+        self.logger.info('The saving stream is not running. Nothing will be done.')
 
+    def start_tracking(self):
+        """ Starts the tracking of the particles
+        """
+        self.tracking = True
+        self.location.start_tracking('free_run')
+
+    def stop_tracking(self):
+        self.tracking = False
+        self.location.stop_tracking()
+
+    def start_saving_location(self):
+        self.saving_location = True
+        file_name = self.config['saving']['filename_tracks'] + '.hdf5'
+        file_dir = self.config['saving']['directory']
+        if not os.path.exists(file_dir):
+            os.makedirs(file_dir)
+            self.logger.debug('Created directory {}'.format(file_dir))
+        file_path = os.path.join(file_dir, file_name)
+        self.location.start_saving(file_path, json.dumps(self.config))
+
+    def stop_saving_location(self):
+        self.saving_location = False
+        self.location.stop_saving()
+
+    def start_linking_locations(self):
+        self.logger.debug('Start linking locations')
+        self.location.start_linking()
+
+    def stop_linking_locations(self):
+        self.logger.debug('Stop linking locations')
+        self.location.stop_linking()
+
+    def localize_particles_image(self, image=None):
+        """
+        Localizes particles based on trackpy. It is a convenience function in order to use the configuration parameters
+        instead of manually passing them to trackpy.
+
+        """
+        if image is None:
+            image = self.temp_image
+
+        params = copy.copy(self.config['tracking']['locate'])
+        diameter = params.pop('diameter')
+        return tp.locate(image, diameter, **params)
 
     @property
     def save_stream_running(self):
         if self.stream_saving_process is not None:
-            return self.stream_saving_process.is_alive()
+            try:
+                return self.stream_saving_process.is_alive()
+            except:
+                return False
         return False
 
     @property
     def link_particles_running(self):
         if self.link_particles_process is not None:
-            return self.link_particles_process.is_alive()
+            try:
+                return self.link_particles_process.is_alive()
+            except:
+                return False
         return False
 
     def stop_link_particles(self):
@@ -338,7 +414,7 @@ class NanoCET(BaseExperiment):
             wf = np.array([np.sum(image[:, center_pixel - vbinhalf:center_pixel + vbinhalf], 1)])
         self.waterfall_data[self.waterfall_index, :] = wf
         self.waterfall_index += 1
-        self.publisher_queue.put({'topic': 'waterfall_data', 'data': wf})
+        self.publisher.publish('waterfall_data', wf)
 
     def check_background(self):
         """ Checks whether the background is set.
@@ -353,31 +429,26 @@ class NanoCET(BaseExperiment):
                     self.background = None
                     self.do_background_correction = False
 
-    def plot_histogram(self):
-        import trackpy as tp
+    def finalize(self):
+        general_stop_event.set()
+        self.stop_free_run()
+        time.sleep(.5)
+        self.stop_save_stream()
+        self.location.finalize()
+        super().finalize()
 
-        df = DataFrame()
-        while not self.tracks_queue.empty():
-            data = self.tracks_queue.get()
-            df = df.append(data[0])
-
-        em = tp.emsd(df, self.config['tracking']['process']['um_pixel'], self.config['camera']['fps'])  # microns per pixel = 100/285., frames per second = 24
-        fig, ax = plt.subplots()
-        ax.plot(em.index, em, 'o')
-        ax.set_xscale('log')
-        ax.set_yscale('log')
-        ax.set(ylabel=r'$\langle \Delta r^2 \rangle$ [$\mu$m$^2$]',
-               xlabel='lag time $t$')
-        # ax.set(ylim=(1e-2, 10))
-        plt.show()
-
-
+    def sysexcept(self, exc_type, exc_value, exc_traceback):
+        self.logger.exception('Got an unhandled exception: {}'.format(exc_type))
+        self.logger.exception('Traceback: {}'.format(exc_traceback))
+        self.logger.exception('Value: {}'.format(exc_value))
+        self.__exit__()
+        sys.exit()
 
     def __enter__(self):
         super().__enter__()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, *args):
         self.empty_saver_queue()
         self.empty_locations_queue()
 
@@ -388,4 +459,5 @@ class NanoCET(BaseExperiment):
         if self.link_particles_running:
             self.stop_link_particles()
 
-        super().__exit__(exc_type, exc_val, exc_tb)
+        # super().__exit__(*args)
+

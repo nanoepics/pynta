@@ -19,3 +19,6 @@ class TrackpyNotInstalled(NanoCETException):
 
 class DiameterNotDefined(NanoCETException):
     pass
+
+class LinkException(NanoCETException):
+    pass

@@ -1,0 +1,2 @@
+class PublisherNotStarted(Exception):
+    pass

@@ -3,10 +3,16 @@
     simulate_brownian.py
     ==================================
     The SimulatedBrownian class generates synthetic images corresponding to particles performing a thermal Brownian
-    motion to be view, and eventually analyzed, by the rest of the openCET code.
+    motion to be view, and eventually analyzed, by the rest of the pynta program.
+
+    .. TODO:: Images could be generated a-priori and stored in memory. This would make it possible to generate higher
+    framerates and specific sleep times between them.
+
+    .. TODO:: A lot of parameters are stored as attributes of the class, but they are also used as arguments of methods.
+    Either replace methods by functions are use the attributes instead of the arguments.
 
     :copyright:  Sanli Faez <s.faez@uu.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
 
@@ -16,19 +22,19 @@ class SimBrownian:
     :param loca: N x d array of coordinates for N particles in d dimensions, dimension can be intensity or point spread width
     :return: generated an image with specified noise and particles displaced accordingly
     """
-    def __init__(self, size = [500, 100]):
+    def __init__(self, size = (500, 100)):
         # camera and monitor parameters
         self.xsize, self.ysize = size
         # simulation parameters
-        self.difcon = 2 # Desired diffusion constant in pixel squared per second
-        self.numpar = 4 # Desired number of diffusing particles
-        self.signal = 30 # brightness for each particle
-        self.noise = 10 # background noise
-        self.psize = 8 # half-spread of each particle in the image, currently must be integer
+        self.difcon = 2  # Desired diffusion constant in pixel squared per second
+        self.numpar = 50  # Desired number of diffusing particles
+        self.signal = 30  # brightness for each particle
+        self.noise = 0  # background noise
+        self.psize = 8  # half-spread of each particle in the image, currently must be integer
         x = np.arange(size[0])
         y = np.arange(size[1])
         X, Y = np.meshgrid(y, x)
-        self.simbg = 5+np.sin((X+Y)/self.psize)
+        self.simbg = 0 #5+np.sin((X+Y)/self.psize) * 0
         self.initLocations()
 
     def initLocations(self):
@@ -47,10 +53,10 @@ class SimBrownian:
         x = np.arange(size[0])
         y = np.arange(size[1])
         X, Y = np.meshgrid(y, x)
-        self.simbg = 5+np.sin((X+Y)/self.psize)
+        self.simbg = 0#  5+np.sin((X+Y)/self.psize)
         self.xsize, self.ysize = size
         self.loca = self.initLocations()
-        return()
+        return
 
     def nextRandomStep(self):
         numpar = self.numpar
@@ -70,7 +76,7 @@ class SimBrownian:
         :return: generated image with specified noise and particles position in self.loca
         """
 
-        simimage = np.random.uniform(1, self.noise, size=(self.xsize, self.ysize)) + self.simbg
+        simimage = np.random.uniform(1, self.noise, size=(self.xsize, self.ysize))# + self.simbg
         psize = self.psize
         normpar = np.zeros((2*psize, 2*psize))
         for x in range(psize):
@@ -81,7 +87,6 @@ class SimBrownian:
             x = np.int(self.loca[n,0])
             y = np.int(self.loca[n,1])
             simimage[x-psize:x+psize, y-psize:y+psize] = simimage[x-psize:x+psize, y-psize:y+psize] + normpar * self.loca[n,2]
-
         return simimage
 
 

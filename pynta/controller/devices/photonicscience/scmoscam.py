@@ -2,11 +2,13 @@
 """
     scmoscam.py
     ~~~~~~~~~~~
-
-    A wrapper class originally written by Perceval Guillou <perceval@photonic-science.com>, in Py2 and has been
-    successfully tested with scmoscontrol.dll SCMOS Pleora (GEV) control dll (x86 )v5.6.0.0 (date modified 10/2/2013)
+    Driver for Photonic Science Cameras (Pleora GEV). This driver was originally written by Perceval Guillou
+    <perceval@photonic-science.com>, in Py2 and has been successfully tested with scmoscontrol.dll SCMOS Pleora (GEV)
+    control dll (x86 )v5.6.0.0 (date modified 10/2/2013)
 
     This version copyright: Sanli Faez <s.faez@uu.nl>
+
+    .. todo:: The coding style is not in line with the rest of PyNTA. The GEVSMOS class can be cleaned up and documented
 """
 
 import ctypes as C
