@@ -13,3 +13,4 @@ UUTracking.egg-info
 dist
 venv/
 *.egg-info/
+_build/
