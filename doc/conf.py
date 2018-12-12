@@ -23,7 +23,6 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx.ext.autosummary',
               'sphinx.ext.extlinks',
-              'numpydoc',
              ]
 
 extlinks = {'issue': ('https://github.com/nanoepics/pynta/issues',
