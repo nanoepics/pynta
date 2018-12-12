@@ -2,9 +2,17 @@
 
 from setuptools import setup
 
+with open('pynta/__init__.py', 'r') as f:
+    version_line = f.readline()
+
+version = version_line.split('=')[1].strip()
+
+with open('README.md', 'r') as f:
+    long_description = f.read()
+
 setup(
     name='pynta',
-    version='0.0',
+    version=version,
     description='Python Nanoparticle Tracking Analysis',
     packages=['pynta',
               ],
@@ -20,5 +28,8 @@ setup(
     package_data={'pynta': ['View/GUI/Icons/*.*']},
     include_package_data=True,
     install_requires=['pyqt5<5.11', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
-                      'pyzmq', 'numba']
+                      'pyzmq', 'numba'],
+    long_description=long_description,
+    long_description_content_type="text/markdown",
 )
+

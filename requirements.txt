@@ -3,3 +3,7 @@ scipy
 trackpy
 h5py
 numpy
+sphinx-rtd-theme
+sphinx
+pyqt5
+pyqtgraph
