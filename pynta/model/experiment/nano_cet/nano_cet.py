@@ -18,6 +18,7 @@ import os
 
 import time
 from datetime import datetime
+from threading import Event
 
 import h5py as h5py
 import numpy as np
@@ -71,7 +72,7 @@ class NanoCET(BaseExperiment):
         self.stream_saving_process = None
         self.do_background_correction = False
         self.background_method = self.BACKGROUND_SINGLE_SNAP
-
+        self._stop_evet = Event()
         self.waterfall_index = 0
 
         self.locations_queue = Queue()
@@ -186,6 +187,7 @@ class NanoCET(BaseExperiment):
         first = True
         self.keep_acquiring = True  # Change this attribute to stop the acquisition
         self.camera.configure(self.config['camera'])
+
         while self.keep_acquiring:
             if first:
                 self.logger.debug('First frame of a free_run')
@@ -203,10 +205,15 @@ class NanoCET(BaseExperiment):
                 # This will broadcast the data just acquired with the current timestamp
                 # The timestamp is very unreliable, especially if the camera has a frame grabber.
                 self.queue.put({'topic':'free_run', 'data': [time.time(), img]})
-
+            if self._stop_evet.is_set():
+                break
             self.temp_image = data[-1]
 
         self.camera.stopAcq()
+
+    def stop_free_run(self):
+        self._stop_evet.set()
+
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.

@@ -11,7 +11,7 @@
         useful ones was formatted according to Lantz standards.
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
 
 from lantz import Action

@@ -29,13 +29,18 @@
 
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: AGPLv3, see LICENSE for more details
+    :license: GPLv3, see LICENSE for more details
 """
-import PyDAQmx as nidaq
+try:
+    import PyDAQmx as nidaq
+except ModuleNotFoundError:
+    print('In order to work with this version of PyNTA you need to install PyDAQmx')
+    raise
+
 import numpy as np
-from pharos.config import config
-from pharos.model.daq._skeleton import DaqBase
-from lantz import Q_
+from pynta.config import config
+from pynta.model.daqs.skeleton import DaqBase
+from pynta import Q_
 
 
 class ni(DaqBase):
@@ -43,6 +48,7 @@ class ni(DaqBase):
         """Class trap for condensing tasks that can be used for interacting with an optical trap.
         session -- class with important variables, including the adq card.
         """
+        super().__init__(daq_num)
         self.daq_num = daq_num
         self.monitorNum = []
         self.tasks = []

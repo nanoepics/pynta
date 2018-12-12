@@ -15,7 +15,7 @@ from pynta.util.log import get_logger
 from pynta import Q_
 
 
-class cameraBase():
+class cameraBase:
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
 
