@@ -1,6 +1,22 @@
 # pynta
 Particle tracking instrumentation and analysis in Python
 
+## Screenshot ##
+
+![Screenshot of the PyNTA software](doc/media/screenshot_01.png?raw=true "PyNTA acquiring")
+
+## Installation
+Create a virtual environment in your own computer and run the following command to get the latest PyNTA version:
+
+    pip install git+https://github.com/nanoepics/pynta
+
+And if you want the development branch, you can run:
+
+    pip install git+https://github.com/nanoepics/pynta@develop
+    
+Note that the development branch is for testing purposes only. Forward 
+compatibility is not ensured and unexpected bugs may be encountered.
+
 ## For Developers
 If you want to add or improve the code, the proper workflow is as follows: 
 
