@@ -6,4 +6,5 @@ include AUTHORS
 include examples/*
 include pynta/view/GUI/Icons/*
 include pynta/view/GUI/designer/*
+include doc/
 exlude pynta/view/old/
