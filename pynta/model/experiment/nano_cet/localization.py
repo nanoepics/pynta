@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+"""
+Localization Routines
+=====================
+Tracking particles is a relatively easy routine. PyNTA uses trackpy to analyse every frame that is generated. However,
+linking localizations in order to build a trace is not trivial, since it implies preserving in memory the previous
+locations. The main idea of these routines is that a main object :class:`~LocateParticles` holds the information of
+the processes running. Moreover, there is a combination of threads and processes depending on the expected load.
+
+It has to be noted that Windows has a peculiar way of dealing with new processes that prevents us from using methods,
+but instead we are forced to use functions. This is very limiting but couldn't find a way around yet.
+
+The core idea is that the localization uses the data broadcasted by :class:`~pynta.model.experiment.publisher.Publisher`
+in order to collect new frames, or save localizations to disk. It uses the
+:class:`~pynta.model.experiment.subscriber.Subscriber` in order to listen for the new data, and in turn publishes it
+with the Publisher.
+
+:copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+:license: GPLv3, see LICENSE for more details
+"""
 from copy import copy
 from datetime import datetime
 
@@ -18,6 +38,10 @@ from pynta.util import get_logger
 
 
 class LocateParticles:
+    """ Convenience class to keep track of processes and threads related to the localization of particles.
+    The idea was to make it more robust when stopping processes and to give a common interface to the experiment in
+     case radical changes are implemented. For example, changing tracking or linking algorithms, etc.
+     """
     def __init__(self, publisher, config):
         self._accumulate_links_event = Event()
         self.publisher = publisher
@@ -41,6 +65,14 @@ class LocateParticles:
         self.logger.info('Initialized locate particles')
 
     def start_tracking(self, topic):
+        """ Starts a process that listens for frames on a specific topic. It uses the function
+        :func:`~calculate_locations`. The process is stored in ``self._trackings_process`` and is automatically started.
+
+        :param str topic: Topic in which to listen for new frames.
+
+        .. TODO:: Implement a lock to prevent more than one process to start
+        """
+
         self.logger.debug('Started tracking')
         self._tracking_event.clear()
         self._tracking_process = Process(
@@ -50,9 +82,20 @@ class LocateParticles:
         self._tracking_process.start()
 
     def stop_tracking(self):
+        """ Stops the tracking process by setting a particular event.
+
+        .. TODO:: This is a hard stop, i.e., tracking will stop immediately. Perhaps it would be wise to clear the queue.
+        """
         self._tracking_event.set()
 
     def start_saving(self, file_path, meta):
+        """ Starts a process for saving localizations to an HDF5 file. It uses the function :func:`~save_locations`.
+
+        :param str file_path: Full path to the location where to save the data
+        :param dict meta: Metadata as a dictionary. It will be serialized with json
+
+        .. TODO:: Implement a lock to prevent a second process starting
+        """
         self._saving_event.clear()
         self._saving_process = Process(
             target=save_locations,
@@ -60,9 +103,20 @@ class LocateParticles:
         self._saving_process.start()
 
     def stop_saving(self):
+        """ Stops the saving process.
+
+        .. TODO:: Implement a way of stop the saving after saving everything and not immediately.
+        """
         self._saving_event.set()
 
     def start_linking(self):
+        """ Starts a process to link the localizations of particles. It publishes the track information as a table,
+        with the frame and particle number appended to the rightmost columns respectively. This particular task may be
+        very time consuming.
+
+        .. warning:: Linking tracks can block a process if there are too many particles with a very large search radius.
+            If linking is too slow consider saving the localizations and link them afterwards.
+        """
         self.logger.debug('Started the linking process')
         self._linking_event.clear()
         self._linking_process = Process(
@@ -75,6 +129,13 @@ class LocateParticles:
 
     @make_async_thread
     def accumulate_links(self):
+        """ Asynchronous method to store the links in this class. It looked like a good idea to keep this information in
+        a single location, regardless of whether another process is listening on the topic. This in principle can be
+        used to analyse data retrospectively.
+
+        .. todo:: Still needs to clear the memory after several calls. Need to fit better in the architecture of the
+            program
+        """
         self._accumulate_links_event.clear()
         socket = subscribe(self.publisher.port, 'particle_links')
         while not self._accumulate_links_event.is_set():
@@ -93,6 +154,18 @@ class LocateParticles:
 
     @make_async_thread
     def calculate_histogram(self):
+        """ Starts a new thread to calculate the histogram of fit-parameters based on the mean-squared displacement of
+        individual particles. It publishes the data on topic `histogram`.
+
+        .. warning:: This method is incredibly expensive. Since it runs on a thread it can block other pieces of code,
+        especially the GUI, which runs on the same process.
+
+        .. TODO:: The histogram loops over all the particles. It would be better to skeep particles for which there is
+            no new data
+
+        .. TODO:: Make this method able to run on a separate process. So far is not possible because it relies on data
+            stored on the class itself (`self.locations`).
+        """
         self.calculating_histograms = True
         locations = self.locations.copy()
         t1 = tp.filter_stubs(locations, self.config['process']['min_traj_length'])
@@ -116,6 +189,9 @@ class LocateParticles:
         self.publisher.publish('histogram', self.histogram_values)
 
     def relevant_tracks(self):
+        """ Returns the relevant tracks as filtered by length, eccentricity, size and mass. This step needs careful
+        consideration and should definitely be used in post-processing or once the parameters have been validated.
+        """
         locations = self.locations.copy()
         t1 = tp.filter_stubs(locations, self.config['process']['min_traj_length'])
         t2 = t1[((t1['mass'] > self.config['process']['min_mass']) & (t1['size'] < self.config['process']['max_size']) &
@@ -126,6 +202,9 @@ class LocateParticles:
         self._linking_event.set()
 
     def finalize(self):
+        """ Stops all the processes and threads. It should be invoked when finishing a measurement or when stopping an
+        acquisition.
+        """
         self.stop_saving()
         self.stop_tracking()
         self.stop_linking()

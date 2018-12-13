@@ -9,17 +9,24 @@ you copy the contents of the file into a folder on your own computer.
 
 Opening the Program
 -------------------
-After installing_ PyNTA, you can trigger it from the command line. We are assuming that you are within the folder that
-contains the configuration file and that its name is ``config.yml``. To start the program, you simply type:
+After :ref:`installing` PyNTA, you can trigger it from the command line. You can simply run the following command:
 
 .. code-block:: bash
 
-    python -m pynta -c config.yml
+    pynta
 
 After a few moments, a screen like the one below will welcome you to the program.
 
 .. figure:: media/screenshot_01.png
    :alt: screenshot
+
+This will use synthetic data by default, i.e. you can snap or acquire a movie and test the capabilities of the program without the need of connecting with a real camera. Once you are confident with the program and you would like to start using real hardware, you need to develop :ref:`a proper config file <example-config>`. Once you have it, you can run the following command:
+
+.. code-block:: bash
+
+    python -m pynta -c config.yml
+
+You can reproduce the config file that gives you the synthetic data and then move to real devices.
 
 The Tools
 ---------

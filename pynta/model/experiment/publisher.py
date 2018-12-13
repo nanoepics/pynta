@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-    publisher.py
-    ~~~~~~~~~~~~
-    Publishers are responsible for broadcasting the message over the ZMQ PUB/SUB architecture.
+Publisher
+=========
 
-    .. TODO:: In the current implementation, data is serialized for being added to a Queue, then deserialized by the
+Publishers are responsible for broadcasting the message over the ZMQ PUB/SUB architecture. The publisher runs
+continuously on a separated process and grabs elements from a queue, which in turn are sent through a socket to any
+other processes listening. 
+
+.. TODO:: In the current implementation, data is serialized for being added to a Queue, then deserialized by the
     publisher and serialized again to be sent. These three steps could be simplify into one if, for example, one assumes
     that objects where pickled. There is also a possibility of assuming numpy arrays and using a zero-copy strategy.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
-    :license: GPLv3, see LICENSE for more details
+:copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+:license: GPLv3, see LICENSE for more details
 """
 
 import logging
@@ -98,6 +101,8 @@ def publisher(queue, event, port):
     :param multiprocessing.Event event: Event to stop the publisher
     :param int port: port in which to broadcast data
     .. TODO:: The publisher's port should be determined in a configuration file.
+
+    .. deprecated:: 0.1.0
     """
     logger = get_logger(name=__name__)
     port_pub = port
