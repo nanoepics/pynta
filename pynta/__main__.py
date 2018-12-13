@@ -1,3 +1,4 @@
+import os
 from argparse import ArgumentParser
 import logging
 from PyQt5.QtWidgets import QApplication
@@ -16,12 +17,18 @@ def main():
     # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     # ch.setFormatter(formatter)
     # logger.addHandler(ch)
+
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     parser = ArgumentParser(description='Start the pyNTA software')
-    parser.add_argument("-c", dest="config_file", required=True,
+    parser.add_argument("-c", dest="config_file", required=False,
                         help="Path to the configuration file")
     args = parser.parse_args()
 
-    exp = NanoCET(args.config_file)
+    if args.config_file is None:
+        config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
+    else:
+        config_file = args.config_file
+    exp = NanoCET(config_file)
     exp.initialize_camera()
     app = QApplication([])
     window = MainWindow(exp)

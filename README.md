@@ -1,5 +1,5 @@
 # PyNTA
-##Particle tracking instrumentation and analysis in Python
+## Particle tracking instrumentation and analysis in Python
 
 ![Screenshot of the PyNTA software](doc/media/screenshot_01.png?raw=true "PyNTA acquiring")
 
@@ -17,12 +17,23 @@ And if you want the development branch, you can run:
 Note that the development branch is for testing purposes only. Forward 
 compatibility is not ensured and unexpected bugs may be encountered. 
 
-##First Steps with PyNTA
+## Starting PyNTA
+In order to start the program, you need to run the following command: 
+
+    pynta
+    
+It will automatically start the program with a default synthetic camera. If you would like to specify your own configuration file for PyNTA, you should run instead:
+
+    pynta -c config.yml
+    
+where ``config.yml`` has to be replaced by the name of your file. You can explore the [examples folder](https://github.com/nanoepics/pynta/tree/master/examples) in the repository.
+
+## First Steps with PyNTA
 By default, PyNTA comes configures to use synthetic data. The images displayed are simulated random movements of particles. You can use that data to test the program regardless of whether you have a camera available or not. 
 
 You can start by aquiring images and movies. Stream the data to the hard drive and do real time tracking and characterization based on the diffusion of the particles. You can find more information on the [online documentation](http://nanoepics.github.io/pynta).
 
-##Supported cameras
+## Supported cameras
 We currently support the following cameras:
 * **Hamamatsu Orca** (which interface through DCAM-API)
 * **Photonic Science** 
@@ -30,15 +41,15 @@ We currently support the following cameras:
 
 The code has been structured in such a way that adding support for other cameras is straightforward, and also the simulation of experiments is easy to implement. You can read the guide on how to contribute to the code. 
 
-##Features
+## Features
 The key feature of PyNTA is the ability to acquire and analyse images in real time. By leveraging the capabilities of Trackpy, every frame is processed, detecting particles and linking their trajectories. This allows the user to see results about the distribution of particle sizes in close-to real time. 
 
 PyNTA allows the user to stream data directly to the hard drive, both video data and particle location can be saved during the progress of the experiment, making it failsafe against failures. Metadata is included in every generated file, guaranteeing the reproducibility of the experiments. 
 
-##Report Issues
+## Report Issues
 To report a problem with PyNTA, or suggestions for improvement, etc. you can use the [Issue Tracking System](https://github.com/nanoepics/pynta/issues). You can also contact the authors of the program if you have specific needs or would like to collaborate either scientifically or with development of code.
 
-##Wishlist
+## Wishlist
 * Make PyNTA available for data analysis of data already collected
 * Simplify the generation of the configuration file
 * Encapsulate the experiment and isolate it from the GUI
