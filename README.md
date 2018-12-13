@@ -1,5 +1,7 @@
 # pynta
-Particle tracking instrumentation and analysis in Python
+##Particle tracking instrumentation and analysis in Python
+
+![Alt text](doc/resources/screenshot.png?raw=true "Optional Title")
 
 ## For Developers
 If you want to add or improve the code, the proper workflow is as follows: 
