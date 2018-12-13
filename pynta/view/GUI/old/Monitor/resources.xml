@@ -1,0 +1,22 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>Icons/snap.png</file>
+    <file>Icons/Blue-Waterfall-icon.png</file>
+    <file>Icons/Delete-Database-icon.png</file>
+    <file>Icons/disk-save.png</file>
+    <file>Icons/Download-Database-icon.png</file>
+    <file>Icons/floppy-icon.png</file>
+    <file>Icons/Pause-icon.png</file>
+    <file>Icons/pinion-icon.png</file>
+    <file>Icons/play-icon.png</file>
+    <file>Icons/power-icon.png</file>
+    <file>Icons/Ruler-icon.png</file>
+    <file>Icons/Signal-stop-icon.png</file>
+    <file>Icons/tools-icon.png</file>
+    <file>Icons/video-icon.png</file>
+    <file>Icons/Zoom-In-icon.png</file>
+    <file>Icons/Zoom-Out-icon.png</file>
+</qresource>
+</RCC>
+
+<!-- Created by: The Resource Compiler for PyQt4 (Qt v4.8.7) -->
