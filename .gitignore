@@ -14,3 +14,4 @@ dist
 venv/
 *.egg-info/
 _build/
+.ipynb_checkpoints/

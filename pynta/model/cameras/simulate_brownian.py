@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 """
     simulate_brownian.py
-    ==================================
-    The SimulatedBrownian class generates synthetic images corresponding to particles performing a thermal Brownian
-    motion to be view, and eventually analyzed, by the rest of the pynta program.
+    ====================
+    The SimBrownian class generates synthetic images corresponding to particles performing a thermal Brownian
+    motion. This class was designed in order to make explicit the real parameters of the particles (i.e. the diffusion
+    coefficient in real-space) with the magnification of the microscope. The PSF on the camera is derived from the
+    pixel size, the wavelength and the numerical aperture of the objective.
+    If the parameter frames_to_accumulate is set to a positive value, memory will be allocated in order to store the first
+    N simulated frames. Once that number is achieved, the frames will keep looping between the already generated data.
+    The decision not to simulate the frames a-priori was to give a better feeling regarding the user-interface. It is
+    also assumed that frames are of datatype np.int16, which is a sensible default for most cameras, although int8 can
+    also be useful for speeding up the trackpy algorithm.
 
-    .. TODO:: Images could be generated a-priori and stored in memory. This would make it possible to generate higher
-    framerates and specific sleep times between them.
+    .. warning:: There is no memory check regarding the accumulated frames.
 
-    .. TODO:: A lot of parameters are stored as attributes of the class, but they are also used as arguments of methods.
-    Either replace methods by functions are use the attributes instead of the arguments.
+    .. TODO:: Think how to add noise, background, and intensity fluuctuations to the particles.
 
-    :copyright:  Sanli Faez <s.faez@uu.com>
+    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
@@ -28,10 +33,14 @@ class SimBrownian:
     pixel_size = 5  # um
     NA = 1  # Numerical aperture of the objective, used to estimate PSF
     wavelength = .500  # um, used to estimate PSF
-    signal = 30  # Peak intensity for a particle
+    signal = 300  # Peak intensity for a particle
     noise = 0  # Background noise
     time_step = 0.01  # s, Time step in the simulation. Should be set to the acquisition rate if used for a camera
     kernel_size = 11  # Number of pixels used to calculate the PSF of the particle
+
+    frames_to_accumulate = 1000  #Number of frames will be accumulated in order to speed up simulations
+                                # (they will be an infinite loop). Set to 0 in order to avoid accumulating frames
+
     def __init__(self, camera_size=(500, 500)):
         # camera and monitor parameters
         self.camera_size = np.array(camera_size)
@@ -41,6 +50,10 @@ class SimBrownian:
         self.localization = np.random.uniform([0, 0], self.real_space_size, size=(self.num_particles, 2))
         self.next_random_step()
         self.psf_width = self.magnification * self.wavelength/(2*self.NA)/self.pixel_size  # In pixels
+        self.current_frame = 0
+
+        if self.frames_to_accumulate:
+            self.frames = np.zeros((camera_size[0], camera_size[1], self.frames_to_accumulate), dtype=np.int16)
 
     def resize_view(self, camera_size):
         """SimulateBrownian.resizeView() adjusts the coordinates of the moving particles such that they
@@ -60,19 +73,34 @@ class SimBrownian:
         """
         :return: generated image with specified noise and particles position
         """
-        img = np.zeros(self.camera_size)
-        x = np.arange(-self.kernel_size, self.kernel_size+1)
-        y = np.arange(-self.kernel_size, self.kernel_size+1)
-        xx, yy = np.meshgrid(x, y)
-        positions = self.localization*self.magnification/self.pixel_size  # In units of pixels (with sub-px accuracy)
-        for p in positions:
-            p_x = p[0]-int(p[0])
-            p_y = p[1]-int(p[1])
-            pix_x = int(p[0])
-            pix_y = int(p[1])
-            s_img = 1 / (np.sqrt(2 * np.pi)*self.psf_width) * np.exp(-((xx - p_x) ** 2 + (yy - p_y) ** 2)/(2*self.psf_width**2))
-            img[pix_x-self.kernel_size:pix_x+self.kernel_size+1, pix_y-self.kernel_size:pix_y+self.kernel_size+1] += s_img
-        return img*self.signal
+        if self.current_frame < self.frames_to_accumulate or not self.frames_to_accumulate:
+            self.next_random_step()
+            img = np.zeros(self.camera_size)
+            x = np.arange(-self.kernel_size, self.kernel_size+1)
+            y = np.arange(-self.kernel_size, self.kernel_size+1)
+            xx, yy = np.meshgrid(x, y)
+            positions = self.localization*self.magnification/self.pixel_size  # In units of pixels (with sub-px accuracy)
+            for p in positions:
+                p_x = p[0]-int(p[0])
+                p_y = p[1]-int(p[1])
+                pix_x = int(p[0])
+                pix_y = int(p[1])
+                s_img = 1 / (np.sqrt(2 * np.pi)*self.psf_width) * np.exp(-((xx - p_x) ** 2 + (yy - p_y) ** 2)/(2*self.psf_width**2))
+                img[pix_x-self.kernel_size:pix_x+self.kernel_size+1, pix_y-self.kernel_size:pix_y+self.kernel_size+1] += s_img
+            if self.frames_to_accumulate:
+                self.frames[:, :, self.current_frame] = img*self.signal
+                self.current_frame += 1
+                return self.frames[:, :, self.current_frame-1]
+            return img*self.signal
+        else:
+            curr_frame = self.current_frame % (2*self.frames_to_accumulate-1)
+            self.current_frame += 1
+            if 2*self.frames_to_accumulate > curr_frame >= self.frames_to_accumulate:
+                curr_frame = (curr_frame + 1) % self.frames_to_accumulate
+                return self.frames[:,:,-curr_frame]
+            else:
+                curr_frame = curr_frame % self.frames_to_accumulate
+                return self.frames[:, :, curr_frame]
 
 
 if __name__ == '__main__':
