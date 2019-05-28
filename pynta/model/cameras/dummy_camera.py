@@ -34,10 +34,10 @@ class camera(cameraBase):
 
         self.running = False
         self.xsize = 600
-        self.ysize = 600
+        self.ysize = 400
         self.sb = SimBrownian((self.xsize, self.ysize))
         self.maxX = 600
-        self.maxY = 600
+        self.maxY = 400
         self.exposure = Q_('10ms')
         self.X = [0, self.maxX-1]
         self.Y = [0, self.maxY-1]
@@ -88,7 +88,6 @@ class camera(cameraBase):
 
     def readCamera(self):
         moment = time.time()
-        self.sb.next_random_step()  # creates a next random step according to parameters in SimulateBrownian.py
         sample = self.sb.gen_image()
         sample = sample.astype('uint8')
         elapsed = time.time() - moment
