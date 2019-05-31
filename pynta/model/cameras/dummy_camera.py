@@ -33,11 +33,11 @@ class camera(cameraBase):
         super().__init__(camera)
 
         self.running = False
-        self.xsize = 600
-        self.ysize = 400
+        self.xsize = 1080
+        self.ysize = 720
         self.sb = SimBrownian((self.xsize, self.ysize))
-        self.maxX = 600
-        self.maxY = 400
+        self.maxX = 1800
+        self.maxY = 720
         self.exposure = Q_('10ms')
         self.X = [0, self.maxX-1]
         self.Y = [0, self.maxY-1]
