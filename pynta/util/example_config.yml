@@ -50,6 +50,8 @@ tracking:
     diameter: 11  # Diameter of the particles (in pixels) to track, has to be an odd number
     invert: False
     minmass: 100
+    preprocess: False  # Avoid bandpass filtering step
+    max_iterations: 3  # Number of iterations to refine center of mass
   link:
     memory: 3
     search_range: 4
