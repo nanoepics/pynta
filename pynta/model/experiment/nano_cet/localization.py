@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 import trackpy as tp
 from multiprocessing import Process, Event
-from time import sleep
+from time import sleep, time
 from pandas import DataFrame
 from scipy.stats import stats
 from trackpy.linking import Linker
@@ -148,8 +148,11 @@ def calculate_locations(port, topic, event, publisher_queue, **kwargs):
         socket.recv_string()
         data = socket.recv_pyobj()  # flags=0, copy=True, track=False)
         image = data[1]  # image[0] is the timestamp of the frame
+        t0 = time()
         locations = tp.locate(image, **kwargs)
+        loc_time = time()-t0
         publisher_queue.put({'topic': 'locations', 'data': locations})
+        publisher_queue.put({'topic': 'locations_time', 'data': [loc_time, len(locations)]})
 
 
 def save_locations(file_path, meta, port, event, topic='locations'):

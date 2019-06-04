@@ -33,10 +33,11 @@ class camera(cameraBase):
         super().__init__(camera)
 
         self.running = False
-        self.xsize = 600
-        self.ysize = 400
-        self.maxX = 600
-        self.maxY = 400
+        self.xsize = 1080
+        self.ysize = 720
+        self.sb = SimBrownian((self.xsize, self.ysize))
+        self.maxX = 1800
+        self.maxY = 720
         self.exposure = Q_('10ms')
         self.X = [0, self.maxX-1]
         self.Y = [0, self.maxY-1]
@@ -48,7 +49,6 @@ class camera(cameraBase):
         self.logger.info('Initializing camera')
         self.maxWidth = self.GetCCDWidth()
         self.maxHeight = self.GetCCDHeight()
-        self.sb = SimBrownian(size=[self.xsize, self.ysize])
         return True
 
     def triggerCamera(self):
@@ -79,6 +79,7 @@ class camera(cameraBase):
         """Sets the exposure of the camera.
         """
         self.exposure = exposure
+        self.sb.time_step = self.exposure.m_as('s')
 
     def getExposure(self):
         """Gets the exposure time of the camera.
@@ -87,8 +88,7 @@ class camera(cameraBase):
 
     def readCamera(self):
         moment = time.time()
-        self.sb.nextRandomStep()  # creates a next random step according to parameters in SimulateBrownian.py
-        sample = self.sb.genImage()
+        sample = self.sb.gen_image()
         sample = sample.astype('uint8')
         elapsed = time.time() - moment
         if elapsed > self.exposure.m_as('s'):
@@ -111,7 +111,7 @@ class camera(cameraBase):
         Y = np.sort(Y)
         self.xsize = abs(X[1] - X[0])+1
         self.ysize = abs(Y[1] - Y[0])+1
-        self.sb.resizeView((self.xsize, self.ysize))
+        # self.sb.resize_view((self.xsize, self.ysize))
         self.X = X
         self.Y = Y
         self.X[1] -= 1
