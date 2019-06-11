@@ -60,7 +60,7 @@ void loop() {
         Serial.println(temp);
       } else if (temp_channel == 1) {
         sensors.requestTemperatures(); // Send the command to get temperature readings
-        delay(10000);
+        delay(1000);
         temp = sensors.getTempCByIndex(0);
         Serial.println(temp);
       }

@@ -12,7 +12,7 @@ from time import sleep
 
 import pyvisa
 from pynta.util.log import get_logger
-# TODO: Make more flexible which bacend will be used for PyVisa
+# TODO: Make more flexible which backend will be used for PyVisa
 from pynta.model.exceptions import OutOfRange
 
 rm = pyvisa.ResourceManager('@py')
