@@ -114,10 +114,10 @@ if __name__ == '__main__':
 
     inst = Arduino('COM3')
     print(inst.read_temperature(0))
-    inst.set_speed(2, 0, 155)
+    inst.set_speed(1, 0, 155)
     sleep(1)
-    inst.set_speed(2, 1, 155)
+    inst.set_speed(1, 1, 155)
     sleep(1)
-    inst.set_speed(2, 0, 0)
+    inst.set_speed(1, 0, 0)
     inst.close()
     inst.list_devices()

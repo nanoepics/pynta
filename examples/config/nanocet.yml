@@ -6,6 +6,9 @@
 user:
   name: Aquiles
 
+arduino:
+  port: COM3
+
 saving:
   auto_save: False
   auto_save_waterfall: True

@@ -44,11 +44,11 @@ void setup() {
 void loop() {
   serialString = "";
   while (Serial.available()) {
-    delay(5);
-    if (Serial.available() > 0) {
+//    delay(5);
+//    if (Serial.available() > 0) {
       char c = Serial.read();
       serialString += c;
-    }
+//    }
   }
   Serial.flush();
   delay(100);
@@ -93,9 +93,9 @@ void loop() {
           analogWrite(speedPin2, speed);
         }
       }
-      delay(200);
+      delay(1);
       Serial.println(speed);
     }
   }
-  delay(200);
+  delay(2);
 }
