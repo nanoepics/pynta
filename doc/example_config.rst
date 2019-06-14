@@ -35,3 +35,22 @@ integer. ``invert`` will be a boolean, etc. If the data type is not clear, the d
 Will generate a ``config['camera']['exposure_time']`` of type string, that will need to be transformed to a quantity
 later on. Note also that comments are ignored (after the ``#`` nothing is read).
 
+Real Cameras
+------------
+Currently Pynta supports a handful of cameras. If you would like to load a hamamatsu camera, you should change the following line:
+
+.. code-block:: yaml
+
+    camera:
+      model: dummy_camera
+
+with the following:
+
+.. code-block:: yaml
+    :emphasize-lines: 2
+
+    camera:
+      model: hamamatsu
+
+If you would like to understand how the loading of the camera works, in order to add your own, you can check :func:`~pynta.model.experiment.nano_cet.win_nanocet.NanoCET.initialize_camera`.
+

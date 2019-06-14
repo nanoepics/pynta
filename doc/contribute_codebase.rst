@@ -2,4 +2,4 @@
 
 How to Contribute Code
 ======================
-Rules for contributing code
+If you want to collaborate with PyNTA, you can start by reading the :ref:`for_developers`.
