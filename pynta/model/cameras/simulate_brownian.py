@@ -27,21 +27,34 @@ class SimBrownian:
     :param tuple camera_size: number of pixels in the x and y direction
     :return: generated an image with specified noise and particles displaced accordingly
     """
+    #: Number of particles per frame
     num_particles = 50
-    dif_coef = 1  # um^2/s
-    magnification = 30  # Magnification of the microscope
-    pixel_size = 5  # um
-    NA = 1  # Numerical aperture of the objective, used to estimate PSF
-    wavelength = .500  # um, used to estimate PSF
-    signal = 300  # Peak intensity for a particle
-    noise = 0  # Background noise
-    time_step = 0.01  # s, Time step in the simulation. Should be set to the acquisition rate if used for a camera
-    kernel_size = 11  # Number of pixels used to calculate the PSF of the particle
+    #: Diffusion coefficient um^2/s
+    dif_coef = 1
+    #: Magnification of the microscope
+    magnification = 30
+    #: In real space, um
+    pixel_size = 5
+    #: Numerical aperture of the objective, used to estimate PSF
+    NA = 1
+    #: um, used to estimate PSF
+    wavelength = .500
+    #: Peak intensity for a particle
+    signal = 300
+    #: Background noise
+    #: TODO: Needs to be implemented
+    noise = 0
+    #: Time step in the simulation. Should be set to the acquisition rate if used for a camera, seconds
+    time_step = 0.01
 
-    frames_to_accumulate = 1000  #Number of frames will be accumulated in order to speed up simulations
-                                # (they will be an infinite loop). Set to 0 in order to avoid accumulating frames
+    #: Number of pixels used to calculate the PSF of the particle
+    kernel_size = 11
 
-    def __init__(self, camera_size=(500, 500)):
+    #: Number of frames will be accumulated in order to speed up simulations
+    #: (they will be an infinite loop). Set to 0 in order to avoid accumulating frames
+    frames_to_accumulate = 1000
+
+    def __init__(self, camera_size: tuple = (500, 500)):
         # camera and monitor parameters
         self.camera_size = np.array(camera_size)
         self.localization = np.zeros(shape=(self.num_particles, 2))

@@ -93,7 +93,7 @@ class Camera(BaseCamera):
         """
         return True
 
-    def setExposure(self,exposure):
+    def setExposure(self, exposure):
         """
         Sets the exposure of the camera.
         """
