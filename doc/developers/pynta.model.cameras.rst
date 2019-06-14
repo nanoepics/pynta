@@ -12,6 +12,13 @@ pynta.model.cameras.dummy\_camera module
     :undoc-members:
     :show-inheritance:
 
+pynta.model.cameras.basler module
+---------------------------------
+.. automodule:: pynta.model.cameras.basler
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 pynta.model.cameras.hamamatsu module
 ------------------------------------
 
