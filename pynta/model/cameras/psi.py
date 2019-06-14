@@ -4,7 +4,7 @@
     ~~~~~~
 
     Model for Photonic Science GEV Cameras. The model just implements the basic methods defined in the
-    :meth:`~pynta.model.cameras.skeleton.cameraBase` using a Photonic Sicence camera. The controller for this
+    :meth:`~pynta.model.cameras.skeleton.BaseCamera` using a Photonic Sicence camera. The controller for this
     camera is :mod:`~pynta.controller.devices.photonicscience`
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
@@ -13,18 +13,18 @@
 import numpy as np
 
 from pynta.controller.devices.photonicscience.scmoscam import GEVSCMOS
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 NUMPY_MODES = {"L": np.uint8, "I;16": np.uint16}
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     def __init__(self, camera):
         self.cam_num = camera
         self.camera = GEVSCMOS(camera, 'SCMOS')
         self.running = False
 
-    def initializeCamera(self):
+    def initialize(self):
         """
         Initializes the camera.
 

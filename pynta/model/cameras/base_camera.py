@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-    skeleton.py
+    base_camera.py
     ~~~~~~~~~~~~
     Camera class with the skeleton functions. Important to keep track of the methods that are
-    exposed to the View. The class cameraBase should be subclassed when developing new Models. This ensures that all the methods are automatically inherited and there is no breaks downstream.
+    exposed to the View. The class BaseCamera should be subclassed when developing new Models. This ensures that all the methods are automatically inherited and there is no breaks downstream.
 
-    .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the cameraBase class. In this way the other models will have access to the method and the program will keep running (perhaps with non intended behavior though).
+    .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the BaseCamera class. In this way the other models will have access to the method and the program will keep running (perhaps with non intended behavior though).
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
@@ -15,7 +15,7 @@ from pynta.util.log import get_logger
 from pynta import Q_
 
 
-class cameraBase:
+class BaseCamera:
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
 
@@ -77,7 +77,7 @@ class cameraBase:
                 self.config.update({'binning_x': properties['binning_x'],
                                     'binning_y': properties['binning_y']})
 
-    def initializeCamera(self):
+    def initialize(self):
         """
         Initializes the camera.
         """
@@ -91,7 +91,7 @@ class cameraBase:
         """
         print("Not Implemented")
 
-    def setAcquisitionMode(self, mode):
+    def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
         :param int mode: One of self.MODE_CONTINUOUS, self.MODE_SINGLE_SHOT

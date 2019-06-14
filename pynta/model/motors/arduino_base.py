@@ -38,9 +38,10 @@ class Arduino:
             self.rsc.read_termination = '\r\n'
             self.rsc.timeout = 2500
 
-    def set_speed(self, motor: int, direction: int, speed: int) -> None:
-        """ Sets the speed and direction of movement of a motor. It is designed to work with two connected motors
-        through a quadrupole half-H driver(SN754410).
+    def move_motor(self, motor: int, direction: int) -> None:
+        """ Moves a motor in a given direction. It is designed to work with two connected motors
+        through a quadrupole half-H driver(SN754410). The arduino is programmed to move the motors a short
+        amount of time.
 
         Parameters
         ----------
@@ -49,8 +50,6 @@ class Arduino:
             Arduino has enough digital channels available.
         direction : int
             Direction of the movement. Either 0 or 1.
-        speed : int
-            Speed in 8-bit format (i.e. values between 0 and 255 are accepted)
 
         Raises
         ------
@@ -58,17 +57,15 @@ class Arduino:
             In case any of the values is outside the allowed range of options.
 
         """
-        logger.info(f'Setting motor {motor} to direction {direction} at speed {speed}')
+        logger.info(f'Setting motor {motor} to direction {direction}')
         if motor not in (1, 2):
             raise OutOfRange('Motor must be either 1 or 2')
-        if not 0 <= speed <= 255:
-            raise OutOfRange('Speed must be between 0 and 255')
         if direction not in (0, 1):
             raise OutOfRange('Direction must be either 0 or 1')
 
-        command = f'{motor}{direction}{speed:0>3}'
+        command = f'{motor}{direction}'
         logger.debug(command)
-        logger.info(self.rsc.query(command))
+        logger.info(self.rsc.write(command))
 
     def read_temperature(self, channel):
         """ Reads the temperature from connected sensors
@@ -90,8 +87,8 @@ class Arduino:
         return self.rsc.query(command)
 
     def close(self):
-        self.set_speed(1, 0, 0)
-        self.set_speed(2, 0, 0)
+        self.move_motor(1, 0, 0)
+        self.move_motor(2, 0, 0)
         self.rsc.close()
 
     @staticmethod
@@ -114,10 +111,10 @@ if __name__ == '__main__':
 
     inst = Arduino('COM3')
     print(inst.read_temperature(0))
-    inst.set_speed(1, 0, 155)
+    inst.move_motor(1, 0, 155)
     sleep(1)
-    inst.set_speed(1, 1, 155)
+    inst.move_motor(1, 1, 155)
     sleep(1)
-    inst.set_speed(1, 0, 0)
+    inst.move_motor(1, 0, 0)
     inst.close()
     inst.list_devices()

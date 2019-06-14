@@ -114,7 +114,7 @@ class NanoCET(BaseExperiment):
             self.max_height = self.camera.GetCCDHeight()
             self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
-        self.camera.initializeCamera()
+        self.camera.initialize()
 
     @check_camera
     @check_not_acquiring
@@ -123,7 +123,7 @@ class NanoCET(BaseExperiment):
         """
         self.logger.info('Acquiring background image')
         self.camera.configure(self.config['camera'])
-        self.camera.setAcquisitionMode(self.camera.MODE_SINGLE_SHOT)
+        self.camera.set_acquisition_mode(self.camera.MODE_SINGLE_SHOT)
         self.camera.triggerCamera()
         self.background = self.camera.readCamera()[-1]
         self.logger.debug('Got an image of {} pixels'.format(self.backgound.shape))
@@ -166,7 +166,7 @@ class NanoCET(BaseExperiment):
         """
         self.logger.info('Snapping a picture')
         self.camera.configure(self.config['camera'])
-        self.camera.setAcquisitionMode(self.camera.MODE_SINGLE_SHOT)
+        self.camera.set_acquisition_mode(self.camera.MODE_SINGLE_SHOT)
         self.camera.triggerCamera()
         self.check_background()
         data = self.camera.readCamera()[-1]
@@ -191,7 +191,7 @@ class NanoCET(BaseExperiment):
         while self.keep_acquiring:
             if first:
                 self.logger.debug('First frame of a free_run')
-                self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
+                self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
                 self.camera.triggerCamera()  # Triggers the camera only once
                 first = False
 

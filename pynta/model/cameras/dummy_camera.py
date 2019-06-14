@@ -22,10 +22,10 @@ import numpy as np
 from pynta.model.cameras.simulate_brownian import SimBrownian
 from pynta.util.log import get_logger
 from pynta import Q_
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
 
@@ -43,7 +43,7 @@ class camera(cameraBase):
         self.Y = [0, self.maxY-1]
         self.logger = get_logger(name=__name__)
 
-    def initializeCamera(self):
+    def initialize(self):
         """Initializes the camera.
         """
         self.logger.info('Initializing camera')
@@ -56,7 +56,7 @@ class camera(cameraBase):
         """
         return True
 
-    def setAcquisitionMode(self, mode):
+    def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
 

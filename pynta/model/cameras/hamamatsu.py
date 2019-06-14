@@ -23,21 +23,21 @@
 import numpy as np
 
 from pynta.controller.devices.hamamatsu.hamamatsu_camera import HamamatsuCamera
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
     MODE_EXTERNAL = 2
 
-    def __init__(self,camera):
+    def __init__(self, camera):
         self.cam_id = camera # Monitor ID
         self.camera = HamamatsuCamera(camera)
         self.running = False
         self.mode = self.MODE_SINGLE_SHOT
 
-    def initializeCamera(self):
+    def initialize(self):
         """ Initializes the camera.
 
         :return:
@@ -62,7 +62,7 @@ class camera(cameraBase):
             self.camera.startAcquisition()
             self.camera.stopAcquisition()
 
-    def setAcquisitionMode(self, mode):
+    def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
         Parameters

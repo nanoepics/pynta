@@ -12,17 +12,13 @@ class MotorTestExperiment(BaseExperiment):
         self.arduino = Arduino(self.config['arduino']['port'])
 
     def motor_right(self):
-        self.arduino.set_speed(1, 1, 50)
-        self.arduino.set_speed(1, 1, 0)
+        self.arduino.move_motor(1, 1)
 
     def motor_left(self):
-        self.arduino.set_speed(1, 0, 50)
-        self.arduino.set_speed(1, 0, 0)
+        self.arduino.move_motor(1, 0)
 
     def motor_top(self):
-        self.arduino.set_speed(2, 1, 50)
-        self.arduino.set_speed(2, 1, 0)
+        self.arduino.move_motor(2, 1)
 
     def motor_bottom(self):
-        self.arduino.set_speed(2, 0, 50)
-        self.arduino.set_speed(2, 0, 0)
+        self.arduino.move_motor(2, 0)
