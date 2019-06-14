@@ -62,7 +62,7 @@ between June 2018 and December 2018.
    getting_started
    contribute_codebase
    making_virtual_environment
-   pynta_api
+   developers/index
    list_todo
 
 
