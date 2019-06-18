@@ -50,8 +50,7 @@ If you want to start right away to improve the code, you can always look at the 
 Acknowledgements
 ----------------
 This program was developed by Aquiles Carattino with the support of funding from NWO, The Netherlands Scientific
-Organization, under a Vici grant from Prof. Allard Mosk. This work was carried on at Utrecht University in the months
-between June 2018 and December 2018.
+Organization, under VICI grant (PI: Prof. Allard Mosk) and Projectruimte FOM.PR1.005 grant (PI: Dr. Sanli Faez) . This work was carried on at Utrecht University in the months between June 2018 and June 2019.
 
 .. toctree::
    :maxdepth: 2
