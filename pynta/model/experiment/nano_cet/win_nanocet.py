@@ -137,8 +137,8 @@ class NanoCET(BaseExperiment):
         self.logger.info('Acquiring background image')
         self.camera.configure(self.config['camera'])
         self.camera.set_acquisition_mode(self.camera.MODE_SINGLE_SHOT)
-        self.camera.triggerCamera()
-        self.background = self.camera.readCamera()[-1]
+        self.camera.trigger_camera()
+        self.background = self.camera.read_camera()[-1]
         self.logger.debug('Got an image of {} pixels'.format(self.backgound.shape))
 
     @check_camera
@@ -178,9 +178,9 @@ class NanoCET(BaseExperiment):
         self.logger.info('Snapping a picture')
         self.camera.configure(self.config['camera'])
         self.camera.set_acquisition_mode(self.camera.MODE_SINGLE_SHOT)
-        self.camera.triggerCamera()
+        self.camera.trigger_camera()
         self.check_background()
-        data = self.camera.readCamera()[-1]
+        data = self.camera.read_camera()[-1]
         self.publisher.publish('snap', data)
         self.temp_image = data
         self.logger.debug('Got an image of {}x{} pixels'.format(self.temp_image.shape[0], self.temp_image.shape[1]))
@@ -205,10 +205,10 @@ class NanoCET(BaseExperiment):
             if first:
                 self.logger.debug('First frame of a free_run')
                 self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
-                self.camera.triggerCamera()  # Triggers the camera only once
+                self.camera.trigger_camera()  # Triggers the camera only once
                 first = False
 
-            data = self.camera.readCamera()
+            data = self.camera.read_camera()
             self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
                 i += 1

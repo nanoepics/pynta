@@ -382,7 +382,7 @@ class MainWindow(QMainWindow):
         self.connect(self.camWidget, QtCore.SIGNAL('specialTask'), self.startSpecialTask)
         self.connect(self.camWidget, QtCore.SIGNAL('stopSpecialTask'), self.stopSpecialTask)
         self.connect(self.camViewer, QtCore.SIGNAL('stopMainAcquisition'), self.stopMovie)
-        self.connect(self, QtCore.SIGNAL('stopChildMovie'), self.camViewer.stopCamera)
+        self.connect(self, QtCore.SIGNAL('stopChildMovie'), self.camViewer.stop_camera)
         self.connect(self, QtCore.SIGNAL('closeAll'), self.camViewer.closeViewer)
         self.connect(self.selectSettings, QtCore.SIGNAL("settings"), self.update_settings)
         self.connect(self, QtCore.SIGNAL('closeAll'), self.selectSettings.close)
@@ -788,7 +788,7 @@ class MainWindow(QMainWindow):
                 self.setROI(X, Y)
 
             if update_exposure:
-                new_exp = self.camera.setExposure(session.Camera['exposure_time'])
+                new_exp = self.camera.set_exposure(session.Camera['exposure_time'])
                 self._session.Camera = {'exposure_time': new_exp}
                 self.messageWidget.appendLog('i', 'Updated exposure: %s' % new_exp)
                 if self._session.Debug['to_screen']:

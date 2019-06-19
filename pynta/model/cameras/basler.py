@@ -14,6 +14,7 @@ import logging
 from pypylon import pylon
 
 from pynta.model.cameras.base_camera import BaseCamera
+from pynta.model.cameras.exceptions import CameraNotFound, WrongCameraState
 from pynta.util import get_logger
 from pynta import Q_
 
@@ -41,7 +42,7 @@ class Camera(BaseCamera):
         tl_factory = pylon.TlFactory.GetInstance()
         devices = tl_factory.EnumerateDevices()
         if len(devices) == 0:
-            raise pylon.RUNTIME_EXCEPTION("No camera present.")
+            raise CameraNotFound('No camera found')
 
         self.camera = pylon.InstantCamera()
         self.camera.Attach(tl_factory.CreateDevice(devices[self.cam_num]))
@@ -64,15 +65,19 @@ class Camera(BaseCamera):
             self.mode = mode
         elif mode == self.MODE_SINGLE_SHOT:
             self.camera.AcquisitionMode.SetValue('SingleFrame')
-            self.camera.AcquisitionStart.Execute()
             self.mode = mode
 
+        self.camera.AcquisitionStart.Execute()
+
     def trigger_camera(self):
-        if self.mode == self.MODE_CONTINUOUS:
-            self.camera.StartGrabbing(pylon.GrabStrategy_OneByOne)
-        elif self.mode == self.MODE_SINGLE_SHOT:
-            self.camera.StartGrabbing(1)
-            self.camera.ExecuteSoftwareTrigger()
+        if self.camera.IsGrabbing():
+            logger.warning('Triggering an already grabbing camera')
+        else:
+            if self.mode == self.MODE_CONTINUOUS:
+                self.camera.StartGrabbing(pylon.GrabStrategy_OneByOne)
+            elif self.mode == self.MODE_SINGLE_SHOT:
+                self.camera.StartGrabbing(1)
+        self.camera.ExecuteSoftwareTrigger()
 
     def set_exposure(self, exposure: Q_) -> None:
         self.camera.ExposureTime.SetValue(exposure.m_as('us'))
@@ -84,14 +89,38 @@ class Camera(BaseCamera):
         return self.exposure
 
     def read_camera(self):
-        img = [
-            self.camera.RetrieveResult(int(self.exposure.m_as('ms'))*2, pylon.TimeoutHandling_Return).GetArray()
-            for _ in range(self.camera.GetQueuedBufferCount())
-        ]
+        if not self.camera.IsGrabbing():
+            raise WrongCameraState('You need to trigger the camera before reading from it')
+
+        if self.mode == self.MODE_SINGLE_SHOT:
+            grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms'))+100, pylon.TimeoutHandling_Return)
+            img = [grab.Array]
+            grab.Release()
+            self.camera.StopGrabbing()
+        else:
+            img = []
+            num_buffers = self.camera.NumReadyBuffers.Value
+            logger.debug(f'{self.camera.NumQueuedBuffers.Value} frames available')
+            if num_buffers:
+                img = [None] * num_buffers
+                for i in range(num_buffers):
+                    grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms'))+100, pylon.TimeoutHandling_Return)
+                    if grab:
+                        img[i] = grab.Array
+                        grab.Release()
         return img
+
+    def stop_camera(self):
+        self.camera.StopGrabbing()
+        self.camera.AcquisitionStop.Execute()
+
+    def __del__(self):
+        self.camera.Close()
 
 
 if __name__ == '__main__':
+    from time import sleep
+
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
@@ -101,8 +130,14 @@ if __name__ == '__main__':
     logger.info('Starting Basler')
     basler = Camera(0)
     basler.initialize()
+    basler.set_acquisition_mode(basler.MODE_SINGLE_SHOT)
     basler.set_exposure(Q_('.02s'))
     basler.trigger_camera()
     print(len(basler.read_camera()))
+    basler.set_acquisition_mode(basler.MODE_CONTINUOUS)
+    basler.trigger_camera()
+    sleep(1)
+    imgs = basler.read_camera()
+    print(len(imgs))
 
 

@@ -41,18 +41,18 @@ class Camera(BaseCamera):
         self.camera.SetTrigger("FreeRunning")
         self.camera.EnableAutoLevel(0)
         self.camera.SetExposure(10, "Millisec")
-        self.triggerCamera()
+        self.trigger_camera()
         size = self.getSize()
         self.maxWidth = size[0]
         self.maxHeight = size[1]
         self.camera.SetGainMode("gain30")  # Change the gain here! Check scmoscam.py for information
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
         self.camera.Snap()
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """Sets the exposure of the camera.
 
         .. todo:: Include units for ensuring the proper exposure time is being set.
@@ -61,11 +61,11 @@ class Camera(BaseCamera):
         # while self.camera.GetStatus(): # Wait until exposure is finished.
         self.camera.SetExposure(np.int(exposure), 'Microsec')
 
-    def readCamera(self):
+    def read_camera(self):
         """Reads the camera
         """
-        if self.getAcquisitionMode() == self.MODE_CONTINUOUS:
-            self.triggerCamera()
+        if self.get_acquisition_mode() == self.MODE_CONTINUOUS:
+            self.trigger_camera()
         size, data = self.camera.GetImage()
         w, h = size
         mode = self.camera.GetMode()
@@ -127,7 +127,7 @@ class Camera(BaseCamera):
         """Stop the acquisition even if ongoing."""
         self.camera.AbortSnap()
 
-    def stopCamera(self):
+    def stop_camera(self):
         """Stops the acquisition and closes the camera. This has to be called before quitting the program.
         """
         self.camera.AbortSnap()

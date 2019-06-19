@@ -53,12 +53,12 @@ class Camera(BaseCamera):
         self.camera.setPropertyValue("readout_speed", 1)
         self.camera.setPropertyValue("defect_correct_mode", 1)
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
-        if self.getAcquisitionMode() == self.MODE_CONTINUOUS:
+        if self.get_acquisition_mode() == self.MODE_CONTINUOUS:
             self.camera.startAcquisition()
-        elif self.getAcquisitionMode() == self.MODE_SINGLE_SHOT:
+        elif self.get_acquisition_mode() == self.MODE_SINGLE_SHOT:
             self.camera.startAcquisition()
             self.camera.stopAcquisition()
 
@@ -81,32 +81,32 @@ class Camera(BaseCamera):
         elif mode == self.MODE_EXTERNAL:
             #self.camera.setPropertyValue("trigger_source", 2)
             self.camera.settrigger(2)
-        return self.getAcquisitionMode()
+        return self.get_acquisition_mode()
 
-    def getAcquisitionMode(self):
+    def get_acquisition_mode(self):
         """Returns the acquisition mode, either continuous or single shot.
         """
         return self.mode
 
-    def acquisitionReady(self):
+    def acquisition_ready(self):
         """Checks if the acquisition in the camera is over.
         """
         return True
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """
         Sets the exposure of the camera.
         """
         self.camera.setPropertyValue("exposure_time",exposure/1000)
-        return self.getExposure()
+        return self.get_exposure()
 
-    def getExposure(self):
+    def get_exposure(self):
         """
         Gets the exposure time of the camera.
         """
         return self.camera.getPropertyValue("exposure_time")[0]*1000
 
-    def readCamera(self):
+    def read_camera(self):
         """
         Reads the camera
         """
@@ -181,7 +181,7 @@ class Camera(BaseCamera):
     def stopAcq(self):
         self.camera.stopAcquisition()
 
-    def stopCamera(self):
+    def stop_camera(self):
         """Stops the acquisition and closes the connection with the camera.
         """
         try:

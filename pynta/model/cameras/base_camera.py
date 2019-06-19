@@ -69,7 +69,7 @@ class BaseCamera:
 
             if update_exposure:
                 exposure = Q_(properties['exposure_time'])
-                new_exp = self.setExposure(exposure)
+                new_exp = self.set_exposure(exposure)
                 self.config['exposure_time'] = new_exp
 
             if update_binning:
@@ -85,7 +85,7 @@ class BaseCamera:
         self.maxHeight = self.GetCCDHeight()
         return True
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """
         Triggers the camera.
         """
@@ -99,31 +99,31 @@ class BaseCamera:
         """
         self.mode = mode
 
-    def getAcquisitionMode(self):
+    def get_acquisition_mode(self):
         """
         Returns the acquisition mode, either continuous or single shot.
         """
         return self.mode
 
-    def acquisitionReady(self):
+    def acquisition_ready(self):
         """
         Checks if the acquisition in the camera is over.
         """
         print("Not Implemented")
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """
         Sets the exposure of the camera.
         """
         self.exposure = exposure
 
-    def getExposure(self):
+    def get_exposure(self):
         """
         Gets the exposure time of the camera.
         """
         return self.exposure
 
-    def readCamera(self):
+    def read_camera(self):
         """
         Reads the camera
         """
@@ -181,7 +181,7 @@ class BaseCamera:
         """
         print("Not Implemented")
 
-    def stopCamera(self):
+    def stop_camera(self):
         """Stops the acquisition and closes the connection with the camera.
         """
         try:

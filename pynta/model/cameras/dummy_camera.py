@@ -51,7 +51,7 @@ class Camera(BaseCamera):
         self.maxHeight = self.GetCCDHeight()
         return True
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
         return True
@@ -63,30 +63,30 @@ class Camera(BaseCamera):
         :param: int mode: One of self.MODE_CONTINUOUS, self.MODE_SINGLE_SHOT
         """
         self.logger.debug('Setting acquisition mode')
-        return self.getAcquisitionMode()
+        return self.get_acquisition_mode()
 
-    def getAcquisitionMode(self):
+    def get_acquisition_mode(self):
         """Returns the acquisition mode, either continuous or single shot.
         """
         return self.MODE_CONTINUOUS
 
-    def acquisitionReady(self):
+    def acquisition_ready(self):
         """Checks if the acquisition in the camera is over.
         """
         return True
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """Sets the exposure of the camera.
         """
         self.exposure = exposure
         self.sb.time_step = self.exposure.m_as('s')
 
-    def getExposure(self):
+    def get_exposure(self):
         """Gets the exposure time of the camera.
         """
         return self.exposure
 
-    def readCamera(self):
+    def read_camera(self):
         moment = time.time()
         sample = self.sb.gen_image()
         sample = sample.astype('uint8')
@@ -154,5 +154,5 @@ class Camera(BaseCamera):
     def stopAcq(self):
         pass
 
-    def stopCamera(self):
+    def stop_camera(self):
         pass
