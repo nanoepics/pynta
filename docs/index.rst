@@ -61,7 +61,7 @@ Organization, under VICI grant (PI: Prof. Allard Mosk) and Projectruimte FOM.PR1
    getting_started
    contribute_codebase
    making_virtual_environment
-   pynta_api
+   developers/index
    list_todo
 
 
