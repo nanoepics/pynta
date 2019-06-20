@@ -7,6 +7,8 @@ import pyqtgraph as pg
 from PyQt5.QtWidgets import QWidget, QGridLayout
 import numpy as np
 
+pg.setConfigOption('background', 'w')
+pg.setConfigOption('foreground', 'k')
 
 class HistogramWidget(QWidget):
     def __init__(self, parent=None):
