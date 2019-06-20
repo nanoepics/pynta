@@ -50,17 +50,17 @@ movie:
 
 tracking:
   locate:
-    diameter: 11  # Diameter of the particles (in pixels) to track, has to be an odd number
+    diameter: 5  # Diameter of the particles (in pixels) to track, has to be an odd number
     invert: False
     minmass: 100
   link:
     memory: 3
-    search_range: 4
+    search_range: 5
   filter:  # Filter spurious trajectories
     min_length: 25
   process:
     compute_drift: False
-    um_pixel: 0.01  # Microns per pixel (calibration of the microscope)
+    um_pixel: 0.15  # Microns per pixel (calibration of the microscope)
     min_traj_length: 2
     min_mass: 0.05
     max_size: 50.0
