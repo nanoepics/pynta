@@ -14,7 +14,7 @@ import logging
 from pypylon import pylon
 
 from pynta.model.cameras.base_camera import BaseCamera
-from pynta.model.cameras.exceptions import CameraNotFound, WrongCameraState
+from pynta.model.cameras.exceptions import CameraNotFound, WrongCameraState, CameraException
 from pynta.util import get_logger
 from pynta import Q_
 
@@ -53,7 +53,7 @@ class Camera(BaseCamera):
         self.max_width = self.camera.Width.Max
         self.max_height = self.camera.Height.Max
         self.camera.RegisterConfiguration(pylon.SoftwareTriggerConfiguration(), pylon.RegistrationMode_ReplaceAll,
-                                     pylon.Cleanup_Delete)
+                                          pylon.Cleanup_Delete)
         self.set_acquisition_mode(self.MODE_SINGLE_SHOT)
 
     def set_acquisition_mode(self, mode):
@@ -69,6 +69,55 @@ class Camera(BaseCamera):
 
         self.camera.AcquisitionStart.Execute()
 
+    def setROI(self, X, Y):
+        """ Set up the region of interest of the camera. Basler calls this the
+        Area of Interest (AOI) in their manuals. Beware that not all cameras allow
+        to set the ROI (especially if they are not area sensors).
+        Both the corner positions and the width/height need to be multiple of 4.
+        Compared to Hamamatsu, Baslers provides a very descriptive error warning.
+
+        """
+        width = abs(X[1]-X[0])
+        width = int(width-width%4)
+        x_pos = int(X[0]-X[0]%4)
+        height = int(abs(Y[1]-Y[0]))
+        y_pos = int(Y[0]-Y[0]%2)
+        if x_pos+width > self.max_width:
+            raise CameraException('ROI width bigger than camera area')
+        if y_pos+height > self.max_height:
+            raise CameraException('ROI height bigger than camera area')
+
+        # First set offset to minimum, to avoid problems when going to a bigger size
+        self.clearROI()
+        logger.debug(f'Setting width to {width}')
+        self.camera.Width.SetValue(width)
+        logger.debug(f'Setting X offset to {x_pos}')
+        self.camera.OffsetX.SetValue(x_pos)
+        logger.debug(f'Setting Height to {height}')
+        self.camera.Height.SetValue(height)
+        logger.debug(f'Setting Y offset to {y_pos}')
+        self.camera.OffsetY.SetValue(y_pos)
+        self.X = [x_pos, x_pos+width]
+        self.Y = [y_pos, y_pos+width]
+        self.width = width
+        self.heigth = height
+        return width, height
+
+    def clearROI(self):
+        self.camera.OffsetX.SetValue(self.camera.OffsetX.Min)
+        self.camera.OffsetY.SetValue(self.camera.OffsetY.Min)
+        self.camera.Width.SetValue(self.camera.Width.Max)
+        self.camera.Height.SetValue(self.camera.Height.Max)
+
+    def GetCCDWidth(self):
+        return self.max_width
+
+    def GetCCDHeight(self):
+        return self.max_height
+
+    def getSize(self):
+        return self.camera.Width.Value, self.camera.Height.Value
+
     def trigger_camera(self):
         if self.camera.IsGrabbing():
             logger.warning('Triggering an already grabbing camera')
@@ -79,13 +128,13 @@ class Camera(BaseCamera):
                 self.camera.StartGrabbing(1)
         self.camera.ExecuteSoftwareTrigger()
 
-    def set_exposure(self, exposure: Q_) -> None:
+    def set_exposure(self, exposure: Q_) -> Q_:
         self.camera.ExposureTime.SetValue(exposure.m_as('us'))
         self.exposure = exposure
         return self.get_exposure()
 
     def get_exposure(self) -> Q_:
-        self.exposure = int(self.camera.ExposureTimeRaw.ToString()) * Q_('us')
+        self.exposure = float(self.camera.ExposureTime.ToString()) * Q_('us')
         return self.exposure
 
     def read_camera(self):
@@ -93,7 +142,7 @@ class Camera(BaseCamera):
             raise WrongCameraState('You need to trigger the camera before reading from it')
 
         if self.mode == self.MODE_SINGLE_SHOT:
-            grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms'))+100, pylon.TimeoutHandling_Return)
+            grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms')) + 100, pylon.TimeoutHandling_Return)
             img = [grab.Array]
             grab.Release()
             self.camera.StopGrabbing()
@@ -104,11 +153,11 @@ class Camera(BaseCamera):
             if num_buffers:
                 img = [None] * num_buffers
                 for i in range(num_buffers):
-                    grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms'))+100, pylon.TimeoutHandling_Return)
+                    grab = self.camera.RetrieveResult(int(self.exposure.m_as('ms')) + 100, pylon.TimeoutHandling_Return)
                     if grab:
                         img[i] = grab.Array
                         grab.Release()
-        return img
+        return [i.T for i in img]  # Transpose to have the correct size
 
     def stop_camera(self):
         self.camera.StopGrabbing()
@@ -139,5 +188,3 @@ if __name__ == '__main__':
     sleep(1)
     imgs = basler.read_camera()
     print(len(imgs))
-
-

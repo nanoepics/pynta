@@ -201,14 +201,13 @@ class NanoCET(BaseExperiment):
         self._stop_free_run.clear()
         t0 = time.time()
         self.free_run_running = True
+        self.logger.debug('First frame of a free_run')
+        self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
+        self.camera.trigger_camera()  # Triggers the camera only once
         while not self._stop_free_run.is_set():
-            if first:
-                self.logger.debug('First frame of a free_run')
-                self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
-                self.camera.trigger_camera()  # Triggers the camera only once
-                first = False
-
             data = self.camera.read_camera()
+            if not data:
+                continue
             self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
                 i += 1
@@ -220,7 +219,7 @@ class NanoCET(BaseExperiment):
                 # The timestamp is very unreliable, especially if the camera has a frame grabber.
                 self.publisher.publish('free_run', [time.time(), img])
             self.fps = round(i / (time.time() - t0))
-            self.temp_image = data[-1]
+            self.temp_image = img
         self.free_run_running = False
         self.camera.stopAcq()
 

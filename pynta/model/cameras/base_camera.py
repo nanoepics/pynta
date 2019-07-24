@@ -1,9 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-    base_camera.py
-    ~~~~~~~~~~~~
-    Camera class with the skeleton functions. Important to keep track of the methods that are
-    exposed to the View. The class BaseCamera should be subclassed when developing new Models. This ensures that all the methods are automatically inherited and there is no breaks downstream.
+    Base Camera
+    ===========
+    Camera class with the base methods. Having a base class exposes the general API for working with cameras.
+    This file is important to keep track of the methods which are exposed to the View.
+    The class BaseCamera should be subclassed when developing new Models for other cameras. This ensures that all the
+    methods are automatically inherited and there are no breaks downstream.
+
+    Conventions
+    -----------
+    Images are 0-indexed. Therefore, a camera with 1024pxx1024px will be used as img[0:1024, 0:1024] (remember Python
+    leaves out the last value in the slice.
+
+    Region of Interest is specified with the coordinates of the corners. A full-frame with the example above would be
+    given by X=[0,1023], Y=[0,1023]. Be careful, since the maximum width (or height) of the camera is 1024.
+
+    The camera keeps track of the coordinates of the initial pixel. For full-frame, this will always be [0,0]. When this
+    is very important for the GUI, since after the first crop, if the user wants to crop even further, the information
+    has to be referenced to the already cropped area.
+
 
     .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the BaseCamera class. In this way the other models will have access to the method and the program will keep running (perhaps with non intended behavior though).
 
@@ -11,8 +26,14 @@
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
+
+from pynta.model.cameras.decorators import not_implemented
 from pynta.util.log import get_logger
 from pynta import Q_
+
+
+logger = get_logger(__name__)
+
 
 
 class BaseCamera:
@@ -77,6 +98,7 @@ class BaseCamera:
                 self.config.update({'binning_x': properties['binning_x'],
                                     'binning_y': properties['binning_y']})
 
+    @not_implemented
     def initialize(self):
         """
         Initializes the camera.
@@ -85,12 +107,14 @@ class BaseCamera:
         self.maxHeight = self.GetCCDHeight()
         return True
 
+    @not_implemented
     def trigger_camera(self):
         """
         Triggers the camera.
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
@@ -99,36 +123,42 @@ class BaseCamera:
         """
         self.mode = mode
 
+    @not_implemented
     def get_acquisition_mode(self):
         """
         Returns the acquisition mode, either continuous or single shot.
         """
         return self.mode
 
+    @not_implemented
     def acquisition_ready(self):
         """
         Checks if the acquisition in the camera is over.
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def set_exposure(self, exposure):
         """
         Sets the exposure of the camera.
         """
         self.exposure = exposure
 
+    @not_implemented
     def get_exposure(self):
         """
         Gets the exposure time of the camera.
         """
         return self.exposure
 
+    @not_implemented
     def read_camera(self):
         """
         Reads the camera
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def setROI(self, X, Y):
         """ Sets up the ROI. Not all cameras are 0-indexed, so this is an important
         place to define the proper ROI.
@@ -139,38 +169,45 @@ class BaseCamera:
         """
         return X, Y
 
+
     def clearROI(self):
         """
         Clears the ROI from the camera.
         """
-        self.setROI(self.maxWidth, self.maxHeight)
+        self.setROI([0, self.maxWidth], [0, self.maxHeight])
 
+    @not_implemented
     def getSize(self):
         """Returns the size in pixels of the image being acquired. This is useful for checking the ROI settings.
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def getSerialNumber(self):
         """Returns the serial number of the camera.
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def GetCCDWidth(self):
         """
         Returns the CCD width in pixels
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def GetCCDHeight(self):
         """
         Returns: the CCD height in pixels
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def stopAcq(self):
         """Stops the acquisition without closing the connection to the camera."""
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def setBinning(self, xbin, ybin):
         """
         Sets the binning of the camera if supported. Has to check if binning in X/Y can be different or not, etc.
@@ -179,14 +216,12 @@ class BaseCamera:
         :param ybin:
         :return:
         """
-        print("Not Implemented")
+        pass
 
+    @not_implemented
     def stop_camera(self):
         """Stops the acquisition and closes the connection with the camera.
         """
-        try:
-            # Closing the camera
-            print("Not Implemented")
-        except:
-            # Monitor failed to close
-            print("Not Implemented")
+        pass
+
+
