@@ -11,7 +11,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='nanoparticle_tracking',
+    name='PyNTA',
     version=version,
     description='Python Nanoparticle Tracking Analysis',
     packages=find_packages(),
