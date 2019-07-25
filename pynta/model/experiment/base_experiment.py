@@ -24,6 +24,7 @@
 from multiprocessing import Process, Event
 
 import yaml
+
 from pynta.util import get_logger
 from pynta.model.experiment.publisher import Publisher
 from pynta.model.experiment.subscriber import subscriber
@@ -39,6 +40,7 @@ class BaseExperiment:
         self._threads = []
         self.publisher = Publisher()
         self.publisher.start()
+
         self._connections = []
         self.subscriber_events = []
 

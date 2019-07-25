@@ -8,7 +8,7 @@ from pynta.model.experiment.publisher import publisher
 from pynta.model.experiment.subscriber import subscriber
 from pynta.util import get_logger
 
-logger = get_logger(name='pynta.model.experiment.subscriber')  # 'pynta.model.experiment.nano_cet.saver'
+logger = get_logger(name='nanoparticle_tracking.model.experiment.subscriber')  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)

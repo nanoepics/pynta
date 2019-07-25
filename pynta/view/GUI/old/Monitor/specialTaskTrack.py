@@ -36,10 +36,10 @@ class specialTaskTracking(QtCore.QThread):
         first = True
         while self.keep_running:
             if first:
-                self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
-                self.camera.triggerCamera() # Triggers the camera only once
+                self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
+                self.camera.trigger_camera() # Triggers the camera only once
                 first = False
-            img = self.camera.readCamera()
+            img = self.camera.read_camera()
             if isinstance(img, list):
                 tracktag = np.zeros((len(img),5)) # 5 Columns correspond to [mass, cx, cy, sx, sy]
                 if self.psize == 0:

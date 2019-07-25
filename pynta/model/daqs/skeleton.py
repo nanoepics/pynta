@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    skeleton.py
+    base_camera.py
     ~~~~~~~~~~~
 
     .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the

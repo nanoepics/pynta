@@ -1,11 +1,11 @@
 import logging
 from time import sleep
 
-from pynta.model.experiment.nano_cet.win_nanocet import NanoCET
+from pynta.model.experiment.nanoparticle_tracking.np_tracking import NPTracking
 from pynta.util.log import get_logger
 
 
-logger = get_logger()  # 'pynta.model.experiment.nano_cet.saver'
+logger = get_logger()  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -15,7 +15,7 @@ logger.addHandler(ch)
 
 
 if __name__ == '__main__':
-    with NanoCET('config/nanocet.yml') as exp:
+    with NPTracking('config/nanocet.yml') as exp:
         sleep(1)
         # exp.connect(calculate_positions_image, 'free_run', exp.publisher_queue, **exp.config['tracking']['locate'])
         # exp.connect(add_to_save_queue, 'free_run', exp.saver_queue)

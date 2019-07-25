@@ -1,4 +1,3 @@
-import time
 import pyqtgraph as pg
 import numpy as np
 
@@ -6,7 +5,6 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout, QAction
 from pyqtgraph import GraphicsLayoutWidget
-
 
 
 class CameraViewerWidget(QWidget):
@@ -21,7 +19,7 @@ class CameraViewerWidget(QWidget):
 
         # Settings for the image
         self.viewport = GraphicsLayoutWidget()
-        self.view = self.viewport.addViewBox(lockAspect = False, enableMenu=True)
+        self.view = self.viewport.addViewBox(lockAspect=False, enableMenu=True)
 
         self.autoScale = QAction("Auto Range", self.view.menu)
         self.autoScale.triggered.connect(self.do_auto_scale)
