@@ -4,8 +4,8 @@
     ~~~~~~
 
     Model for Photonic Science GEV Cameras. The model just implements the basic methods defined in the
-    :meth:`~pynta.model.cameras.skeleton.cameraBase` using a Photonic Sicence camera. The controller for this
-    camera is :mod:`~pynta.controller.devices.photonicscience`
+    :meth:`~nanoparticle_tracking.model.cameras.skeleton.BaseCamera` using a Photonic Sicence camera. The controller for this
+    camera is :mod:`~nanoparticle_tracking.controller.devices.photonicscience`
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
@@ -13,18 +13,18 @@
 import numpy as np
 
 from pynta.controller.devices.photonicscience.scmoscam import GEVSCMOS
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 NUMPY_MODES = {"L": np.uint8, "I;16": np.uint16}
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     def __init__(self, camera):
         self.cam_num = camera
         self.camera = GEVSCMOS(camera, 'SCMOS')
         self.running = False
 
-    def initializeCamera(self):
+    def initialize(self):
         """
         Initializes the camera.
 
@@ -41,18 +41,18 @@ class camera(cameraBase):
         self.camera.SetTrigger("FreeRunning")
         self.camera.EnableAutoLevel(0)
         self.camera.SetExposure(10, "Millisec")
-        self.triggerCamera()
+        self.trigger_camera()
         size = self.getSize()
         self.maxWidth = size[0]
         self.maxHeight = size[1]
         self.camera.SetGainMode("gain30")  # Change the gain here! Check scmoscam.py for information
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
         self.camera.Snap()
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """Sets the exposure of the camera.
 
         .. todo:: Include units for ensuring the proper exposure time is being set.
@@ -61,11 +61,11 @@ class camera(cameraBase):
         # while self.camera.GetStatus(): # Wait until exposure is finished.
         self.camera.SetExposure(np.int(exposure), 'Microsec')
 
-    def readCamera(self):
+    def read_camera(self):
         """Reads the camera
         """
-        if self.getAcquisitionMode() == self.MODE_CONTINUOUS:
-            self.triggerCamera()
+        if self.get_acquisition_mode() == self.MODE_CONTINUOUS:
+            self.trigger_camera()
         size, data = self.camera.GetImage()
         w, h = size
         mode = self.camera.GetMode()
@@ -127,7 +127,7 @@ class camera(cameraBase):
         """Stop the acquisition even if ongoing."""
         self.camera.AbortSnap()
 
-    def stopCamera(self):
+    def stop_camera(self):
         """Stops the acquisition and closes the camera. This has to be called before quitting the program.
         """
         self.camera.AbortSnap()

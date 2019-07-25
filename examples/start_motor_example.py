@@ -3,11 +3,11 @@ from time import sleep
 
 from PyQt5.QtWidgets import QApplication
 
-from pynta.model.experiment.nano_cet.motor_test import MotorTestExperiment
+from pynta.model.experiment.nanoparticle_tracking.motor_test import MotorTestExperiment
 from pynta.util import get_logger
 from pynta.view.GUI.camera_focusing import CameraFocusing
 
-logger = get_logger()#'pynta.model.experiment.nano_cet.worker_saver')
+logger = get_logger()#'nanoparticle_tracking.model.experiment.nanoparticle_tracking.worker_saver')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)

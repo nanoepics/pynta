@@ -10,7 +10,7 @@ class MainWindow(MainWindowGUI):
     def __init__(self, experiment):
         """
 
-        :param pynta.model.experiment.win_nanocet.NanoCET experiment: Experiment class
+        :param nanoparticle_tracking.model.experiment.win_nanocet.NPTracking experiment: Experiment class
         """
         super().__init__(experiment.config['GUI']['refresh_time'])
 

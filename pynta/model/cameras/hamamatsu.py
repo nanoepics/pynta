@@ -11,7 +11,7 @@
     DCAM-API relies mostly on setting parameters into the camera. The correct data type of each parameter is not well
     documented; however it is possible to print all the available properties and work from there. The properties are
     stored in a filed named params.txt next to the :mod:`Hamamatsu Driver
-    <pynta.controller.devices.hamamatsu.hamamatsu_camera>`
+    <nanoparticle_tracking.controller.devices.hamamatsu.hamamatsu_camera>`
 
     .. note:: When setting the ROI, Hamamatsu only allows to set multiples of 4 for every setting (X,Y and vsize,
         hsize). This is checked in the function. Changing the ROI cannot be done directly, one first needs to disable it
@@ -23,21 +23,21 @@
 import numpy as np
 
 from pynta.controller.devices.hamamatsu.hamamatsu_camera import HamamatsuCamera
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
     MODE_EXTERNAL = 2
 
-    def __init__(self,camera):
+    def __init__(self, camera):
         self.cam_id = camera # Monitor ID
         self.camera = HamamatsuCamera(camera)
         self.running = False
         self.mode = self.MODE_SINGLE_SHOT
 
-    def initializeCamera(self):
+    def initialize(self):
         """ Initializes the camera.
 
         :return:
@@ -53,16 +53,16 @@ class camera(cameraBase):
         self.camera.setPropertyValue("readout_speed", 1)
         self.camera.setPropertyValue("defect_correct_mode", 1)
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
-        if self.getAcquisitionMode() == self.MODE_CONTINUOUS:
+        if self.get_acquisition_mode() == self.MODE_CONTINUOUS:
             self.camera.startAcquisition()
-        elif self.getAcquisitionMode() == self.MODE_SINGLE_SHOT:
+        elif self.get_acquisition_mode() == self.MODE_SINGLE_SHOT:
             self.camera.startAcquisition()
             self.camera.stopAcquisition()
 
-    def setAcquisitionMode(self, mode):
+    def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
         Parameters
@@ -81,32 +81,32 @@ class camera(cameraBase):
         elif mode == self.MODE_EXTERNAL:
             #self.camera.setPropertyValue("trigger_source", 2)
             self.camera.settrigger(2)
-        return self.getAcquisitionMode()
+        return self.get_acquisition_mode()
 
-    def getAcquisitionMode(self):
+    def get_acquisition_mode(self):
         """Returns the acquisition mode, either continuous or single shot.
         """
         return self.mode
 
-    def acquisitionReady(self):
+    def acquisition_ready(self):
         """Checks if the acquisition in the camera is over.
         """
         return True
 
-    def setExposure(self,exposure):
+    def set_exposure(self, exposure):
         """
         Sets the exposure of the camera.
         """
         self.camera.setPropertyValue("exposure_time",exposure/1000)
-        return self.getExposure()
+        return self.get_exposure()
 
-    def getExposure(self):
+    def get_exposure(self):
         """
         Gets the exposure time of the camera.
         """
         return self.camera.getPropertyValue("exposure_time")[0]*1000
 
-    def readCamera(self):
+    def read_camera(self):
         """
         Reads the camera
         """
@@ -181,7 +181,7 @@ class camera(cameraBase):
     def stopAcq(self):
         self.camera.stopAcquisition()
 
-    def stopCamera(self):
+    def stop_camera(self):
         """Stops the acquisition and closes the connection with the camera.
         """
         try:

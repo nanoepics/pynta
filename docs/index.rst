@@ -13,9 +13,13 @@ triggered with a built in function or can be included into larger projects.
 
 Installing
 ----------
-The best place to look for the code of the program is the repository at
-`https://github.com/nanoepics/pynta <https://github.com/nanoepics/pynta>`_. In short, if you want to install PyNTA you
-can run the following command::
+PyNTA can be easily installed by running::
+
+    pip install pynta
+
+However, it is also possible to install the latest development version. The source code of the program is hosted at
+`https://github.com/nanoepics/pynta <https://github.com/nanoepics/pynta>`_. If you want to install the development
+version of PyNTA you can run the following command::
 
     pip install git+https://github.com/nanoepics/pynta
 
