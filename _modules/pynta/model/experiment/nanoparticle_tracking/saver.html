@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.experiment.nanoparticle_tracking.saver &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.model.experiment.nanoparticle_tracking.saver</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.model.experiment.nanoparticle_tracking.saver</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    nanoparticle_tracking.model.experiment.workerSaver</span>
+<span class="sd">    ==================================</span>
+<span class="sd">    When working with multi threading in Python it is important to define the function that will be run in a separate</span>
+<span class="sd">    thread. workerSaver is just a function that will be moved to a separate, parallel thread to save data to disk</span>
+<span class="sd">    without interrupting the acquisition.</span>
+
+<span class="sd">    Since the workerSaver function will be passed to a different Process (via the *multiprocessing* package) the only</span>
+<span class="sd">    way for it to receive data from other threads is via a Queue. The workerSaver will run continuously until it finds a</span>
+<span class="sd">    string as the next item.</span>
+
+<span class="sd">    To understand how the separate process is created, please refer to</span>
+<span class="sd">    :meth:`~UUTrack.View.Camera.cameraMain.cameraMain.movieSave`</span>
+
+<span class="sd">    The general principle is</span>
+
+<span class="sd">        &gt;&gt;&gt; filename = &#39;name.hdf5&#39;</span>
+<span class="sd">        &gt;&gt;&gt; q = Queue()</span>
+<span class="sd">        &gt;&gt;&gt; metadata = _session.serialize() # This prints a YAML-ready version of the session.</span>
+<span class="sd">        &gt;&gt;&gt; p = Process(target=workerSaver, args=(filename, metaData, q,))</span>
+<span class="sd">        &gt;&gt;&gt; p.start()</span>
+<span class="sd">        &gt;&gt;&gt; q.put([1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; q.put(&#39;Stop&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; p.join()</span>
+
+<span class="sd">    :copyright: 2017</span>
+
+<span class="sd">    .. sectionauthor:: Aquiles Carattino &lt;aquiles@aquicarattino.com&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">zmq</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">pynta.util.log</span> <span class="k">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="worker_listener"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.saver.worker_listener">[docs]</a><span class="k">def</span> <span class="nf">worker_listener</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5555</span><span class="p">,</span> <span class="n">max_memory</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Function that listens on the specified port for new data and then saves it to disk. It is the same as</span>
+<span class="sd">    :func:`worker_saver` but implementing a ZMQ socket instead of grabbing data from a queue.</span>
+
+<span class="sd">    :param str file_path: the path to the file to use.</span>
+<span class="sd">    :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.</span>
+<span class="sd">    :param int port: Port on which to listen for publisher data</span>
+<span class="sd">    :param int max_memory: Maximum memory (in MB) to allocate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting worker saver for topic </span><span class="si">{}</span><span class="s1"> on port </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">zmq</span><span class="o">.</span><span class="n">Context</span><span class="p">()</span>
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">SUB</span><span class="p">)</span>
+    <span class="n">socket</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;tcp://localhost:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+    <span class="n">topic_filter</span> <span class="o">=</span> <span class="n">topic</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">zmq</span><span class="o">.</span><span class="n">SUBSCRIBE</span><span class="p">,</span> <span class="n">topic_filter</span><span class="p">)</span>
+    <span class="n">allocate_memory</span> <span class="o">=</span> <span class="n">max_memory</span>  <span class="c1"># megabytes of memory to allocate on the hard drive.</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+        <span class="c1"># Has to be submitted via the socket a string &#39;stop&#39;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">topic</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_pyobj</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got data of type </span><span class="si">{}</span><span class="s1"> on the saver topic </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">topic</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Got the signal to stop the saving&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">first</span><span class="p">:</span>  <span class="c1"># First time it runs, creates the dataset</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Image size: </span><span class="si">{}</span><span class="s1">x</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                <span class="n">allocate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">allocate_memory</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocating </span><span class="si">{}</span><span class="s1">MB to stream to disk&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allocate_memory</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocate </span><span class="si">{}</span><span class="s1"> frames&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allocate</span><span class="p">))</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="n">dset</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;timelapse&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                        <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">compression_opts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                        <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># The images are going to be stacked along the z-axis.</span>
+                <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">allocate</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocating more memory&#39;</span><span class="p">)</span>
+                    <span class="n">dset</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">allocate</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                    <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">allocate</span><span class="p">))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="n">allocate</span>
+                <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving last bits of data before stopping.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Missing values: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">dset</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># Last save before closing</span>
+
+        <span class="c1"># This last bit is to avoid having a lot of zeros at the end of the timelapses</span>
+        <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Flushing file to disk...&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Finished writing to disk&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="add_to_save_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.saver.add_to_save_queue">[docs]</a><span class="k">def</span> <span class="nf">add_to_save_queue</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">queue_saver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; This method is a buffer between the publisher and the ``save_stream`` method. The idea is that in order</span>
+<span class="sd">    to be quick (saving to disk may be slow), whatever the publisher sends will be added to a Queue. Another</span>
+<span class="sd">    process will read from the queue and save it to disk on a separate process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">queue_saver</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">img</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="worker_saver"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.saver.worker_saver">[docs]</a><span class="k">def</span> <span class="nf">worker_saver</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">max_memory</span><span class="o">=</span><span class="mi">500</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function that can be run in a separate thread for continuously save data to disk.</span>
+
+<span class="sd">    :param str file_path: the path to the file to use.</span>
+<span class="sd">    :param str meta: Metadata. It is kept as a string in order to provide flexibility for other programs.</span>
+<span class="sd">    :param Queue q: Queue that will store all the images to be saved to disk.</span>
+<span class="sd">    :param int max_memory: Maximum memory (in MB) to allocate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Appending data to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_path</span><span class="p">))</span>
+    <span class="n">allocate_memory</span> <span class="o">=</span> <span class="n">max_memory</span>  <span class="c1"># megabytes of memory to allocate on the hard drive.</span>
+
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span><span class="s2">&quot;ignore&quot;</span><span class="p">))</span>
+        <span class="n">keep_saving</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Flag that will stop the worker function if running in a separate thread.</span>
+        <span class="c1"># Has to be submitted via the queue a string &#39;exit&#39;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">keep_saving</span><span class="p">:</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">or</span> <span class="n">q</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">keep_saving</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Got the signal to stop the saving&#39;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="n">first</span><span class="p">:</span>  <span class="c1"># First time it runs, creates the dataset</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Image size: </span><span class="si">{}</span><span class="s1">x</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+                    <span class="n">allocate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">allocate_memory</span> <span class="o">/</span> <span class="n">img</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocating </span><span class="si">{}</span><span class="s1">MB to stream to disk&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allocate_memory</span><span class="p">))</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocate </span><span class="si">{}</span><span class="s1"> frames&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">allocate</span><span class="p">))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                    <span class="n">dset</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;timelapse&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                                            <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">compression_opts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                                            <span class="n">dtype</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>  <span class="c1"># The images are going to be stacked along the z-axis.</span>
+                    <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">allocate</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Allocating more memory&#39;</span><span class="p">)</span>
+                        <span class="n">dset</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">allocate</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+                        <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">allocate</span><span class="p">))</span>
+                        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">allocate</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">img</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="n">j</span> <span class="o">+=</span> <span class="n">allocate</span>
+                    <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving last bits of data before stopping.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Missing values: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">dset</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># Last save before closing</span>
+
+        <span class="c1"># This last bit is to avoid having a lot of zeros at the end of the timelapses</span>
+        <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">i</span><span class="p">))</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Flushing file to disk...&#39;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Finished writing to disk&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="clear_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.saver.clear_queue">[docs]</a><span class="k">def</span> <span class="nf">clear_queue</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Clears the queue by reading it.</span>
+
+<span class="sd">    :params q: Queue to be cleaned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">q</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">or</span> <span class="n">q</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">get</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

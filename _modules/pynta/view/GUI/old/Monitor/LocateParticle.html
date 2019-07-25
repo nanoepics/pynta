@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.old.Monitor.LocateParticle &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.old.Monitor.LocateParticle</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.view.GUI.old.Monitor.LocateParticle</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    openCET.View.LocateParticle.py</span>
+<span class="sd">    ==================================</span>
+<span class="sd">    The LocateParticle class contains necessary methods for localizing centroid of a particle and following its track.</span>
+<span class="sd">    the idea is to make the output suitable for analysis with TrackPy of similar open-source tracking packages</span>
+
+<span class="sd">    .. lastedit:: 10/5/2017</span>
+<span class="sd">    .. sectionauthor:: Sanli Faez &lt;s.faez@uu.nl&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="c1">#from scipy.ndimage.measurements import center_of_mass as cenmass</span>
+
+<div class="viewcode-block" id="LocatingParticle"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle">[docs]</a><span class="k">class</span> <span class="nc">LocatingParticle</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    initiate the localization requirements</span>
+<span class="sd">    :param psize: expected particle size (e.g. point spread function)</span>
+<span class="sd">    :param step: expected step size for searching for next location</span>
+<span class="sd">    :param noiselvl: noise level below which all image data will be set to zero</span>
+<span class="sd">    :param iniloc: starting position [row, column] of the track passed by the monitoring routine</span>
+<span class="sd">    :param imgsize: [number of rows, number of columns] in the analyzed image array</span>
+<span class="sd">    [not implemented] consistently return success/failure messages regarding locating the particle</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">psize</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">noiselvl</span><span class="p">,</span> <span class="n">imgsize</span><span class="p">,</span> <span class="n">iniloc</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">noise</span> <span class="o">=</span> <span class="n">noiselvl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="n">psize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locx</span> <span class="o">=</span> <span class="n">iniloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locy</span> <span class="o">=</span> <span class="n">iniloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgwidth</span> <span class="o">=</span> <span class="n">imgsize</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgheight</span> <span class="o">=</span> <span class="n">imgsize</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">imgsize</span><span class="p">,</span> <span class="n">iniloc</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LocatingParticle.findParticleSize"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.findParticleSize">[docs]</a>    <span class="k">def</span> <span class="nf">findParticleSize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Estimates size of the PSF of the particle at the specified :location: in the :image:&quot;&quot;&quot;</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">location</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">location</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="mi">40</span> <span class="c1"># distance of the expected peak from the crosshair pointer</span>
+        <span class="n">imgpart</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">x</span> <span class="o">-</span> <span class="n">w</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">w</span><span class="p">:</span><span class="n">y</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">imgpart</span><span class="p">[</span><span class="n">imgpart</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">:</span>
+            <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locy</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">w</span><span class="o">+</span><span class="n">cx</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">w</span><span class="o">+</span><span class="n">cy</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)))</span> <span class="c1"># very rough estimate, Gaussian fit can be better</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">psize</span></div>
+
+<div class="viewcode-block" id="LocatingParticle.centroid"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.centroid">[docs]</a>    <span class="k">def</span> <span class="nf">centroid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+        <span class="n">cy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">cx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Y</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="LocatingParticle.pointspread"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.pointspread">[docs]</a>    <span class="k">def</span> <span class="nf">pointspread</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">):</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">-</span> <span class="n">cy</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">cx</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">sy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">mass</span><span class="p">)</span>
+        <span class="n">sx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span> <span class="o">*</span> <span class="n">data</span><span class="p">)</span> <span class="o">/</span> <span class="n">mass</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="LocatingParticle.Locate"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.Locate">[docs]</a>    <span class="k">def</span> <span class="nf">Locate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_o</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;extracts the particle localization information close the lastly known location (self.loc) and updates it&quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">data_o</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locy</span><span class="p">)]</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">psize</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgwidth</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">w</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">y</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgheight</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="n">w</span><span class="p">):</span>
+            <span class="n">imgpart</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">x</span> <span class="o">-</span> <span class="n">w</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">w</span><span class="p">:</span><span class="n">y</span> <span class="o">+</span> <span class="n">w</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">imgpart</span><span class="p">[</span><span class="n">imgpart</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#note that this changes the actual data</span>
+            <span class="c1"># for future: there should be checked that noise level is not set too high or too low</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">noise</span><span class="p">:</span>
+                <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locy</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="n">w</span><span class="o">+</span><span class="n">cx</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">w</span><span class="o">+</span><span class="n">cy</span><span class="p">]</span>
+                <span class="n">mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">imgpart</span><span class="p">)</span>
+                <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pointspread</span><span class="p">(</span><span class="n">imgpart</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">)</span>
+                <span class="n">tracktag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">mass</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locy</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">tracktag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tracktag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">locy</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1">#np.set_printoptions(precision=3)</span>
+        <span class="c1">#print(tracktag) #for debugging purposes</span>
+        <span class="k">return</span> <span class="n">tracktag</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,655 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.experiment.nanoparticle_tracking.np_tracking &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.model.experiment.nanoparticle_tracking.np_tracking</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.model.experiment.nanoparticle_tracking.np_tracking</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    nanoparticle_tracking.py</span>
+<span class="sd">    ===========</span>
+<span class="sd">    Nanoparticle tracking is a technique that allows to measure the size of very small objects. The core idea is that</span>
+<span class="sd">    by locating objects subject to brownian motion, it is possible to reconstruct their movement, which in turn can be</span>
+<span class="sd">    fitted to a model which depends on properties of the medium (i.e. viscosity) and on  the diameter of the particles.</span>
+
+<span class="sd">    Nanoparticle tracking analysis (NTA) is a common name used to the entire cycle of data acquisition, localization,</span>
+<span class="sd">    and analysis. Commercial devices such as NanoSight and ZetaView provide a closed-solution to the problem. PyNTA aims</span>
+<span class="sd">    at providing a superior approach, allowing researchers to have real-time information on the sample studied and a</span>
+<span class="sd">    completely transparent approach regarding algorithms used.</span>
+
+<span class="sd">    :copyright:  Aquiles Carattino &lt;aquiles@aquicarattino.com&gt;</span>
+<span class="sd">    :license: GPLv3, see LICENSE for more details</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="k">import</span> <span class="n">Event</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span> <span class="k">as</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Queue</span><span class="p">,</span> <span class="n">Process</span>
+
+<span class="kn">from</span> <span class="nn">pynta</span> <span class="k">import</span> <span class="n">general_stop_event</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.base_experiment</span> <span class="k">import</span> <span class="n">BaseExperiment</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.decorators</span> <span class="k">import</span> <span class="p">(</span><span class="n">check_camera</span><span class="p">,</span>
+                                                                     <span class="n">check_not_acquiring</span><span class="p">,</span>
+                                                                     <span class="n">make_async_thread</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.localization</span> <span class="k">import</span> <span class="n">link_queue</span><span class="p">,</span> <span class="n">LocateParticles</span>
+
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.saver</span> <span class="k">import</span> <span class="n">worker_listener</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.exceptions</span> <span class="k">import</span> <span class="n">StreamSavingRunning</span>
+<span class="kn">from</span> <span class="nn">pynta.util</span> <span class="k">import</span> <span class="n">get_logger</span>
+<span class="kn">import</span> <span class="nn">trackpy</span> <span class="k">as</span> <span class="nn">tp</span>
+
+
+<div class="viewcode-block" id="NPTracking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking">[docs]</a><span class="k">class</span> <span class="nc">NPTracking</span><span class="p">(</span><span class="n">BaseExperiment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Experiment class for performing a nanoCET measurement.&quot;&quot;&quot;</span>
+    <span class="n">BACKGROUND_NO_CORRECTION</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># No backround correction</span>
+    <span class="n">BACKGROUND_SINGLE_SNAP</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">free_run_running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saving_location</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dropped_frames</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_acquiring</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acquiring</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Status of the acquisition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># This will hold the model for the camera</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_width</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Temporary image, used to quickly have access to &#39;some&#39; data and display it to the user</span>
+        <span class="c1"># self.temp_locations = None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">movie_buffer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Holds few frames of the movie in order to be able to do some analysis, save later, etc.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_index</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Last index used for storing to the movie buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">async_threads</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># List holding all the threads spawn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_histogram_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_background_correction</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">BACKGROUND_SINGLE_SNAP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_locations</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracks_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size_distribution_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keep_locating</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_free_run</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">LocateParticles</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Calculates frames per second based on the number of frames received in a period of time</span>
+        <span class="c1"># sys.excepthook = self.sysexcept  # This is very handy in case there are exceptions that force the program to quit.</span>
+
+<div class="viewcode-block" id="NPTracking.initialize_camera"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.initialize_camera">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes the camera to be used to acquire data. The information on the camera should be provided in the</span>
+<span class="sd">        configuration file and loaded with :meth:`~self.load_configuration`. It will load the camera assuming</span>
+<span class="sd">        it is located in nanoparticle_tracking/model/cameras/[model].</span>
+
+<span class="sd">        .. TODO:: Define how to load models from outside of PyNTA. E.g. from a user-specified folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Importing camera model </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;pynta.model.cameras.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">])</span>
+
+            <span class="n">camera_model_to_import</span> <span class="o">=</span> <span class="s1">&#39;pynta.model.cameras.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+            <span class="n">cam_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">camera_model_to_import</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;The model </span><span class="si">{}</span><span class="s1"> for the camera was not found&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;model&#39;</span><span class="p">]))</span>
+            <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Unhandled exception&#39;</span><span class="p">)</span>
+            <span class="k">raise</span>
+
+        <span class="n">cam_init_arguments</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;init&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;extra_args&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initializing camera with extra arguments&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;cam_module.camera(</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cam_init_arguments</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;extra_args&#39;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">cam_module</span><span class="o">.</span><span class="n">Camera</span><span class="p">(</span><span class="n">cam_init_arguments</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;Camera&#39;</span><span class="p">][</span><span class="s1">&#39;extra_args&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initializing camera without extra arguments&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;cam_module.camera(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cam_init_arguments</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">cam_module</span><span class="o">.</span><span class="n">Camera</span><span class="p">(</span><span class="n">cam_init_arguments</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">getSize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Camera sensor ROI: </span><span class="si">{}</span><span class="s1">px X </span><span class="si">{}</span><span class="s1">px&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">GetCCDWidth</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">GetCCDHeight</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Camera sensor size: </span><span class="si">{}</span><span class="s1">px X </span><span class="si">{}</span><span class="s1">px&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="NPTracking.snap_background"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap_background">[docs]</a>    <span class="nd">@check_camera</span>
+    <span class="nd">@check_not_acquiring</span>
+    <span class="k">def</span> <span class="nf">snap_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Snaps an image that will be stored as background.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Acquiring background image&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">trigger_camera</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">read_camera</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got an image of </span><span class="si">{}</span><span class="s1"> pixels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backgound</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="NPTracking.set_roi"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.set_roi">[docs]</a>    <span class="nd">@check_camera</span>
+    <span class="nd">@check_not_acquiring</span>
+    <span class="k">def</span> <span class="nf">set_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities</span>
+<span class="sd">        should be addressed on the camera model, not in this method.</span>
+
+<span class="sd">        :param list X: horizontal position for the start and end of the cropping</span>
+<span class="sd">        :param list Y: vertical position for the start and end of the cropping</span>
+<span class="sd">        :raises ValueError: if either dimension of the cropping goes out of the camera total amount of pixels</span>
+<span class="sd">        :returns: The final cropping dimensions, it may be that the camera limits the user desires</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Setting new camera ROI to x=</span><span class="si">{}</span><span class="s1">,y=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">setROI</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;New camera width: </span><span class="si">{}</span><span class="s1">px, height: </span><span class="si">{}</span><span class="s1">px&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="NPTracking.clear_roi"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.clear_roi">[docs]</a>    <span class="nd">@check_camera</span>
+    <span class="nd">@check_not_acquiring</span>
+    <span class="k">def</span> <span class="nf">clear_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Clears the region of interest and returns to the full frame of the camera.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Clearing ROI settings&#39;</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">setROI</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.snap"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap">[docs]</a>    <span class="nd">@check_camera</span>
+    <span class="nd">@check_not_acquiring</span>
+    <span class="nd">@make_async_thread</span>
+    <span class="k">def</span> <span class="nf">snap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Snap a single frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Snapping a picture&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">trigger_camera</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_background</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">read_camera</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;snap&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got an image of </span><span class="si">{}</span><span class="s1">x</span><span class="si">{}</span><span class="s1"> pixels&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="NPTracking.start_free_run"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_free_run">[docs]</a>    <span class="nd">@make_async_thread</span>
+    <span class="nd">@check_not_acquiring</span>
+    <span class="nd">@check_camera</span>
+    <span class="k">def</span> <span class="nf">start_free_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts continuous acquisition from the camera, but it is not being saved. This method is the workhorse</span>
+<span class="sd">        of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other</span>
+<span class="sd">        methods. In this way it is possible to continuously save to hard drive, track particles, etc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting a free run acquisition&#39;</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Used to keep track of the number of frames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_free_run</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">free_run_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;First frame of a free_run&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">MODE_CONTINUOUS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">trigger_camera</span><span class="p">()</span>  <span class="c1"># Triggers the camera only once</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_free_run</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">read_camera</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1"> new frames&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Number of frames: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_background_correction</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_method</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">BACKGROUND_SINGLE_SNAP</span><span class="p">:</span>
+                    <span class="n">img</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span>
+
+                <span class="c1"># This will broadcast the data just acquired with the current timestamp</span>
+                <span class="c1"># The timestamp is very unreliable, especially if the camera has a frame grabber.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;free_run&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="n">img</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span> <span class="o">=</span> <span class="n">img</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">free_run_running</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">stopAcq</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">temp_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">localize_particles_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NPTracking.stop_free_run"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_free_run">[docs]</a>    <span class="k">def</span> <span class="nf">stop_free_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops the free run by setting the ``_stop_event``. It is basically a convenience method to avoid</span>
+<span class="sd">        having users dealing with somewhat lower level threading options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting the stop_event&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_free_run</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.save_image"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Saves the last acquired image. The file to which it is going to be saved is defined in the config.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Saving last acquired image&#39;</span><span class="p">)</span>
+            <span class="c1"># Data will be appended to existing file</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;filename_photo&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.hdf5&#39;</span>
+            <span class="n">file_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;directory&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_dir</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_dir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Created directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_dir</span><span class="p">))</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+                <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span><span class="p">)</span>
+                <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saved image to </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Tried to save an image, but no image was acquired yet.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.save_stream"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_stream">[docs]</a>    <span class="k">def</span> <span class="nf">save_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Saves the queue to a file continuously. This is an async function, that can be triggered before starting</span>
+<span class="sd">        the stream. It relies on the multiprocess library. It uses a queue in order to get the data to be saved.</span>
+<span class="sd">        In normal operation, it should be used together with ``add_to_stream_queue``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_stream_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Tried to start a new instance of save stream&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">StreamSavingRunning</span><span class="p">(</span><span class="s1">&#39;You tried to start a new process for stream saving&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting to save the stream&#39;</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;filename_video&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.hdf5&#39;</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;directory&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Created directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_dir</span><span class="p">))</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">max_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;max_memory&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">worker_listener</span><span class="p">,</span>
+                                             <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">),</span> <span class="s1">&#39;free_run&#39;</span><span class="p">),</span>
+                                             <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;max_memory&#39;</span><span class="p">:</span> <span class="n">max_memory</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started the stream saving process&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.link_particles"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.link_particles">[docs]</a>    <span class="k">def</span> <span class="nf">link_particles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts linking the particles while the acquisition is in progress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting to link particles&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">link_queue</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">_queue</span><span class="p">,</span>
+                                                                       <span class="bp">self</span><span class="o">.</span><span class="n">tracks_queue</span><span class="p">],</span>
+                                              <span class="n">kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">][</span><span class="s1">&#39;link&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started the linking process&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.stop_save_stream"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_save_stream">[docs]</a>    <span class="k">def</span> <span class="nf">stop_save_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops saving the stream.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_stream_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stopping the saving stream process&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;Exit&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;free_run&#39;</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;The saving stream is not running. Nothing will be done.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.start_tracking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts the tracking of the particles</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">start_tracking</span><span class="p">(</span><span class="s1">&#39;free_run&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.stop_tracking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">stop_tracking</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.start_saving_location"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_saving_location">[docs]</a>    <span class="k">def</span> <span class="nf">start_saving_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saving_location</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;filename_tracks&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;.hdf5&#39;</span>
+        <span class="n">file_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;saving&#39;</span><span class="p">][</span><span class="s1">&#39;directory&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_dir</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">file_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Created directory </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file_dir</span><span class="p">))</span>
+        <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">file_dir</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">start_saving</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="NPTracking.stop_saving_location"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_saving_location">[docs]</a>    <span class="k">def</span> <span class="nf">stop_saving_location</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">saving_location</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">stop_saving</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.start_linking_locations"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_linking_locations">[docs]</a>    <span class="k">def</span> <span class="nf">start_linking_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Start linking locations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">start_linking</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.stop_linking_locations"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_linking_locations">[docs]</a>    <span class="k">def</span> <span class="nf">stop_linking_locations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Stop linking locations&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">stop_linking</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.localize_particles_image"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.localize_particles_image">[docs]</a>    <span class="k">def</span> <span class="nf">localize_particles_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Localizes particles based on trackpy. It is a convenience function in order to use the configuration parameters</span>
+<span class="sd">        instead of manually passing them to trackpy.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">image</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp_image</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">][</span><span class="s1">&#39;locate&#39;</span><span class="p">])</span>
+        <span class="n">diameter</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;diameter&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tp</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">save_stream_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stream_saving_process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">link_particles_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_process</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_process</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="NPTracking.stop_link_particles"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_link_particles">[docs]</a>    <span class="k">def</span> <span class="nf">stop_link_particles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops the linking process.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stopping the linking particles process&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;Exit&#39;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;The linking particles process is not running. Nothing will be done.&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.empty_saver_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_saver_queue">[docs]</a>    <span class="k">def</span> <span class="nf">empty_saver_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Empties the queue where the data from the movie is being stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Clearing the saver queue&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Current saver queue length: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()))</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">saver_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saver queue cleared&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.empty_locations_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_locations_queue">[docs]</a>    <span class="k">def</span> <span class="nf">empty_locations_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Empties the queue with location data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Location queue not empty. Cleaning.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Current location queue length: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()))</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">locations_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Location queue cleared&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.calculate_waterfall"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.calculate_waterfall">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_waterfall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; A waterfall is the product of summing together all the vertical values of an image and displaying them</span>
+<span class="sd">        as lines on a 2D image. It is how spectrometers normally work. A waterfall can be produced either by binning the</span>
+<span class="sd">        image in the vertical direction directly at the camera, or by doing it in software.</span>
+<span class="sd">        The first has the advantage of speeding up the readout process. The latter has the advantage of working with any</span>
+<span class="sd">        camera.</span>
+<span class="sd">        This method will work either with 1D arrays or with 2D arrays and will generate a stack of lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;waterfall&#39;</span><span class="p">][</span><span class="s1">&#39;length_waterfall&#39;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;waterfall&#39;</span><span class="p">][</span><span class="s1">&#39;length_waterfall&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">center_pixel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">height</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># Calculates the center of the image</span>
+        <span class="n">vbinhalf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;waterfall&#39;</span><span class="p">][</span><span class="s1">&#39;vertical_bin&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">vbinhalf</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">image</span><span class="p">[:,</span> <span class="n">center_pixel</span> <span class="o">-</span> <span class="n">vbinhalf</span><span class="p">:</span><span class="n">center_pixel</span> <span class="o">+</span> <span class="n">vbinhalf</span><span class="p">],</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">waterfall_index</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">wf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waterfall_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;waterfall_data&#39;</span><span class="p">,</span> <span class="n">wf</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NPTracking.check_background"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.check_background">[docs]</a>    <span class="k">def</span> <span class="nf">check_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks whether the background is set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_background_correction</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Setting up the background corretion&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">background_method</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">BACKGROUND_SINGLE_SNAP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Bacground single snap&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_height</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Background not set. Defaulting to no background...&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">do_background_correction</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="NPTracking.finalize"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">general_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_free_run</span><span class="p">()</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_save_stream</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NPTracking.sysexcept"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.sysexcept">[docs]</a>    <span class="k">def</span> <span class="nf">sysexcept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Got an unhandled exception: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc_type</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Traceback: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc_traceback</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Value: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exc_value</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">()</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">empty_saver_queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">empty_locations_queue</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_stream_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stopping the saver process&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_save_stream</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">link_particles_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_link_particles</span><span class="p">()</span>
+        <span class="n">general_stop_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,384 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.cameras.basler &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.model.cameras.basler</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.model.cameras.basler</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Basler Camera Model</span>
+<span class="sd">    ===================</span>
+<span class="sd">    Model to adapt PyPylon to the needs of Pynta. PyPylon is only a wrapper for Pylon, thus the documentation</span>
+<span class="sd">    has to be found in the folder where Pylon was installed. It refers only to the C++ documentation, which is</span>
+<span class="sd">    very extensive, but not necessarily clear.</span>
+
+<span class="sd">    Some assumptions</span>
+<span class="sd">    ----------------</span>
+<span class="sd">    The program forces software trigger during :meth:`~nanoparticle_tracking.model.cameras.basler.Camera.initialize`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">pypylon</span> <span class="k">import</span> <span class="n">pylon</span>
+
+<span class="kn">from</span> <span class="nn">pynta.model.cameras.base_camera</span> <span class="k">import</span> <span class="n">BaseCamera</span>
+<span class="kn">from</span> <span class="nn">pynta.model.cameras.exceptions</span> <span class="k">import</span> <span class="n">CameraNotFound</span><span class="p">,</span> <span class="n">WrongCameraState</span><span class="p">,</span> <span class="n">CameraException</span>
+<span class="kn">from</span> <span class="nn">pynta.util</span> <span class="k">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">pynta</span> <span class="k">import</span> <span class="n">Q_</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Camera"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera">[docs]</a><span class="k">class</span> <span class="nc">Camera</span><span class="p">(</span><span class="n">BaseCamera</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cam_num</span> <span class="o">=</span> <span class="n">camera</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Camera.initialize"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initializes the communication with the camera. Get&#39;s the maximum and minimum width. It also forces</span>
+<span class="sd">        the camera to work on Software Trigger.</span>
+
+<span class="sd">        .. warning:: It may be useful to integrate with other types of triggers in applications that need to</span>
+<span class="sd">        synchronize with other hardware.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initializing Basler Camera&#39;</span><span class="p">)</span>
+        <span class="n">tl_factory</span> <span class="o">=</span> <span class="n">pylon</span><span class="o">.</span><span class="n">TlFactory</span><span class="o">.</span><span class="n">GetInstance</span><span class="p">()</span>
+        <span class="n">devices</span> <span class="o">=</span> <span class="n">tl_factory</span><span class="o">.</span><span class="n">EnumerateDevices</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">devices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CameraNotFound</span><span class="p">(</span><span class="s1">&#39;No camera found&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span> <span class="o">=</span> <span class="n">pylon</span><span class="o">.</span><span class="n">InstantCamera</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Attach</span><span class="p">(</span><span class="n">tl_factory</span><span class="o">.</span><span class="n">CreateDevice</span><span class="p">(</span><span class="n">devices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cam_num</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Open</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Loaded camera {self.camera.GetDeviceInfo().GetModelName()}&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Width</span><span class="o">.</span><span class="n">Max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Height</span><span class="o">.</span><span class="n">Max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">RegisterConfiguration</span><span class="p">(</span><span class="n">pylon</span><span class="o">.</span><span class="n">SoftwareTriggerConfiguration</span><span class="p">(),</span> <span class="n">pylon</span><span class="o">.</span><span class="n">RegistrationMode_ReplaceAll</span><span class="p">,</span>
+                                          <span class="n">pylon</span><span class="o">.</span><span class="n">Cleanup_Delete</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Camera.set_acquisition_mode"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.set_acquisition_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_acquisition_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting acquisition mode to </span><span class="si">{mode}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODE_CONTINUOUS</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting buffer to </span><span class="si">{self.camera.MaxNumBuffer.Value}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OutputQueueSize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">MaxNumBuffer</span><span class="o">.</span><span class="n">Value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">AcquisitionMode</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s1">&#39;Continuous&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">AcquisitionMode</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="s1">&#39;SingleFrame&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">AcquisitionStart</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Camera.setROI"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.setROI">[docs]</a>    <span class="k">def</span> <span class="nf">setROI</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set up the region of interest of the camera. Basler calls this the</span>
+<span class="sd">        Area of Interest (AOI) in their manuals. Beware that not all cameras allow</span>
+<span class="sd">        to set the ROI (especially if they are not area sensors).</span>
+<span class="sd">        Both the corner positions and the width/height need to be multiple of 4.</span>
+<span class="sd">        Compared to Hamamatsu, Baslers provides a very descriptive error warning.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="o">-</span><span class="n">width</span><span class="o">%</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">x_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">%</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">y_pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">%</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x_pos</span><span class="o">+</span><span class="n">width</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CameraException</span><span class="p">(</span><span class="s1">&#39;ROI width bigger than camera area&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y_pos</span><span class="o">+</span><span class="n">height</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CameraException</span><span class="p">(</span><span class="s1">&#39;ROI height bigger than camera area&#39;</span><span class="p">)</span>
+
+        <span class="c1"># First set offset to minimum, to avoid problems when going to a bigger size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clearROI</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting width to </span><span class="si">{width}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Width</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting X offset to </span><span class="si">{x_pos}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetX</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">x_pos</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting Height to </span><span class="si">{height}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Height</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">height</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Setting Y offset to </span><span class="si">{y_pos}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetY</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">y_pos</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">x_pos</span><span class="o">+</span><span class="n">width</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="p">[</span><span class="n">y_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="o">+</span><span class="n">width</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">heigth</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="k">return</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span></div>
+
+<div class="viewcode-block" id="Camera.clearROI"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.clearROI">[docs]</a>    <span class="k">def</span> <span class="nf">clearROI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetX</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetX</span><span class="o">.</span><span class="n">Min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetY</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">OffsetY</span><span class="o">.</span><span class="n">Min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Width</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Width</span><span class="o">.</span><span class="n">Max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Height</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Height</span><span class="o">.</span><span class="n">Max</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Camera.GetCCDWidth"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.GetCCDWidth">[docs]</a>    <span class="k">def</span> <span class="nf">GetCCDWidth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span></div>
+
+<div class="viewcode-block" id="Camera.GetCCDHeight"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.GetCCDHeight">[docs]</a>    <span class="k">def</span> <span class="nf">GetCCDHeight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span></div>
+
+<div class="viewcode-block" id="Camera.getSize"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.getSize">[docs]</a>    <span class="k">def</span> <span class="nf">getSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Width</span><span class="o">.</span><span class="n">Value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Height</span><span class="o">.</span><span class="n">Value</span></div>
+
+<div class="viewcode-block" id="Camera.trigger_camera"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.trigger_camera">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">IsGrabbing</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Triggering an already grabbing camera&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODE_CONTINUOUS</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">StartGrabbing</span><span class="p">(</span><span class="n">pylon</span><span class="o">.</span><span class="n">GrabStrategy_OneByOne</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">StartGrabbing</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">ExecuteSoftwareTrigger</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Camera.set_exposure"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.set_exposure">[docs]</a>    <span class="k">def</span> <span class="nf">set_exposure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exposure</span><span class="p">:</span> <span class="n">Q_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Q_</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">ExposureTime</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">exposure</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span> <span class="o">=</span> <span class="n">exposure</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_exposure</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Camera.get_exposure"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.get_exposure">[docs]</a>    <span class="k">def</span> <span class="nf">get_exposure</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Q_</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">ExposureTime</span><span class="o">.</span><span class="n">ToString</span><span class="p">())</span> <span class="o">*</span> <span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exposure</span></div>
+
+<div class="viewcode-block" id="Camera.read_camera"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.read_camera">[docs]</a>    <span class="k">def</span> <span class="nf">read_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">IsGrabbing</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">WrongCameraState</span><span class="p">(</span><span class="s1">&#39;You need to trigger the camera before reading from it&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">:</span>
+            <span class="n">grab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">RetrieveResult</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exposure</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;ms&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="mi">100</span><span class="p">,</span> <span class="n">pylon</span><span class="o">.</span><span class="n">TimeoutHandling_Return</span><span class="p">)</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="p">[</span><span class="n">grab</span><span class="o">.</span><span class="n">Array</span><span class="p">]</span>
+            <span class="n">grab</span><span class="o">.</span><span class="n">Release</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">StopGrabbing</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">num_buffers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">NumReadyBuffers</span><span class="o">.</span><span class="n">Value</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{self.camera.NumQueuedBuffers.Value}</span><span class="s1"> frames available&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">num_buffers</span><span class="p">:</span>
+                <span class="n">img</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_buffers</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_buffers</span><span class="p">):</span>
+                    <span class="n">grab</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">RetrieveResult</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exposure</span><span class="o">.</span><span class="n">m_as</span><span class="p">(</span><span class="s1">&#39;ms&#39;</span><span class="p">))</span> <span class="o">+</span> <span class="mi">100</span><span class="p">,</span> <span class="n">pylon</span><span class="o">.</span><span class="n">TimeoutHandling_Return</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">grab</span><span class="p">:</span>
+                        <span class="n">img</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">grab</span><span class="o">.</span><span class="n">Array</span>
+                        <span class="n">grab</span><span class="o">.</span><span class="n">Release</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">img</span><span class="p">]</span>  <span class="c1"># Transpose to have the correct size</span></div>
+
+<div class="viewcode-block" id="Camera.stop_camera"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.basler.Camera.stop_camera">[docs]</a>    <span class="k">def</span> <span class="nf">stop_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">StopGrabbing</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">AcquisitionStop</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting Basler&#39;</span><span class="p">)</span>
+    <span class="n">basler</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="n">basler</span><span class="o">.</span><span class="n">MODE_SINGLE_SHOT</span><span class="p">)</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">set_exposure</span><span class="p">(</span><span class="n">Q_</span><span class="p">(</span><span class="s1">&#39;.02s&#39;</span><span class="p">))</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">trigger_camera</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">basler</span><span class="o">.</span><span class="n">read_camera</span><span class="p">()))</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">set_acquisition_mode</span><span class="p">(</span><span class="n">basler</span><span class="o">.</span><span class="n">MODE_CONTINUOUS</span><span class="p">)</span>
+    <span class="n">basler</span><span class="o">.</span><span class="n">trigger_camera</span><span class="p">()</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">imgs</span> <span class="o">=</span> <span class="n">basler</span><span class="o">.</span><span class="n">read_camera</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">imgs</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

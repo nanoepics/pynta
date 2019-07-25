@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Getting Started &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to Contribute Code" href="contribute_codebase.html" />
+    <link rel="prev" title="The Config File" href="example_config.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_config.html">The Config File</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#opening-the-program">Opening the Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-tools">The Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tracking-and-linking">Tracking and Linking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Getting Started</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>In order to familiarize yourself with the program, the best idea is to start with simulated data. In this way you avoid
+all the problems arising from interfacing with a real instrument and you can see the limitations of the program. The
+example config available on the repository is already configured to work with a simulated camera. It is recommended that
+you copy the contents of the file into a folder on your own computer.</p>
+<div class="section" id="opening-the-program">
+<h2>Opening the Program<a class="headerlink" href="#opening-the-program" title="Permalink to this headline">¶</a></h2>
+<p>After <a class="reference internal" href="installing.html#installing"><span class="std std-ref">Installing</span></a> PyNTA, you can trigger it from the command line. You can simply run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pynta
+</pre></div>
+</div>
+<p>After a few moments, a screen like the one below will welcome you to the program.</p>
+<div class="figure align-default">
+<img alt="screenshot" src="_images/screenshot_01.png" />
+</div>
+<p>This will use synthetic data by default, i.e. you can snap or acquire a movie and test the capabilities of the program without the need of connecting with a real camera. Once you are confident with the program and you would like to start using real hardware, you need to develop <a class="reference internal" href="example_config.html#example-config"><span class="std std-ref">a proper config file</span></a>. Once you have it, you can run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python -m pynta -c config.yml
+</pre></div>
+</div>
+<p>You can reproduce the config file that gives you the synthetic data and then move to real devices.</p>
+</div>
+<div class="section" id="the-tools">
+<h2>The Tools<a class="headerlink" href="#the-tools" title="Permalink to this headline">¶</a></h2>
+<p>Most of the options were designed to be self-explanatory. However it is important to give a short discussion in order to
+speed the introduction to the tool. After initializing, normally one would like to snap a photo in order to see what is being recorded by the camera. You can achieve it by clicking the button as shown in the image below:</p>
+<div class="figure align-default">
+<img alt="Snap an Image" src="_images/screenshot_snap.png" />
+</div>
+<p>This will record a single image from the camera and will be displayed on the space right below:</p>
+<div class="figure align-default">
+<img alt="Simulated particles on the camera" src="_images/screenshot_particles.png" />
+</div>
+<p>The image can be zoomed-in and out by scrolling with the central wheel of the mouse. Dragging allows to move around the image. In order to return to the full view, it is possible to right-click on the image and select <code class="docutils literal notranslate"><span class="pre">View</span> <span class="pre">All</span></code>. The histogram on the right of the image shows the levels for displaying. You can adjust the minimum and maximum as well as the color scale. Right clicking on the image allows you to do an <code class="docutils literal notranslate"><span class="pre">Auto</span> <span class="pre">Range</span></code>, i.e. to adjust the levels such that the maximum and minimum correspond to those of the data being displayed.</p>
+<p>If you want to save the image you can click on the icon for saving, as shown below:</p>
+<div class="figure align-default">
+<img alt="Simulated particles on the camera" src="_images/screenshot_save_image.png" />
+</div>
+<p>PyNTA also allows you to acquire continuous images, by clicking on the icon highlighted below. The exact behaviour will depend on the camera employed. For example, if a frame-grabber is available, the exact timing between frames can be guaranteed. Cameras without a buffer, however, will have a timing that depends on the computer ability to read from them. The communication with the camera happens in a separate thread, trying to guarantee the maximum reliability of the timing.</p>
+<div class="figure align-default">
+<img alt="Start a Free Run" src="_images/screenshot_free_run.png" />
+</div>
+<p>Another feature is the continuous saves option, which is right next to the start movie button. The continuous saves streams all the available frames to a file on the hard rive. The location of the file is determined in the config file or, as we will see later, can be set in the configuration on the User Interface. In case of acquiring at high frame rates, not all frames are displayed to the user, but all of them will be saved.</p>
+</div>
+<div class="section" id="tracking-and-linking">
+<h2>Tracking and Linking<a class="headerlink" href="#tracking-and-linking" title="Permalink to this headline">¶</a></h2>
+<div class="figure align-default">
+<img alt="Screenshot tracking options" src="_images/screenshot_tracking.png" />
+</div>
+<p>The feature that really makes PyNTA unique is the ability to identify and track nanoparticles on a video in real time.
+The procedure for tracking and analysis requires of two steps. First, you have to start identifying the particles, with
+the button called <code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">tracking</span></code>. You will see red crosses appearing on the particles in the image. It takes a few instants to setup the linking procedure, during which the movie may seem to freeze.</p>
+<p>If you are satisfied with how the identification of particles works, you can start linking the positions. Linking is a procedure that identifies whether locations in consecutive frames belong to the same particle or not. This procedure can be computationally expensive and requires fine tuning of the parameters. Linking also happens in a separate process, and in parallel to the acquisition and identification of particles.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="contribute_codebase.html" class="btn btn-neutral float-right" title="How to Contribute Code" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="example_config.html" class="btn btn-neutral float-left" title="The Config File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

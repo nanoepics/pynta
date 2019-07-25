@@ -1,0 +1,1093 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.experiment.nano_cet package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pynta.tests package" href="pynta.tests.html" />
+    <link rel="prev" title="pynta.model.experiment package" href="pynta.model.experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Information for Developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#view">View</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pynta.html">pynta package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta.config">pynta.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="modules.html">pynta</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html">pynta package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Information for Developers</a> &raquo;</li>
+        
+          <li><a href="pynta.html">pynta package</a> &raquo;</li>
+        
+          <li><a href="pynta.model.html">pynta.model package</a> &raquo;</li>
+        
+          <li><a href="pynta.model.experiment.html">pynta.model.experiment package</a> &raquo;</li>
+        
+      <li>pynta.model.experiment.nano_cet package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.model.experiment.nano_cet.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-model-experiment-nano-cet-package">
+<h1>pynta.model.experiment.nano_cet package<a class="headerlink" href="#pynta-model-experiment-nano-cet-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.decorators">
+<span id="pynta-model-experiment-nano-cet-decorators-module"></span><h2>pynta.model.experiment.nano_cet.decorators module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.decorators" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nano-cet-decorators">
+<h3>Nano CET decorators<a class="headerlink" href="#nano-cet-decorators" title="Permalink to this headline">¶</a></h3>
+<p>Useful decorators for the Nano CET experiment.
+For example, to check whether the camera was initialized already or not before calling a method that needs an active
+camera.</p>
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.decorators.check_camera">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.decorators.</code><code class="sig-name descname">check_camera</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/decorators.html#check_camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.decorators.check_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to check whether the camera has been already initialized.
+It raises an error if it has not been.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.decorators.check_not_acquiring">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.decorators.</code><code class="sig-name descname">check_not_acquiring</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/decorators.html#check_not_acquiring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.decorators.check_not_acquiring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to check that the camera is not acquiring before running the function. This prevents, for example,
+changing the ROI while a movie is in progress.
+This decorator works in conjuction with <code class="docutils literal notranslate"><span class="pre">check_camera</span></code>, i.e., it will not double check whether the camera was
+initialized or not.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.decorators.make_async_process">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.decorators.</code><code class="sig-name descname">make_async_process</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/decorators.html#make_async_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.decorators.make_async_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple decorator to start a method as a separated process. It requires that the class has a property
+called <code class="docutils literal notranslate"><span class="pre">_processes</span></code> which is a list and holds all the running processes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.decorators.make_async_thread">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.decorators.</code><code class="sig-name descname">make_async_thread</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/decorators.html#make_async_thread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.decorators.make_async_thread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple decorator to make a method run on a separated thread. It requires that the class has a property
+called <code class="docutils literal notranslate"><span class="pre">_threads</span></code> which is a list and holds all the running threads.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.exceptions">
+<span id="pynta-model-experiment-nano-cet-exceptions-module"></span><h2>pynta.model.experiment.nano_cet.exceptions module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.exceptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nano-cet-exceptions">
+<h3>Nano CET exceptions<a class="headerlink" href="#nano-cet-exceptions" title="Permalink to this headline">¶</a></h3>
+<p>Collection of custom exceptions for the nanoCET experiment.</p>
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.CameraNotInitialized">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">CameraNotInitialized</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#CameraNotInitialized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.CameraNotInitialized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.DiameterNotDefined">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">DiameterNotDefined</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#DiameterNotDefined"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.DiameterNotDefined" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.LinkException">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">LinkException</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#LinkException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.LinkException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">NanoCETException</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#NanoCETException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.StreamSavingRunning">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">StreamSavingRunning</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#StreamSavingRunning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.StreamSavingRunning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException</span></code></a></p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="pynta.model.experiment.nanoparticle_tracking.exceptions.TrackpyNotInstalled">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.exceptions.</code><code class="sig-name descname">TrackpyNotInstalled</code><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/exceptions.html#TrackpyNotInstalled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.TrackpyNotInstalled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException" title="pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.nanoparticle_tracking.exceptions.NanoCETException</span></code></a></p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.localization">
+<span id="pynta-model-experiment-nano-cet-localization-module"></span><h2>pynta.model.experiment.nano_cet.localization module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.localization" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="localization-routines">
+<h3>Localization Routines<a class="headerlink" href="#localization-routines" title="Permalink to this headline">¶</a></h3>
+<p>Tracking particles is a relatively easy routine. PyNTA uses trackpy to analyse every frame that is generated. However,
+linking localizations in order to build a trace is not trivial, since it implies preserving in memory the previous
+locations. The main idea of these routines is that a main object <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles" title="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocateParticles</span></code></a> holds the information of
+the processes running. Moreover, there is a combination of threads and processes depending on the expected load.</p>
+<p>It has to be noted that Windows has a peculiar way of dealing with new processes that prevents us from using methods,
+but instead we are forced to use functions. This is very limiting but couldn’t find a way around yet.</p>
+<p>The core idea is that the localization uses the data broadcasted by <code class="xref py py-class docutils literal notranslate"><span class="pre">Publisher</span></code>
+in order to collect new frames, or save localizations to disk. It uses the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code> in order to listen for the new data, and in turn publishes it
+with the Publisher.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>Aquiles Carattino &lt;<a class="reference external" href="mailto:aquiles&#37;&#52;&#48;aquicarattino&#46;com">aquiles<span>&#64;</span>aquicarattino<span>&#46;</span>com</a>&gt;</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GPLv3, see LICENSE for more details</p>
+</dd>
+</dl>
+<dl class="class">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">LocateParticles</code><span class="sig-paren">(</span><em class="sig-param">publisher</em>, <em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Convenience class to keep track of processes and threads related to the localization of particles.
+The idea was to make it more robust when stopping processes and to give a common interface to the experiment in</p>
+<blockquote>
+<div><p>case radical changes are implemented. For example, changing tracking or linking algorithms, etc.</p>
+</div></blockquote>
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.accumulate_links">
+<code class="sig-name descname">accumulate_links</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.accumulate_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.accumulate_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asynchronous method to store the links in this class. It looked like a good idea to keep this information in
+a single location, regardless of whether another process is listening on the topic. This in principle can be
+used to analyse data retrospectively.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Still needs to clear the memory after several calls. Need to fit better in the architecture of the
+program</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.calculate_histogram">
+<code class="sig-name descname">calculate_histogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.calculate_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.calculate_histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a new thread to calculate the histogram of fit-parameters based on the mean-squared displacement of
+individual particles. It publishes the data on topic <cite>histogram</cite>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method is incredibly expensive. Since it runs on a thread it can block other pieces of code,</p>
+</div>
+<p>especially the GUI, which runs on the same process.</p>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>The histogram loops over all the particles. It would be better to skeep particles for which there is
+no new data</p>
+</div>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Make this method able to run on a separate process. So far is not possible because it relies on data
+stored on the class itself (<cite>self.locations</cite>).</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.finalize">
+<code class="sig-name descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops all the processes and threads. It should be invoked when finishing a measurement or when stopping an
+acquisition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.relevant_tracks">
+<code class="sig-name descname">relevant_tracks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.relevant_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.relevant_tracks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the relevant tracks as filtered by length, eccentricity, size and mass. This step needs careful
+consideration and should definitely be used in post-processing or once the parameters have been validated.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_linking">
+<code class="sig-name descname">start_linking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.start_linking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_linking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a process to link the localizations of particles. It publishes the track information as a table,
+with the frame and particle number appended to the rightmost columns respectively. This particular task may be
+very time consuming.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Linking tracks can block a process if there are too many particles with a very large search radius.
+If linking is too slow consider saving the localizations and link them afterwards.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_saving">
+<code class="sig-name descname">start_saving</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">meta</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.start_saving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_saving" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a process for saving localizations to an HDF5 file. It uses the function <a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.localization.save_locations" title="pynta.model.experiment.nanoparticle_tracking.localization.save_locations"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_locations()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Full path to the location where to save the data</p></li>
+<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – Metadata as a dictionary. It will be serialized with json</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>Implement a lock to prevent a second process starting</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_tracking">
+<code class="sig-name descname">start_tracking</code><span class="sig-paren">(</span><em class="sig-param">topic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.start_tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_tracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a process that listens for frames on a specific topic. It uses the function
+<a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations" title="pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate_locations()</span></code></a>. The process is stored in <code class="docutils literal notranslate"><span class="pre">self._trackings_process</span></code> and is automatically started.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>topic</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Topic in which to listen for new frames.</p>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<p>Implement a lock to prevent more than one process to start</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_accumulate_links">
+<code class="sig-name descname">stop_accumulate_links</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.stop_accumulate_links"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_accumulate_links" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_linking">
+<code class="sig-name descname">stop_linking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.stop_linking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_linking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_saving">
+<code class="sig-name descname">stop_saving</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.stop_saving"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_saving" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the saving process.</p>
+<div class="admonition-todo admonition" id="id6">
+<p class="admonition-title">Todo</p>
+<p>Implement a way of stop the saving after saving everything and not immediately.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_tracking">
+<code class="sig-name descname">stop_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#LocateParticles.stop_tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_tracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the tracking process by setting a particular event.</p>
+<div class="admonition-todo admonition" id="id7">
+<p class="admonition-title">Todo</p>
+<p>This is a hard stop, i.e., tracking will stop immediately. Perhaps it would be wise to clear the queue.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.add_linking_queue">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">add_linking_queue</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#add_linking_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.add_linking_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.add_links_to_queue">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">add_links_to_queue</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#add_links_to_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.add_links_to_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.calculate_histogram_sizes">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">calculate_histogram_sizes</code><span class="sig-paren">(</span><em class="sig-param">tracks_queue</em>, <em class="sig-param">config</em>, <em class="sig-param">out_queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#calculate_histogram_sizes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.calculate_histogram_sizes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">calculate_locations</code><span class="sig-paren">(</span><em class="sig-param">port</em>, <em class="sig-param">topic</em>, <em class="sig-param">event</em>, <em class="sig-param">publisher_queue</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#calculate_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations_image">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">calculate_locations_image</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">publisher_queue</em>, <em class="sig-param">locations_queue</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#calculate_locations_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the positions of the particles on an image. It used the trackpy package, which may not be
+installed by default.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.link_locations">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">link_locations</code><span class="sig-paren">(</span><em class="sig-param">port</em>, <em class="sig-param">topic</em>, <em class="sig-param">event</em>, <em class="sig-param">publisher_queue</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#link_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.link_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.link_queue">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">link_queue</code><span class="sig-paren">(</span><em class="sig-param">locations_queue</em>, <em class="sig-param">publisher_queue</em>, <em class="sig-param">links_queue</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#link_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.link_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Links the locations of particles from a location queue.
+It is a reimplementation of the link_iter of trackpy.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.localization.save_locations">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.localization.</code><code class="sig-name descname">save_locations</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">meta</em>, <em class="sig-param">port</em>, <em class="sig-param">event</em>, <em class="sig-param">topic='locations'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/localization.html#save_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.localization.save_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.np_tracking">
+<span id="pynta-model-experiment-nano-cet-nano-cet-module"></span><h2>pynta.model.experiment.nano_cet.nano_cet module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.np_tracking" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nanoparticle-tracking-py">
+<h3>nanoparticle_tracking.py<a class="headerlink" href="#nanoparticle-tracking-py" title="Permalink to this headline">¶</a></h3>
+<p>Nanoparticle tracking is a technique that allows to measure the size of very small objects. The core idea is that
+by locating objects subject to brownian motion, it is possible to reconstruct their movement, which in turn can be
+fitted to a model which depends on properties of the medium (i.e. viscosity) and on  the diameter of the particles.</p>
+<p>Nanoparticle tracking analysis (NTA) is a common name used to the entire cycle of data acquisition, localization,
+and analysis. Commercial devices such as NanoSight and ZetaView provide a closed-solution to the problem. PyNTA aims
+at providing a superior approach, allowing researchers to have real-time information on the sample studied and a
+completely transparent approach regarding algorithms used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>Aquiles Carattino &lt;<a class="reference external" href="mailto:aquiles&#37;&#52;&#48;aquicarattino&#46;com">aquiles<span>&#64;</span>aquicarattino<span>&#46;</span>com</a>&gt;</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GPLv3, see LICENSE for more details</p>
+</dd>
+</dl>
+<dl class="class">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.np_tracking.</code><code class="sig-name descname">NPTracking</code><span class="sig-paren">(</span><em class="sig-param">filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pynta.model.experiment.html#pynta.model.experiment.base_experiment.BaseExperiment" title="pynta.model.experiment.base_experiment.BaseExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.base_experiment.BaseExperiment</span></code></a></p>
+<p>Experiment class for performing a nanoCET measurement.</p>
+<dl class="attribute">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.BACKGROUND_NO_CORRECTION">
+<code class="sig-name descname">BACKGROUND_NO_CORRECTION</code><em class="property"> = 0</em><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.BACKGROUND_NO_CORRECTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.BACKGROUND_SINGLE_SNAP">
+<code class="sig-name descname">BACKGROUND_SINGLE_SNAP</code><em class="property"> = 1</em><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.BACKGROUND_SINGLE_SNAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.calculate_waterfall">
+<code class="sig-name descname">calculate_waterfall</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.calculate_waterfall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.calculate_waterfall" title="Permalink to this definition">¶</a></dt>
+<dd><p>A waterfall is the product of summing together all the vertical values of an image and displaying them
+as lines on a 2D image. It is how spectrometers normally work. A waterfall can be produced either by binning the
+image in the vertical direction directly at the camera, or by doing it in software.
+The first has the advantage of speeding up the readout process. The latter has the advantage of working with any
+camera.
+This method will work either with 1D arrays or with 2D arrays and will generate a stack of lines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.check_background">
+<code class="sig-name descname">check_background</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.check_background"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.check_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the background is set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.clear_roi">
+<code class="sig-name descname">clear_roi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.clear_roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.clear_roi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears the region of interest and returns to the full frame of the camera.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_locations_queue">
+<code class="sig-name descname">empty_locations_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.empty_locations_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_locations_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empties the queue with location data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_saver_queue">
+<code class="sig-name descname">empty_saver_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.empty_saver_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.empty_saver_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Empties the queue where the data from the movie is being stored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.finalize">
+<code class="sig-name descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.finalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Needs to be overridden by child classes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.initialize_camera">
+<code class="sig-name descname">initialize_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.initialize_camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.initialize_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the camera to be used to acquire data. The information on the camera should be provided in the
+configuration file and loaded with <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_configuration()</span></code>. It will load the camera assuming
+it is located in nanoparticle_tracking/model/cameras/[model].</p>
+<div class="admonition-todo admonition" id="id8">
+<p class="admonition-title">Todo</p>
+<p>Define how to load models from outside of PyNTA. E.g. from a user-specified folder.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.link_particles">
+<code class="sig-name descname">link_particles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.link_particles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.link_particles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts linking the particles while the acquisition is in progress.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.link_particles_running">
+<em class="property">property </em><code class="sig-name descname">link_particles_running</code><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.link_particles_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.localize_particles_image">
+<code class="sig-name descname">localize_particles_image</code><span class="sig-paren">(</span><em class="sig-param">image=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.localize_particles_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.localize_particles_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Localizes particles based on trackpy. It is a convenience function in order to use the configuration parameters
+instead of manually passing them to trackpy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_image">
+<code class="sig-name descname">save_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.save_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the last acquired image. The file to which it is going to be saved is defined in the config.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_stream">
+<code class="sig-name descname">save_stream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.save_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the queue to a file continuously. This is an async function, that can be triggered before starting
+the stream. It relies on the multiprocess library. It uses a queue in order to get the data to be saved.
+In normal operation, it should be used together with <code class="docutils literal notranslate"><span class="pre">add_to_stream_queue</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_stream_running">
+<em class="property">property </em><code class="sig-name descname">save_stream_running</code><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.save_stream_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.set_roi">
+<code class="sig-name descname">set_roi</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.set_roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.set_roi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
+should be addressed on the camera model, not in this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – horizontal position for the start and end of the cropping</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – vertical position for the start and end of the cropping</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><strong>ValueError</strong></a> – if either dimension of the cropping goes out of the camera total amount of pixels</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The final cropping dimensions, it may be that the camera limits the user desires</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap">
+<code class="sig-name descname">snap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.snap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Snap a single frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap_background">
+<code class="sig-name descname">snap_background</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.snap_background"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.snap_background" title="Permalink to this definition">¶</a></dt>
+<dd><p>Snaps an image that will be stored as background.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_free_run">
+<code class="sig-name descname">start_free_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_free_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_free_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts continuous acquisition from the camera, but it is not being saved. This method is the workhorse
+of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other
+methods. In this way it is possible to continuously save to hard drive, track particles, etc.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_linking_locations">
+<code class="sig-name descname">start_linking_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_linking_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_linking_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_saving_location">
+<code class="sig-name descname">start_saving_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_saving_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_saving_location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_tracking">
+<code class="sig-name descname">start_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.start_tracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the tracking of the particles</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_free_run">
+<code class="sig-name descname">stop_free_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_free_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_free_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the free run by setting the <code class="docutils literal notranslate"><span class="pre">_stop_event</span></code>. It is basically a convenience method to avoid
+having users dealing with somewhat lower level threading options.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_link_particles">
+<code class="sig-name descname">stop_link_particles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_link_particles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_link_particles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the linking process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_linking_locations">
+<code class="sig-name descname">stop_linking_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_linking_locations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_linking_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_save_stream">
+<code class="sig-name descname">stop_save_stream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_save_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_save_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops saving the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_saving_location">
+<code class="sig-name descname">stop_saving_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_saving_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_saving_location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_tracking">
+<code class="sig-name descname">stop_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.stop_tracking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.sysexcept">
+<code class="sig-name descname">sysexcept</code><span class="sig-paren">(</span><em class="sig-param">exc_type</em>, <em class="sig-param">exc_value</em>, <em class="sig-param">exc_traceback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.sysexcept"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.sysexcept" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.temp_locations">
+<em class="property">property </em><code class="sig-name descname">temp_locations</code><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking.temp_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.saver">
+<span id="pynta-model-experiment-nano-cet-saver-module"></span><h2>pynta.model.experiment.nano_cet.saver module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.saver" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="nanoparticle-tracking-model-experiment-workersaver">
+<h3>nanoparticle_tracking.model.experiment.workerSaver<a class="headerlink" href="#nanoparticle-tracking-model-experiment-workersaver" title="Permalink to this headline">¶</a></h3>
+<p>When working with multi threading in Python it is important to define the function that will be run in a separate
+thread. workerSaver is just a function that will be moved to a separate, parallel thread to save data to disk
+without interrupting the acquisition.</p>
+<p>Since the workerSaver function will be passed to a different Process (via the <em>multiprocessing</em> package) the only
+way for it to receive data from other threads is via a Queue. The workerSaver will run continuously until it finds a
+string as the next item.</p>
+<p>To understand how the separate process is created, please refer to
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">movieSave()</span></code></p>
+<p>The general principle is</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;name.hdf5&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">metadata</span> <span class="o">=</span> <span class="n">_session</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="c1"># This prints a YAML-ready version of the session.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">workerSaver</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">metaData</span><span class="p">,</span> <span class="n">q</span><span class="p">,))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s1">&#39;Stop&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>2017</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.saver.add_to_save_queue">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.saver.</code><code class="sig-name descname">add_to_save_queue</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">queue_saver</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/saver.html#add_to_save_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.saver.add_to_save_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is a buffer between the publisher and the <code class="docutils literal notranslate"><span class="pre">save_stream</span></code> method. The idea is that in order
+to be quick (saving to disk may be slow), whatever the publisher sends will be added to a Queue. Another
+process will read from the queue and save it to disk on a separate process.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.saver.clear_queue">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.saver.</code><code class="sig-name descname">clear_queue</code><span class="sig-paren">(</span><em class="sig-param">q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/saver.html#clear_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.saver.clear_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears the queue by reading it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Params q</dt>
+<dd class="field-odd"><p>Queue to be cleaned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.saver.worker_listener">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.saver.</code><code class="sig-name descname">worker_listener</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">meta</em>, <em class="sig-param">topic</em>, <em class="sig-param">port=5555</em>, <em class="sig-param">max_memory=500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/saver.html#worker_listener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.saver.worker_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that listens on the specified port for new data and then saves it to disk. It is the same as
+<a class="reference internal" href="#pynta.model.experiment.nanoparticle_tracking.saver.worker_saver" title="pynta.model.experiment.nanoparticle_tracking.saver.worker_saver"><code class="xref py py-func docutils literal notranslate"><span class="pre">worker_saver()</span></code></a> but implementing a ZMQ socket instead of grabbing data from a queue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the path to the file to use.</p></li>
+<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Metadata. It is kept as a string in order to provide flexibility for other programs.</p></li>
+<li><p><strong>port</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Port on which to listen for publisher data</p></li>
+<li><p><strong>max_memory</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Maximum memory (in MB) to allocate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.saver.worker_saver">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.saver.</code><code class="sig-name descname">worker_saver</code><span class="sig-paren">(</span><em class="sig-param">file_path</em>, <em class="sig-param">meta</em>, <em class="sig-param">q</em>, <em class="sig-param">max_memory=500</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/saver.html#worker_saver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.saver.worker_saver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that can be run in a separate thread for continuously save data to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – the path to the file to use.</p></li>
+<li><p><strong>meta</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – Metadata. It is kept as a string in order to provide flexibility for other programs.</p></li>
+<li><p><strong>q</strong> (<em>Queue</em>) – Queue that will store all the images to be saved to disk.</p></li>
+<li><p><strong>max_memory</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – Maximum memory (in MB) to allocate</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.waterfall_worker">
+<span id="pynta-model-experiment-nano-cet-waterfall-worker-module"></span><h2>pynta.model.experiment.nano_cet.waterfall_worker module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.waterfall_worker" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="pynta.model.experiment.nanoparticle_tracking.waterfall_worker.calculate_waterfall">
+<code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.waterfall_worker.</code><code class="sig-name descname">calculate_waterfall</code><span class="sig-paren">(</span><em class="sig-param">in_queue</em>, <em class="sig-param">out_queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/waterfall_worker.html#calculate_waterfall"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.model.experiment.nanoparticle_tracking.waterfall_worker.calculate_waterfall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function for calculating the vertical binning of each frame of an image. It needs an input and output queue,
+the first one holds the images while the latter accumulates the 1D arrays. The second queue has to be consumed by another
+process, either for saving or for displaying.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_queue</strong> – </p></li>
+<li><p><strong>out_queue</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking.np_tracking">
+<span id="pynta-model-experiment-nano-cet-win-nanocet-module"></span><h2>pynta.model.experiment.nano_cet.win_nanocet module<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking.np_tracking" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3>nanoparticle_tracking.py<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>Nanoparticle tracking is a technique that allows to measure the size of very small objects. The core idea is that
+by locating objects subject to brownian motion, it is possible to reconstruct their movement, which in turn can be
+fitted to a model which depends on properties of the medium (i.e. viscosity) and on  the diameter of the particles.</p>
+<p>Nanoparticle tracking analysis (NTA) is a common name used to the entire cycle of data acquisition, localization,
+and analysis. Commercial devices such as NanoSight and ZetaView provide a closed-solution to the problem. PyNTA aims
+at providing a superior approach, allowing researchers to have real-time information on the sample studied and a
+completely transparent approach regarding algorithms used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>Aquiles Carattino &lt;<a class="reference external" href="mailto:aquiles&#37;&#52;&#48;aquicarattino&#46;com">aquiles<span>&#64;</span>aquicarattino<span>&#46;</span>com</a>&gt;</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GPLv3, see LICENSE for more details</p>
+</dd>
+</dl>
+<dl class="class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">pynta.model.experiment.nanoparticle_tracking.np_tracking.</code><code class="sig-name descname">NPTracking</code><span class="sig-paren">(</span><em class="sig-param">filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Bases: <a class="reference internal" href="pynta.model.experiment.html#pynta.model.experiment.base_experiment.BaseExperiment" title="pynta.model.experiment.base_experiment.BaseExperiment"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.model.experiment.base_experiment.BaseExperiment</span></code></a></p>
+<p>Experiment class for performing a nanoCET measurement.</p>
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">BACKGROUND_NO_CORRECTION</code><em class="property"> = 0</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="sig-name descname">BACKGROUND_SINGLE_SNAP</code><em class="property"> = 1</em></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">calculate_waterfall</code><span class="sig-paren">(</span><em class="sig-param">image</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.calculate_waterfall"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A waterfall is the product of summing together all the vertical values of an image and displaying them
+as lines on a 2D image. It is how spectrometers normally work. A waterfall can be produced either by binning the
+image in the vertical direction directly at the camera, or by doing it in software.
+The first has the advantage of speeding up the readout process. The latter has the advantage of working with any
+camera.
+This method will work either with 1D arrays or with 2D arrays and will generate a stack of lines.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">check_background</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.check_background"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Checks whether the background is set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">clear_roi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.clear_roi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Clears the region of interest and returns to the full frame of the camera.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">empty_locations_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.empty_locations_queue"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Empties the queue with location data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">empty_saver_queue</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.empty_saver_queue"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Empties the queue where the data from the movie is being stored.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">finalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.finalize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Needs to be overridden by child classes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">initialize_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.initialize_camera"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Initializes the camera to be used to acquire data. The information on the camera should be provided in the
+configuration file and loaded with <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_configuration()</span></code>. It will load the camera assuming
+it is located in nanoparticle_tracking/model/cameras/[model].</p>
+<div class="admonition-todo admonition" id="id10">
+<p class="admonition-title">Todo</p>
+<p>Define how to load models from outside of PyNTA. E.g. from a user-specified folder.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">link_particles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.link_particles"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Starts linking the particles while the acquisition is in progress.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">link_particles_running</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">localize_particles_image</code><span class="sig-paren">(</span><em class="sig-param">image=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.localize_particles_image"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Localizes particles based on trackpy. It is a convenience function in order to use the configuration parameters
+instead of manually passing them to trackpy.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">save_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.save_image"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Saves the last acquired image. The file to which it is going to be saved is defined in the config.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">save_stream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.save_stream"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Saves the queue to a file continuously. This is an async function, that can be triggered before starting
+the stream. It relies on the multiprocess library. It uses a queue in order to get the data to be saved.
+In normal operation, it should be used together with <code class="docutils literal notranslate"><span class="pre">add_to_stream_queue</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">save_stream_running</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">set_roi</code><span class="sig-paren">(</span><em class="sig-param">X</em>, <em class="sig-param">Y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.set_roi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
+should be addressed on the camera model, not in this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – horizontal position for the start and end of the cropping</p></li>
+<li><p><strong>Y</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – vertical position for the start and end of the cropping</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><strong>ValueError</strong></a> – if either dimension of the cropping goes out of the camera total amount of pixels</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The final cropping dimensions, it may be that the camera limits the user desires</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">snap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.snap"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Snap a single frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">snap_background</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.snap_background"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Snaps an image that will be stored as background.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">start_free_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_free_run"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Starts continuous acquisition from the camera, but it is not being saved. This method is the workhorse
+of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other
+methods. In this way it is possible to continuously save to hard drive, track particles, etc.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">start_linking_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_linking_locations"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">start_saving_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_saving_location"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">start_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.start_tracking"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Starts the tracking of the particles</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_free_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_free_run"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Stops the free run by setting the <code class="docutils literal notranslate"><span class="pre">_stop_event</span></code>. It is basically a convenience method to avoid
+having users dealing with somewhat lower level threading options.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_link_particles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_link_particles"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Stops the linking process.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_linking_locations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_linking_locations"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_save_stream</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_save_stream"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Stops saving the stream.</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_saving_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_saving_location"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">stop_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.stop_tracking"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">sysexcept</code><span class="sig-paren">(</span><em class="sig-param">exc_type</em>, <em class="sig-param">exc_value</em>, <em class="sig-param">exc_traceback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/model/experiment/nanoparticle_tracking/np_tracking.html#NPTracking.sysexcept"><span class="viewcode-link">[source]</span></a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt>
+<em class="property">property </em><code class="sig-name descname">temp_locations</code></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.model.experiment.nanoparticle_tracking">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.model.experiment.nanoparticle_tracking" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pynta.tests.html" class="btn btn-neutral float-right" title="pynta.tests package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pynta.model.experiment.html" class="btn btn-neutral float-left" title="pynta.model.experiment package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.old.Monitor.popOut &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.old.Monitor.popOut</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.view.GUI.old.Monitor.popOut</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    UUTrack.View.Monitor.popOut.py</span>
+<span class="sd">    ===================================</span>
+<span class="sd">    Pop-out window that can show predefined messages</span>
+
+<span class="sd">    .. sectionauthor:: Sanli Faez &lt;s.faez@uu.nl&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pyqtgraph.Qt</span> <span class="k">import</span> <span class="n">QtGui</span>
+
+<div class="viewcode-block" id="popOutWindow"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.popOut.popOutWindow">[docs]</a><span class="k">class</span> <span class="nc">popOutWindow</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple window that contains the message text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">QtGui</span><span class="o">.</span><span class="n">QWidget</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1"># General layout of the widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Displays a textbox to the user with either information or a simple log.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QTextEdit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupStyles</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupMessage</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="popOutWindow.setupStyles"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupStyles">[docs]</a>    <span class="k">def</span> <span class="nf">setupStyles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Setups three styles for the bars: Red, Yellow and Default. It is meant to be more graphical to the user regarding</span>
+<span class="sd">        the availability of resources.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RED_STYLE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                QProgressBar{</span>
+<span class="s2">                    border: 2px solid grey;</span>
+<span class="s2">                    border-radius: 5px;</span>
+<span class="s2">                    text-align: center</span>
+<span class="s2">                }</span>
+
+<span class="s2">                QProgressBar::chunk {</span>
+<span class="s2">                    background-color: red;</span>
+<span class="s2">                    width: 10px;</span>
+<span class="s2">                    margin: 1px;</span>
+<span class="s2">                }</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_STYLE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                QProgressBar{</span>
+<span class="s2">                    border: 2px solid grey;</span>
+<span class="s2">                    border-radius: 5px;</span>
+<span class="s2">                    text-align: center</span>
+<span class="s2">                }</span>
+
+<span class="s2">                QProgressBar::chunk {</span>
+<span class="s2">                    background-color: green;</span>
+<span class="s2">                    width: 10px;</span>
+<span class="s2">                    margin: 1px;</span>
+<span class="s2">                }</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">YELLOW_STYLE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                QProgressBar{</span>
+<span class="s2">                    border: 2px solid grey;</span>
+<span class="s2">                    border-radius: 5px;</span>
+<span class="s2">                    text-align: center</span>
+<span class="s2">                }</span>
+
+<span class="s2">                QProgressBar::chunk {</span>
+<span class="s2">                    background-color: yellow;</span>
+<span class="s2">                    width: 10px;</span>
+<span class="s2">                    margin: 1px;</span>
+<span class="s2">                }</span>
+<span class="s2">                &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="popOutWindow.setupMessage"><a class="viewcode-back" href="../../../../../../developers/pynta.view.GUI.old.Monitor.html#pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupMessage">[docs]</a>    <span class="k">def</span> <span class="nf">setupMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts the message box with a title that will always be displayed.&quot;&quot;&quot;</span>
+        <span class="n">messagetitle</span> <span class="o">=</span> <span class="s2">&quot;UUTrack Assistant&quot;</span>
+        <span class="n">shortcuts</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    F1, Show cheatsheet&lt;br&gt;</span>
+<span class="s2">                    F5, Snap image&lt;br&gt;</span>
+<span class="s2">                    F6, Continuous run&lt;br&gt;</span>
+<span class="s2">                    Alt+mouse: Select line &lt;br&gt;</span>
+<span class="s2">                    Ctrl+mouse: Crosshair &lt;br&gt;</span>
+<span class="s2">                    Ctrl+B: Toggle buffering&lt;br&gt;</span>
+<span class="s2">                    Ctrl+G: Toggle background subtraction&lt;br&gt;</span>
+<span class="s2">                    Ctrl+F: Empty buffer&lt;br&gt;</span>
+<span class="s2">                    Ctrl+C: Start tracking&lt;br&gt;</span>
+<span class="s2">                    Ctrl+V: Stop tracking&lt;br&gt;</span>
+<span class="s2">                    Ctrl+M: Autosave on&lt;br&gt;</span>
+<span class="s2">                    Ctrl+N: Autosave off&lt;br&gt;</span>
+<span class="s2">                    Ctrl+S: Save image&lt;br&gt;</span>
+<span class="s2">                    Ctrl+W: Start waterfall&lt;br&gt;</span>
+<span class="s2">                    Ctrl+Q: Exit application&lt;br&gt;</span>
+<span class="s2">                    Ctrl+Shift+W: Save waterfall data&lt;br&gt;</span>
+<span class="s2">                    Ctrl+Shift+T: Save trajectory&lt;br&gt;</span>
+<span class="s2">                    &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">setHtml</span><span class="p">(</span><span class="s1">&#39;&lt;h1&gt;</span><span class="si">%s</span><span class="s1">&lt;/h1&gt;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">messagetitle</span><span class="p">,</span> <span class="n">shortcuts</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

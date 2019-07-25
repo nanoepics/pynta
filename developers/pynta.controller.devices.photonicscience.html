@@ -1,0 +1,614 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.controller.devices.photonicscience package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>pynta.controller.devices.photonicscience package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.controller.devices.photonicscience.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-controller-devices-photonicscience-package">
+<h1>pynta.controller.devices.photonicscience package<a class="headerlink" href="#pynta-controller-devices-photonicscience-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.controller.devices.photonicscience.scmoscam">
+<span id="pynta-controller-devices-photonicscience-scmoscam-module"></span><h2>pynta.controller.devices.photonicscience.scmoscam module<a class="headerlink" href="#module-pynta.controller.devices.photonicscience.scmoscam" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="scmoscam-py">
+<h3>scmoscam.py<a class="headerlink" href="#scmoscam-py" title="Permalink to this headline">¶</a></h3>
+<p>Driver for Photonic Science Cameras (Pleora GEV). This driver was originally written by Perceval Guillou
+&lt;<a class="reference external" href="mailto:perceval&#37;&#52;&#48;photonic-science&#46;com">perceval<span>&#64;</span>photonic-science<span>&#46;</span>com</a>&gt;, in Py2 and has been successfully tested with scmoscontrol.dll SCMOS Pleora (GEV)
+control dll (x86 )v5.6.0.0 (date modified 10/2/2013)</p>
+<p>This version copyright: Sanli Faez &lt;<a class="reference external" href="mailto:s&#46;faez&#37;&#52;&#48;uu&#46;nl">s<span>&#46;</span>faez<span>&#64;</span>uu<span>&#46;</span>nl</a>&gt;</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>The coding style is not in line with the rest of PyNTA. The GEVSMOS class can be cleaned up and documented</p>
+</div>
+<dl class="class">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.photonicscience.scmoscam.</code><code class="sig-name descname">GEVSCMOS</code><span class="sig-paren">(</span><em class="sig-param">cwd_path</em>, <em class="sig-param">name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AbortSnap">
+<code class="sig-name descname">AbortSnap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.AbortSnap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AbortSnap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AutoBinningFilter">
+<code class="sig-name descname">AutoBinningFilter</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.AutoBinningFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AutoBinningFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Close">
+<code class="sig-name descname">Close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Demangle">
+<code class="sig-name descname">Demangle</code><span class="sig-paren">(</span><em class="sig-param">image_pointer</em>, <em class="sig-param">Nx</em>, <em class="sig-param">Ny</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Demangle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Demangle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableAutoLevel">
+<code class="sig-name descname">EnableAutoLevel</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableAutoLevel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableAutoLevel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBestFit">
+<code class="sig-name descname">EnableBestFit</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableBestFit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBestFit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBinningFilter">
+<code class="sig-name descname">EnableBinningFilter</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableBinningFilter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBinningFilter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBrightPixel">
+<code class="sig-name descname">EnableBrightPixel</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableBrightPixel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBrightPixel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableClip">
+<code class="sig-name descname">EnableClip</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableClip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableClip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableFlatField">
+<code class="sig-name descname">EnableFlatField</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableFlatField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableFlatField" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableGamma">
+<code class="sig-name descname">EnableGamma</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableGamma"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableGamma" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableOffset">
+<code class="sig-name descname">EnableOffset</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableOffset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableRemapping">
+<code class="sig-name descname">EnableRemapping</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableRemapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableRemapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSharpening">
+<code class="sig-name descname">EnableSharpening</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableSharpening"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSharpening" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSmooth">
+<code class="sig-name descname">EnableSmooth</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableSmooth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSmooth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableStreaming">
+<code class="sig-name descname">EnableStreaming</code><span class="sig-paren">(</span><em class="sig-param">enable</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.EnableStreaming"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableStreaming" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.FreeSequence">
+<code class="sig-name descname">FreeSequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.FreeSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.FreeSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLL">
+<code class="sig-name descname">GetDLL</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetDLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLLName">
+<code class="sig-name descname">GetDLLName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetDLLName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLLName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImage">
+<code class="sig-name descname">GetImage</code><span class="sig-paren">(</span><em class="sig-param">imp=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImagePointer">
+<code class="sig-name descname">GetImagePointer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetImagePointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImagePointer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetMode">
+<code class="sig-name descname">GetMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetName">
+<code class="sig-name descname">GetName</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetOptions">
+<code class="sig-name descname">GetOptions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetPedestal">
+<code class="sig-name descname">GetPedestal</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetPedestal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetPedestal" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRawImage">
+<code class="sig-name descname">GetRawImage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetRawImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRawImage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRemapSize">
+<code class="sig-name descname">GetRemapSize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetRemapSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRemapSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSequencePointer">
+<code class="sig-name descname">GetSequencePointer</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetSequencePointer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSequencePointer" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSize">
+<code class="sig-name descname">GetSize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSizeMax">
+<code class="sig-name descname">GetSizeMax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetSizeMax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSizeMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetState">
+<code class="sig-name descname">GetState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetState" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetStatus">
+<code class="sig-name descname">GetStatus</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetStatus" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetTemperature">
+<code class="sig-name descname">GetTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.GetTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetTemperature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Has8bitGainModes">
+<code class="sig-name descname">Has8bitGainModes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Has8bitGainModes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Has8bitGainModes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasBinning">
+<code class="sig-name descname">HasBinning</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.HasBinning"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasBinning" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasClockSpeedLimit">
+<code class="sig-name descname">HasClockSpeedLimit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.HasClockSpeedLimit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasClockSpeedLimit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasHPMapping">
+<code class="sig-name descname">HasHPMapping</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.HasHPMapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasHPMapping" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasIntensifier">
+<code class="sig-name descname">HasIntensifier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.HasIntensifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasIntensifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasTemperature">
+<code class="sig-name descname">HasTemperature</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.HasTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasTemperature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitFunctions">
+<code class="sig-name descname">InitFunctions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.InitFunctions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitFunctions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitSequence">
+<code class="sig-name descname">InitSequence</code><span class="sig-paren">(</span><em class="sig-param">imnum</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.InitSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsFlipped">
+<code class="sig-name descname">IsFlipped</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.IsFlipped"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsFlipped" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsInCamCor">
+<code class="sig-name descname">IsInCamCor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.IsInCamCor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsInCamCor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsIntensifier">
+<code class="sig-name descname">IsIntensifier</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.IsIntensifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsIntensifier" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.LoadCamDLL">
+<code class="sig-name descname">LoadCamDLL</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.LoadCamDLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.LoadCamDLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.MakeFlatField">
+<code class="sig-name descname">MakeFlatField</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.MakeFlatField"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.MakeFlatField" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Open">
+<code class="sig-name descname">Open</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Open" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.OpenMap">
+<code class="sig-name descname">OpenMap</code><span class="sig-paren">(</span><em class="sig-param">file_name='distortion.map'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.OpenMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.OpenMap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Remap">
+<code class="sig-name descname">Remap</code><span class="sig-paren">(</span><em class="sig-param">image_pointer</em>, <em class="sig-param">Nx</em>, <em class="sig-param">Ny</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Remap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Remap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.ResetOptions">
+<code class="sig-name descname">ResetOptions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.ResetOptions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.ResetOptions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SaveSequence">
+<code class="sig-name descname">SaveSequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SaveSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SaveSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SelectIportDevice">
+<code class="sig-name descname">SelectIportDevice</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SelectIportDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SelectIportDevice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCMaxExp">
+<code class="sig-name descname">SetALCMaxExp</code><span class="sig-paren">(</span><em class="sig-param">maxexp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetALCMaxExp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCMaxExp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCWin">
+<code class="sig-name descname">SetALCWin</code><span class="sig-paren">(</span><em class="sig-param">l</em>, <em class="sig-param">t</em>, <em class="sig-param">r</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetALCWin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCWin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetBFPeek">
+<code class="sig-name descname">SetBFPeek</code><span class="sig-paren">(</span><em class="sig-param">peek</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetBFPeek"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetBFPeek" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetChipGain">
+<code class="sig-name descname">SetChipGain</code><span class="sig-paren">(</span><em class="sig-param">gain</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetChipGain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetChipGain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetClockSpeed">
+<code class="sig-name descname">SetClockSpeed</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetClockSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetClockSpeed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetExposure">
+<code class="sig-name descname">SetExposure</code><span class="sig-paren">(</span><em class="sig-param">expo</em>, <em class="sig-param">unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetExposure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetExposure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlatAverage">
+<code class="sig-name descname">SetFlatAverage</code><span class="sig-paren">(</span><em class="sig-param">average_number</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetFlatAverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlatAverage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlickerMode">
+<code class="sig-name descname">SetFlickerMode</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetFlickerMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlickerMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGainMode">
+<code class="sig-name descname">SetGainMode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetGainMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGainMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaBright">
+<code class="sig-name descname">SetGammaBright</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetGammaBright"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaBright" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaPeak">
+<code class="sig-name descname">SetGammaPeak</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetGammaPeak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaPeak" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIFDelay">
+<code class="sig-name descname">SetIFDelay</code><span class="sig-paren">(</span><em class="sig-param">delay</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetIFDelay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIFDelay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIntensifierGain">
+<code class="sig-name descname">SetIntensifierGain</code><span class="sig-paren">(</span><em class="sig-param">gain</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetIntensifierGain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIntensifierGain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetPowerSavingMode">
+<code class="sig-name descname">SetPowerSavingMode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetPowerSavingMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetPowerSavingMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSoftBin">
+<code class="sig-name descname">SetSoftBin</code><span class="sig-paren">(</span><em class="sig-param">Sx</em>, <em class="sig-param">Sy</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetSoftBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSoftBin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSubArea">
+<code class="sig-name descname">SetSubArea</code><span class="sig-paren">(</span><em class="sig-param">left</em>, <em class="sig-param">top</em>, <em class="sig-param">right</em>, <em class="sig-param">bottom</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetSubArea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSubArea" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTemperature">
+<code class="sig-name descname">SetTemperature</code><span class="sig-paren">(</span><em class="sig-param">temp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetTemperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTemperature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTrigger">
+<code class="sig-name descname">SetTrigger</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetTrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTrigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetVideoGain">
+<code class="sig-name descname">SetVideoGain</code><span class="sig-paren">(</span><em class="sig-param">gain</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SetVideoGain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetVideoGain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Snap">
+<code class="sig-name descname">Snap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.Snap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Snap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapAndReturn">
+<code class="sig-name descname">SnapAndReturn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SnapAndReturn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapAndReturn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapSequence">
+<code class="sig-name descname">SnapSequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SnapSequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapSequence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SoftBinImage">
+<code class="sig-name descname">SoftBinImage</code><span class="sig-paren">(</span><em class="sig-param">image_pointer</em>, <em class="sig-param">Nx</em>, <em class="sig-param">Ny</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.SoftBinImage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SoftBinImage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UnloadCamDLL">
+<code class="sig-name descname">UnloadCamDLL</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.UnloadCamDLL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UnloadCamDLL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSize">
+<code class="sig-name descname">UpdateSize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.UpdateSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSizeMax">
+<code class="sig-name descname">UpdateSizeMax</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/photonicscience/scmoscam.html#GEVSCMOS.UpdateSizeMax"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSizeMax" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.controller.devices.photonicscience">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.controller.devices.photonicscience" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

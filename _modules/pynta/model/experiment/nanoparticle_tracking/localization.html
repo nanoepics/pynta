@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.experiment.nanoparticle_tracking.localization &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.model.experiment.nanoparticle_tracking.localization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.model.experiment.nanoparticle_tracking.localization</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Localization Routines</span>
+<span class="sd">=====================</span>
+<span class="sd">Tracking particles is a relatively easy routine. PyNTA uses trackpy to analyse every frame that is generated. However,</span>
+<span class="sd">linking localizations in order to build a trace is not trivial, since it implies preserving in memory the previous</span>
+<span class="sd">locations. The main idea of these routines is that a main object :class:`~LocateParticles` holds the information of</span>
+<span class="sd">the processes running. Moreover, there is a combination of threads and processes depending on the expected load.</span>
+
+<span class="sd">It has to be noted that Windows has a peculiar way of dealing with new processes that prevents us from using methods,</span>
+<span class="sd">but instead we are forced to use functions. This is very limiting but couldn&#39;t find a way around yet.</span>
+
+<span class="sd">The core idea is that the localization uses the data broadcasted by :class:`~nanoparticle_tracking.model.experiment.publisher.Publisher`</span>
+<span class="sd">in order to collect new frames, or save localizations to disk. It uses the</span>
+<span class="sd">:class:`~nanoparticle_tracking.model.experiment.subscriber.Subscriber` in order to listen for the new data, and in turn publishes it</span>
+<span class="sd">with the Publisher.</span>
+
+<span class="sd">:copyright:  Aquiles Carattino &lt;aquiles@aquicarattino.com&gt;</span>
+<span class="sd">:license: GPLv3, see LICENSE for more details</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">trackpy</span> <span class="k">as</span> <span class="nn">tp</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span><span class="p">,</span> <span class="n">time</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">stats</span>
+<span class="kn">from</span> <span class="nn">trackpy.linking</span> <span class="k">import</span> <span class="n">Linker</span>
+
+<span class="kn">from</span> <span class="nn">pynta</span> <span class="k">import</span> <span class="n">general_stop_event</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.decorators</span> <span class="k">import</span> <span class="n">make_async_thread</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.nanoparticle_tracking.exceptions</span> <span class="k">import</span> <span class="n">DiameterNotDefined</span><span class="p">,</span> <span class="n">LinkException</span>
+<span class="kn">from</span> <span class="nn">pynta.model.experiment.subscriber</span> <span class="k">import</span> <span class="n">subscribe</span>
+<span class="kn">from</span> <span class="nn">pynta.util</span> <span class="k">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="LocateParticles"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles">[docs]</a><span class="k">class</span> <span class="nc">LocateParticles</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Convenience class to keep track of processes and threads related to the localization of particles.</span>
+<span class="sd">    The idea was to make it more robust when stopping processes and to give a common interface to the experiment in</span>
+<span class="sd">     case radical changes are implemented. For example, changing tracking or linking algorithms, etc.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">publisher</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate_links_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span> <span class="o">=</span> <span class="n">publisher</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_event</span> <span class="o">=</span> <span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">particle_ids</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculating_histograms</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_values</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initialized locate particles&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LocateParticles.start_tracking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topic</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts a process that listens for frames on a specific topic. It uses the function</span>
+<span class="sd">        :func:`~calculate_locations`. The process is stored in ``self._trackings_process`` and is automatically started.</span>
+
+<span class="sd">        :param str topic: Topic in which to listen for new frames.</span>
+
+<span class="sd">        .. TODO:: Implement a lock to prevent more than one process to start</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started tracking&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">calculate_locations</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">_queue</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;locate&#39;</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.stop_tracking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops the tracking process by setting a particular event.</span>
+
+<span class="sd">        .. TODO:: This is a hard stop, i.e., tracking will stop immediately. Perhaps it would be wise to clear the queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tracking_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.start_saving"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_saving">[docs]</a>    <span class="k">def</span> <span class="nf">start_saving</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">meta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts a process for saving localizations to an HDF5 file. It uses the function :func:`~save_locations`.</span>
+
+<span class="sd">        :param str file_path: Full path to the location where to save the data</span>
+<span class="sd">        :param dict meta: Metadata as a dictionary. It will be serialized with json</span>
+
+<span class="sd">        .. TODO:: Implement a lock to prevent a second process starting</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">save_locations</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">file_path</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_saving_event</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.stop_saving"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_saving">[docs]</a>    <span class="k">def</span> <span class="nf">stop_saving</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops the saving process.</span>
+
+<span class="sd">        .. TODO:: Implement a way of stop the saving after saving everything and not immediately.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_saving_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.start_linking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.start_linking">[docs]</a>    <span class="k">def</span> <span class="nf">start_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts a process to link the localizations of particles. It publishes the track information as a table,</span>
+<span class="sd">        with the frame and particle number appended to the rightmost columns respectively. This particular task may be</span>
+<span class="sd">        very time consuming.</span>
+
+<span class="sd">        .. warning:: Linking tracks can block a process if there are too many particles with a very large search radius.</span>
+<span class="sd">            If linking is too slow consider saving the localizations and link them afterwards.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started the linking process&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_process</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">link_locations</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="s1">&#39;locations&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linking_event</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">_queue</span><span class="p">],</span>
+            <span class="n">kwargs</span><span class="o">=</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;link&#39;</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_process</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accumulate_links</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.accumulate_links"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.accumulate_links">[docs]</a>    <span class="nd">@make_async_thread</span>
+    <span class="k">def</span> <span class="nf">accumulate_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Asynchronous method to store the links in this class. It looked like a good idea to keep this information in</span>
+<span class="sd">        a single location, regardless of whether another process is listening on the topic. This in principle can be</span>
+<span class="sd">        used to analyse data retrospectively.</span>
+
+<span class="sd">        .. todo:: Still needs to clear the memory after several calls. Need to fit better in the architecture of the</span>
+<span class="sd">            program</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate_links_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">socket</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="s1">&#39;particle_links&#39;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate_links_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">general_stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">break</span>
+
+            <span class="n">topic</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_pyobj</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="LocateParticles.stop_accumulate_links"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_accumulate_links">[docs]</a>    <span class="k">def</span> <span class="nf">stop_accumulate_links</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulate_links_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.calculate_histogram"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.calculate_histogram">[docs]</a>    <span class="nd">@make_async_thread</span>
+    <span class="k">def</span> <span class="nf">calculate_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts a new thread to calculate the histogram of fit-parameters based on the mean-squared displacement of</span>
+<span class="sd">        individual particles. It publishes the data on topic `histogram`.</span>
+
+<span class="sd">        .. warning:: This method is incredibly expensive. Since it runs on a thread it can block other pieces of code,</span>
+<span class="sd">        especially the GUI, which runs on the same process.</span>
+
+<span class="sd">        .. TODO:: The histogram loops over all the particles. It would be better to skeep particles for which there is</span>
+<span class="sd">            no new data</span>
+
+<span class="sd">        .. TODO:: Make this method able to run on a separate process. So far is not possible because it relies on data</span>
+<span class="sd">            stored on the class itself (`self.locations`).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculating_histograms</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">filter_stubs</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;min_traj_length&#39;</span><span class="p">])</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[((</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;min_mass&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;max_size&#39;</span><span class="p">])</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;ecc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;max_ecc&#39;</span><span class="p">]))]</span>
+        <span class="n">im</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">imsd</span><span class="p">(</span><span class="n">t2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;um_pixel&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;fps&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_values</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pcle</span> <span class="ow">in</span> <span class="n">im</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">general_stop_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                <span class="k">break</span>
+
+            <span class="n">data</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">pcle</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">)]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">val</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">histogram_values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">])</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculating_histograms</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;histogram&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">histogram_values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="LocateParticles.relevant_tracks"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.relevant_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">relevant_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the relevant tracks as filtered by length, eccentricity, size and mass. This step needs careful</span>
+<span class="sd">        consideration and should definitely be used in post-processing or once the parameters have been validated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">locations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">filter_stubs</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;min_traj_length&#39;</span><span class="p">])</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="n">t1</span><span class="p">[((</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;mass&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;min_mass&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;max_size&#39;</span><span class="p">])</span> <span class="o">&amp;</span>
+                 <span class="p">(</span><span class="n">t1</span><span class="p">[</span><span class="s1">&#39;ecc&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;max_ecc&#39;</span><span class="p">]))]</span>
+        <span class="k">return</span> <span class="n">t2</span></div>
+
+<div class="viewcode-block" id="LocateParticles.stop_linking"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.stop_linking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_linking_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="LocateParticles.finalize"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.LocateParticles.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Stops all the processes and threads. It should be invoked when finishing a measurement or when stopping an</span>
+<span class="sd">        acquisition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_saving</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_tracking</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_linking</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_accumulate_links</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">thread</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Finalizing a running thread: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">thread</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_tracking</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_saving</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="calculate_locations"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations">[docs]</a><span class="k">def</span> <span class="nf">calculate_locations</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">publisher_queue</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;diameter&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DiameterNotDefined</span><span class="p">(</span><span class="s1">&#39;A diameter is mandatory for locating particles&#39;</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+        <span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_pyobj</span><span class="p">()</span>  <span class="c1"># flags=0, copy=True, track=False)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># image[0] is the timestamp of the frame</span>
+        <span class="c1"># t0 = time()</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># loc_time = time()-t0</span>
+        <span class="n">publisher_queue</span><span class="o">.</span><span class="n">put</span><span class="p">({</span><span class="s1">&#39;topic&#39;</span><span class="p">:</span> <span class="s1">&#39;locations&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">locations</span><span class="p">})</span></div>
+        <span class="c1"># publisher_queue.put({&#39;topic&#39;: &#39;locations_time&#39;, &#39;data&#39;: [loc_time, len(locations)]})</span>
+
+
+<div class="viewcode-block" id="save_locations"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.save_locations">[docs]</a><span class="k">def</span> <span class="nf">save_locations</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">meta</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;locations&#39;</span><span class="p">):</span>
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;metadata&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">topic</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_pyobj</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># The first values is the number of rows, h5py uses the opposite notation</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dset</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;locations&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">maxshape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">x</span><span class="o">+</span><span class="n">last_x</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">dset</span><span class="p">[</span><span class="n">last_x</span><span class="p">:</span><span class="n">last_x</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">dset</span><span class="p">[</span><span class="n">last_x</span><span class="p">:</span><span class="n">last_x</span><span class="o">+</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">last_x</span> <span class="o">+=</span> <span class="n">x</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="calculate_locations_image"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.calculate_locations_image">[docs]</a><span class="k">def</span> <span class="nf">calculate_locations_image</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">publisher_queue</span><span class="p">,</span> <span class="n">locations_queue</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Calculates the positions of the particles on an image. It used the trackpy package, which may not be</span>
+<span class="sd">    installed by default.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;diameter&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">DiameterNotDefined</span><span class="p">(</span><span class="s1">&#39;A diameter is mandatory for locating particles&#39;</span><span class="p">)</span>
+
+    <span class="n">diameter</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;diameter&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;diameter&#39;</span><span class="p">]</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># image[0] is the timestamp of the frame</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Calculating positions on image&#39;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Calculating positions with trackpy&#39;</span><span class="p">)</span>
+    <span class="n">locations</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">diameter</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1"> locations&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">locations</span><span class="p">)))</span>
+    <span class="n">publisher_queue</span><span class="o">.</span><span class="n">put</span><span class="p">({</span><span class="s1">&#39;topic&#39;</span><span class="p">:</span> <span class="s1">&#39;trackpy_locations&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">locations</span><span class="p">})</span>
+    <span class="n">locations_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="link_locations"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.link_locations">[docs]</a><span class="k">def</span> <span class="nf">link_locations</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">publisher_queue</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="s1">&#39;search_range&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">LinkException</span><span class="p">(</span><span class="s1">&#39;Search Range must be specified&#39;</span><span class="p">)</span>
+
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="n">topic</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># First frame</span>
+    <span class="n">linker</span> <span class="o">=</span> <span class="n">Linker</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+        <span class="n">topic</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_string</span><span class="p">()</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">recv_pyobj</span><span class="p">()</span>
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">locations</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">linker</span><span class="o">.</span><span class="n">init_level</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">linker</span><span class="o">.</span><span class="n">next_level</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;particle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">linker</span><span class="o">.</span><span class="n">particle_ids</span>
+        <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;frame&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="n">publisher_queue</span><span class="o">.</span><span class="n">put</span><span class="p">({</span><span class="s1">&#39;topic&#39;</span><span class="p">:</span> <span class="s1">&#39;particle_links&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">locations</span><span class="p">,</span> <span class="n">linker</span><span class="o">.</span><span class="n">particle_ids</span><span class="p">]})</span></div>
+
+
+<div class="viewcode-block" id="add_linking_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.add_linking_queue">[docs]</a><span class="k">def</span> <span class="nf">add_linking_queue</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Adding data frame to linking queue&#39;</span><span class="p">)</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="link_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.link_queue">[docs]</a><span class="k">def</span> <span class="nf">link_queue</span><span class="p">(</span><span class="n">locations_queue</span><span class="p">,</span> <span class="n">publisher_queue</span><span class="p">,</span> <span class="n">links_queue</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Links the locations of particles from a location queue.</span>
+<span class="sd">    It is a reimplementation of the link_iter of trackpy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Starting to create trajectory links from queue&#39;</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># First frame</span>
+    <span class="n">search_range</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;search_range&#39;</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;search_range&#39;</span><span class="p">]</span>
+    <span class="n">linker</span> <span class="o">=</span> <span class="n">Linker</span><span class="p">(</span><span class="n">search_range</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">locations_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">or</span> <span class="n">locations_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">locations</span> <span class="o">=</span> <span class="n">locations_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">locations</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got string on coordinates&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">locations</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]))</span><span class="o">.</span><span class="n">T</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;First set of coordinates&#39;</span><span class="p">)</span>
+                <span class="n">linker</span><span class="o">.</span><span class="n">init_level</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Processing frame </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="n">linker</span><span class="o">.</span><span class="n">next_level</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Frame </span><span class="si">{0}</span><span class="s2">: </span><span class="si">{1}</span><span class="s2"> trajectories present.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">linker</span><span class="o">.</span><span class="n">particle_ids</span><span class="p">)))</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;particle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">linker</span><span class="o">.</span><span class="n">particle_ids</span>
+            <span class="n">locations</span><span class="p">[</span><span class="s1">&#39;frame&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">publisher_queue</span><span class="o">.</span><span class="n">put</span><span class="p">({</span><span class="s1">&#39;topic&#39;</span><span class="p">:</span> <span class="s1">&#39;particle_links&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">locations</span><span class="p">,</span> <span class="n">linker</span><span class="o">.</span><span class="n">particle_ids</span><span class="p">]})</span>
+            <span class="n">links_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Stopping link queue trajectories&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="add_links_to_queue"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.add_links_to_queue">[docs]</a><span class="k">def</span> <span class="nf">add_links_to_queue</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_histogram_sizes"><a class="viewcode-back" href="../../../../../developers/pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.localization.calculate_histogram_sizes">[docs]</a><span class="k">def</span> <span class="nf">calculate_histogram_sizes</span><span class="p">(</span><span class="n">tracks_queue</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">out_queue</span><span class="p">):</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">][</span><span class="s1">&#39;process&#39;</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">()</span>
+    <span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">tracks_queue</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">or</span> <span class="n">tracks_queue</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">tracks_queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># t1 = tp.filter_stubs(df, params[&#39;min_traj_length&#39;])</span>
+            <span class="c1"># print(t1.head())</span>
+            <span class="c1"># t2 = t1[((t1[&#39;mass&#39;] &gt; params[&#39;min_mass&#39;]) &amp; (t1[&#39;size&#39;] &lt; params[&#39;max_size&#39;]) &amp;</span>
+            <span class="c1">#          (t1[&#39;ecc&#39;] &lt; params[&#39;max_ecc&#39;]))]</span>
+            <span class="c1"># print(t2.head())</span>
+            <span class="c1"># t2 = t1</span>
+            <span class="c1"># d = tp.compute_drift(t1)</span>
+            <span class="c1"># tm = tp.subtract_drift(t2.copy(), d)</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">imsd</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">][</span><span class="s1">&#39;process&#39;</span><span class="p">][</span><span class="s1">&#39;um_pixel&#39;</span><span class="p">],</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;camera&#39;</span><span class="p">][</span><span class="s1">&#39;fps&#39;</span><span class="p">])</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pcle</span> <span class="ow">in</span> <span class="n">im</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">im</span><span class="p">[</span><span class="n">pcle</span><span class="p">]</span>
+                <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">])</span>
+
+            <span class="n">out_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
+
+        <span class="c1"># if len(df) &gt; 100:</span>
+        <span class="c1">#     break</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

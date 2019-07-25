@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.camera_viewer_widget &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.camera_viewer_widget</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.view.GUI.camera_viewer_widget</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pyqtgraph</span> <span class="k">as</span> <span class="nn">pg</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">pyqtSignal</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QAction</span>
+<span class="kn">from</span> <span class="nn">pyqtgraph</span> <span class="k">import</span> <span class="n">GraphicsLayoutWidget</span>
+
+
+<div class="viewcode-block" id="CameraViewerWidget"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget">[docs]</a><span class="k">class</span> <span class="nc">CameraViewerWidget</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Widget for holding the images generated by the camera.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">specialTask</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">stopSpecialTask</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">)</span>
+        <span class="c1"># General layout of the widget to hold an image and a histogram</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Settings for the image</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span> <span class="o">=</span> <span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewport</span><span class="o">.</span><span class="n">addViewBox</span><span class="p">(</span><span class="n">lockAspect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">enableMenu</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">autoScale</span> <span class="o">=</span> <span class="n">QAction</span><span class="p">(</span><span class="s2">&quot;Auto Range&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">menu</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autoScale</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">do_auto_scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">autoScale</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">img</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageItem</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">(</span><span class="n">pen</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">marker</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imv</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">ImageView</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">,</span> <span class="n">imageItem</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="p">)</span>
+
+        <span class="c1"># Add everything to the widget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">showCrosshair</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">showCrossCut</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rois</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius_circle</span> <span class="o">=</span> <span class="mi">10</span> <span class="c1"># The radius to draw around particles</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Initial ROI corner for the camera</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_image</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="CameraViewerWidget.setup_roi_lines"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.setup_roi_lines">[docs]</a>    <span class="k">def</span> <span class="nf">setup_roi_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets up the ROI lines surrounding the image.</span>
+<span class="sd">        </span>
+<span class="sd">        :param list max_size: List containing the maximum size of the image to avoid ROIs bigger than the CCD.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline1</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hoverPen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s2">&quot;FF0&quot;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline2</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hoverPen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s2">&quot;FF0&quot;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline1</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hoverPen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s2">&quot;FF0&quot;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline2</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hoverPen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s2">&quot;FF0&quot;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline1</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline1</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline2</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">max_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline2</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">max_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline1</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline2</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline1</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline2</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hline1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hline2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vline1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vline2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.get_roi_values"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.get_roi_values">[docs]</a>    <span class="k">def</span> <span class="nf">get_roi_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Get&#39;s the ROI values in camera-space. It keeps track of the top left corner in order</span>
+<span class="sd">        to update the values before returning.</span>
+<span class="sd">        :return: Position of the corners of the ROI region assuming 0-indexed cameras.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hline1</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hline2</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="n">x1</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vline1</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vline2</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">((</span><span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
+        <span class="c1"># Updates to the real values in camera space</span>
+        <span class="n">X</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.set_roi_lines"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.set_roi_lines">[docs]</a>    <span class="k">def</span> <span class="nf">set_roi_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corner_roi</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline1</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline1</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hline2</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">y2</span><span class="p">)</span>  <span class="c1"># To the last pixel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vline2</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">x2</span><span class="p">)</span>  <span class="c1"># To the last pixel</span></div>
+
+
+<div class="viewcode-block" id="CameraViewerWidget.setup_mouse_tracking"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.setup_mouse_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">setup_mouse_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imv</span><span class="o">.</span><span class="n">setMouseTracking</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imv</span><span class="o">.</span><span class="n">getImageItem</span><span class="p">()</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">sigMouseMoved</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mouseMoved</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imv</span><span class="o">.</span><span class="n">getImageItem</span><span class="p">()</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">contextMenu</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.keyPressEvent"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.keyPressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">keyPressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggered when there is a key press with some modifier.</span>
+<span class="sd">        Shift+C: Removes the cross hair from the screen</span>
+<span class="sd">        Ctrl+C: Emits a specialTask signal</span>
+<span class="sd">        Ctrl+V: Emits a stopSpecialTask signal</span>
+<span class="sd">        These last two events have to be handeled in the mainWindow that implemented this widget.&quot;&quot;&quot;</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">keyboardModifiers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">modifiers</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">key</span><span class="p">()</span> <span class="o">==</span> <span class="mi">67</span><span class="p">:</span> <span class="c1"># For letter C of &#39;Clear</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">showCrosshair</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">showCrosshair</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">showCrossCut</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crossCut</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">showCrossCut</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">modifiers</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">key</span><span class="p">()</span> <span class="o">==</span> <span class="mi">67</span><span class="p">:</span> <span class="c1"># For letter C of &#39;Clear</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">specialTask</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">key</span><span class="p">()</span> <span class="o">==</span> <span class="mi">86</span><span class="p">:</span> <span class="c1"># For letter V</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stopSpecialTask</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.mouseMoved"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.mouseMoved">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoved</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the position of the cross hair. The mouse has to be moved while pressing down the Ctrl button.&quot;&quot;&quot;</span>
+        <span class="c1"># arg = evt.pos()</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">QApplication</span><span class="o">.</span><span class="n">keyboardModifiers</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">modifiers</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">showCrosshair</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">showCrosshair</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">mapFromScene</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">x</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">mapFromScene</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">y</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="n">modifiers</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AltModifier</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">showCrossCut</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crossCut</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">showCrossCut</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">crossCut</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">mapFromScene</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span><span class="o">.</span><span class="n">y</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.do_auto_scale"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.do_auto_scale">[docs]</a>    <span class="k">def</span> <span class="nf">do_auto_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">h</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">getHistogram</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imv</span><span class="o">.</span><span class="n">setLevels</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">h</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">h</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.draw_target_pointer"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.draw_target_pointer">[docs]</a>    <span class="k">def</span> <span class="nf">draw_target_pointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">locations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;gets an image and draws a circle around the target locations.</span>
+
+<span class="sd">        :param DataFrame locations: DataFrame generated by trackpy&#39;s locate method. It only requires columns `x` and `y` with coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">locations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">locations</span> <span class="o">=</span> <span class="n">locations</span><span class="p">[[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">brush</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">marker</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">locations</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">locations</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">symbol</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">symbolBrush</span><span class="o">=</span><span class="n">brush</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.update_image"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.update_image">[docs]</a>    <span class="k">def</span> <span class="nf">update_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img</span><span class="o">.</span><span class="n">setImage</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">autoLevels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autoRange</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autoHistogramRange</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_image</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">do_auto_scale</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_image</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.setup_cross_hair"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.setup_cross_hair">[docs]</a>    <span class="k">def</span> <span class="nf">setup_cross_hair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets up a cross hair.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="mi">124</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="mi">124</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crosshair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="CameraViewerWidget.setup_cross_cut"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.camera_viewer_widget.CameraViewerWidget.setup_cross_cut">[docs]</a>    <span class="k">def</span> <span class="nf">setup_cross_cut</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set ups the horizontal line for the cross cut.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crossCut</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">crossCut</span><span class="o">.</span><span class="n">setBounds</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_size</span><span class="p">))</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">pandas</span> <span class="k">import</span> <span class="n">DataFrame</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">CameraViewerWidget</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">update_image</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">([[</span><span class="mi">20</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">]],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">draw_target_pointer</span><span class="p">(</span><span class="n">location</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

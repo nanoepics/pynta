@@ -1,0 +1,1062 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.controller.devices.hamamatsu.hamamatsu_camera &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.controller.devices.hamamatsu.hamamatsu_camera</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.controller.devices.hamamatsu.hamamatsu_camera</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    hamamatsu_camera.py</span>
+<span class="sd">    ~~~~~~~~~~~~~~~~~~~~</span>
+<span class="sd">    File taken from `ZhuangLab &lt;https://github.com/ZhuangLab/storm-control&gt;`_</span>
+
+<span class="sd">    A ctypes based interface to Hamamatsu cameras.</span>
+<span class="sd">    (tested on a sCMOS Flash 4.0).</span>
+
+<span class="sd">    The documentation is a little confusing to me on this subject..</span>
+<span class="sd">    I used c_int32 when this is explicitly specified, otherwise I use c_int.</span>
+
+<span class="sd">    .. todo:: I&#39;m using the &quot;old&quot; functions because these are documented. Switch to the &quot;new&quot; functions at some point.</span>
+
+<span class="sd">    .. todo:: How to stream 2048 x 2048 at max frame rate to the flash disk? The Hamamatsu software can do this.</span>
+
+<span class="sd">    Copyright: Hazen Babcock</span>
+<span class="sd">    This file was adapted to Python 3 and documented in the numpy style by Aquiles Carattino &lt;aquiles@aquicarattino.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">ctypes.util</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c1"># Hamamatsu constants.</span>
+<span class="n">DCAMCAP_EVENT_FRAMEREADY</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x0002&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># DCAM3 API.</span>
+<span class="n">DCAMERR_ERROR</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DCAMERR_NOERROR</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">DCAMPROP_ATTR_HASVALUETEXT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x10000000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_ATTR_READABLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00010000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_ATTR_WRITABLE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00020000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">DCAMPROP_OPTION_NEAREST</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x80000000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_OPTION_NEXT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x01000000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_OPTION_SUPPORT</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00000000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">DCAMPROP_TYPE_MODE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00000001&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_TYPE_LONG</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00000002&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_TYPE_REAL</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x00000003&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAMPROP_TYPE_MASK</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x0000000F&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">DCAMWAIT_TIMEOUT_INFINITE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x80000000&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="n">DCAM_CAPTUREMODE_SNAP</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">DCAM_CAPTUREMODE_SEQUENCE</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">DCAM_DEFAULT_ARG</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">DCAM_IDPROP_EXPOSURETIME</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x001F0110&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">DCAM_IDSTR_MODEL</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="s2">&quot;0x04000104&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DCAM_PARAM_PROPERTYATTR"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR">[docs]</a><span class="k">class</span> <span class="nc">DCAM_PARAM_PROPERTYATTR</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The dcam property attribute structure.&quot;&quot;&quot;</span>
+
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;cbSize&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iProp&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;option&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iReserved1&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;attribute&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iGroup&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iUnit&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;attribute2&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;valuemin&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;valuemax&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;valuestep&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;valuedefault&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;nMaxChannel&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iReserved3&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;nMaxView&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iProp_NumberOfElement&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iProp_ArrayBase&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iPropStep_Element&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="DCAM_PARAM_PROPERTYVALUETEXT"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT">[docs]</a><span class="k">class</span> <span class="nc">DCAM_PARAM_PROPERTYVALUETEXT</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">Structure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The dcam text property structure.&quot;&quot;&quot;</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;cbSize&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;iProp&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_char_p</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">&quot;textbytes&quot;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="convertPropertyName"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.convertPropertyName">[docs]</a><span class="k">def</span> <span class="nf">convertPropertyName</span><span class="p">(</span><span class="n">p_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;&quot;Regularizes&quot; a property name. We are using all lowercase names with</span>
+<span class="sd">    the spaces replaced by underscores.</span>
+<span class="sd">    @param p_name The property name string to regularize.</span>
+<span class="sd">    @return The regularized property name.&quot;&quot;&quot;</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">p_name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="DCAMException"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAMException">[docs]</a><span class="k">class</span> <span class="nc">DCAMException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Monitor exceptions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="ne">Exception</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div>
+
+
+<span class="c1"># dcam = ctypes.windll.dcamapi</span>
+<span class="c1">#</span>
+<span class="c1"># temp = ctypes.c_int32(0)</span>
+<span class="c1"># if (dcam.dcam_init(None, ctypes.byref(temp), None) != DCAMERR_NOERROR):</span>
+<span class="c1">#     raise DCAMException(&quot;DCAM initialization failed.&quot;)</span>
+<span class="c1"># n_cameras = temp.value</span>
+
+<div class="viewcode-block" id="HCamData"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData">[docs]</a><span class="k">class</span> <span class="nc">HCamData</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Hamamatsu camera data object.</span>
+<span class="sd">    Initially I tried to use create_string_buffer() to allocate storage for the</span>
+<span class="sd">    data from the camera but this turned out to be too slow. The software</span>
+<span class="sd">    kept falling behind the camera and create_string_buffer() seemed to be the</span>
+<span class="sd">    bottleneck.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a data object of the appropriate size.</span>
+<span class="sd">        @param size The size of the data object in bytes.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">np_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+
+    <span class="c1">## __getitem__</span>
+    <span class="c1">#</span>
+    <span class="c1"># @param slice The slice of the item to get.</span>
+    <span class="c1">#</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">np_array</span><span class="p">[</span><span class="nb">slice</span><span class="p">]</span>
+
+    <span class="c1">## copyData</span>
+    <span class="c1">#</span>
+    <span class="c1"># Uses the C memmove function to copy data from an address in memory</span>
+    <span class="c1"># into memory allocated for the numpy array of this object.</span>
+    <span class="c1">#</span>
+    <span class="c1"># @param address The memory address of the data to copy.</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="HCamData.copyData"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.copyData">[docs]</a>    <span class="k">def</span> <span class="nf">copyData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">memmove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">np_array</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span></div>
+
+    <span class="c1">## getData</span>
+    <span class="c1">#</span>
+    <span class="c1"># @return A numpy array that contains the camera data.</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="HCamData.getData"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getData">[docs]</a>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">np_array</span></div>
+
+    <span class="c1">## getDataPtr</span>
+    <span class="c1">#</span>
+    <span class="c1"># @return The physical address in memory of the data.</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="HCamData.getDataPtr"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getDataPtr">[docs]</a>    <span class="k">def</span> <span class="nf">getDataPtr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">np_array</span><span class="o">.</span><span class="n">ctypes</span><span class="o">.</span><span class="n">data</span></div></div>
+
+
+<div class="viewcode-block" id="HamamatsuCamera"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera">[docs]</a><span class="k">class</span> <span class="nc">HamamatsuCamera</span><span class="p">():</span>
+    <span class="n">CAPTUREMODE_SNAP</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">CAPTUREMODE_SEQUENCE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="sd">&quot;&quot;&quot;Basic camera interface class.</span>
+<span class="sd">    This version uses the Hamamatsu library to allocate camera buffers.</span>
+<span class="sd">    Storage for the data from the camera is allocated dynamically and</span>
+<span class="sd">    copied out of the camera buffers.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Open the connection to the camera specified by camera_id.</span>
+<span class="sd">        @param camera_id The id of the camera (an integer).&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span> <span class="o">=</span> <span class="n">camera_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">dcamapi</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_frame_number</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Open the camera.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_init</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="n">DCAMERR_NOERROR</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DCAMException</span><span class="p">(</span><span class="s2">&quot;DCAM initialization failed.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_cameras</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_open</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                                             <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_id</span><span class="p">),</span>
+                                             <span class="kc">None</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_open&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getModelInfo</span><span class="p">(</span><span class="n">camera_id</span><span class="p">)</span>
+        <span class="c1"># Get camera properties.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getCameraProperties</span><span class="p">()</span>
+
+        <span class="c1"># Get camera max width, height.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;image_width&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;image_height&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setmode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CAPTUREMODE_SEQUENCE</span><span class="p">)</span>  <span class="c1"># By default is a sequence</span>
+
+    <span class="k">def</span> <span class="nf">settrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">TRIGMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_settriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">TRIGMODE</span><span class="p">),</span> <span class="s1">&#39;settriggermode&#39;</span><span class="p">)</span>
+        <span class="n">DCAM_TRIGGERMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_gettriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">DCAM_TRIGGERMODE</span><span class="p">)),</span>
+                         <span class="s1">&#39;gettrigermode&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DCAM_TRIGGERMODE</span><span class="o">.</span><span class="n">value</span>
+
+<div class="viewcode-block" id="HamamatsuCamera.setmode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setmode">[docs]</a>    <span class="k">def</span> <span class="nf">setmode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the acquisition mode of the camera.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span></div>
+
+    <span class="k">def</span> <span class="nf">settrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">TRIGMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_settriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">TRIGMODE</span><span class="p">),</span> <span class="s1">&#39;settriggermode&#39;</span><span class="p">)</span>
+        <span class="n">DCAM_TRIGGERMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_gettriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">DCAM_TRIGGERMODE</span><span class="p">)),</span>
+                         <span class="s1">&#39;gettrigermode&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DCAM_TRIGGERMODE</span><span class="o">.</span><span class="n">value</span>
+
+<div class="viewcode-block" id="HamamatsuCamera.settrigger"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.settrigger">[docs]</a>    <span class="k">def</span> <span class="nf">settrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">TRIGMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_settriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">TRIGMODE</span><span class="p">),</span> <span class="s1">&#39;settriggermode&#39;</span><span class="p">)</span>
+        <span class="n">DCAM_TRIGGERMODE</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_gettriggermode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">DCAM_TRIGGERMODE</span><span class="p">)),</span>
+                         <span class="s1">&#39;gettrigermode&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">DCAM_TRIGGERMODE</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.initCamera"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.initCamera">[docs]</a>    <span class="k">def</span> <span class="nf">initCamera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#</span>
+        <span class="c1"># Initialization</span>
+        <span class="c1">#</span>
+        <span class="c1"># self.dcam = ctypes.windll.dcamapi</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">captureSetup</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.captureSetup"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.captureSetup">[docs]</a>    <span class="k">def</span> <span class="nf">captureSetup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Capture setup (internal use only). This is called at the start</span>
+<span class="sd">        of new acquisition sequence to determine the current ROI and</span>
+<span class="sd">        get the camera configured properly.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_frame_number</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Set sub array mode.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSubArrayMode</span><span class="p">()</span>
+
+        <span class="c1"># Get frame properties.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;image_width&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;image_height&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;image_framebytes&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Set capture mode.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_precapture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                   <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_precapture&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.checkStatus"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.checkStatus">[docs]</a>    <span class="k">def</span> <span class="nf">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn_return</span><span class="p">,</span> <span class="n">fn_name</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check return value of the dcam function call.</span>
+<span class="sd">        Throw an error if not as expected?</span>
+<span class="sd">        @return The return value of the function.&quot;&quot;&quot;</span>
+
+        <span class="c1"># if (fn_return != DCAMERR_NOERROR) and (fn_return != DCAMERR_ERROR):</span>
+        <span class="c1">#    raise DCAMException(&quot;dcam error: &quot; + fn_name + &quot; returned &quot; + str(fn_return))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">fn_return</span> <span class="o">==</span> <span class="n">DCAMERR_ERROR</span><span class="p">):</span>
+            <span class="n">c_buf_len</span> <span class="o">=</span> <span class="mi">80</span>
+            <span class="n">c_buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)</span>
+            <span class="n">c_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getlasterror</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                  <span class="n">c_buf</span><span class="p">,</span>
+                                                  <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">DCAMException</span><span class="p">(</span><span class="s2">&quot;dcam error &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fn_name</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c_buf</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+            <span class="c1"># print &quot;dcam error&quot;, fn_name, c_buf.value</span>
+        <span class="k">return</span> <span class="n">fn_return</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getCameraProperties"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getCameraProperties">[docs]</a>    <span class="k">def</span> <span class="nf">getCameraProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the ids &amp; names of all the properties that the camera supports. This</span>
+<span class="sd">        is used at initialization to populate the self.properties attribute.</span>
+<span class="sd">        @return A python dictionary of camera properties.&quot;&quot;&quot;</span>
+
+        <span class="n">c_buf_len</span> <span class="o">=</span> <span class="mi">64</span>
+        <span class="n">c_buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">prop_id</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Reset to the start.</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getnextpropertyid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                               <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                               <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAMPROP_OPTION_NEAREST</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">DCAMERR_NOERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="s2">&quot;dcam_getnextpropertyid&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the first property.</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getnextpropertyid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                               <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                               <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAMPROP_OPTION_NEXT</span><span class="p">))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">DCAMERR_NOERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="s2">&quot;dcam_getnextpropertyid&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getpropertyname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                        <span class="n">prop_id</span><span class="p">,</span>
+                                                        <span class="n">c_buf</span><span class="p">,</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_getpropertyname&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the rest of the properties.</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">while</span> <span class="n">prop_id</span><span class="o">.</span><span class="n">value</span> <span class="o">!=</span> <span class="n">last</span><span class="p">:</span>
+            <span class="n">last</span> <span class="o">=</span> <span class="n">prop_id</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">properties</span><span class="p">[</span><span class="n">convertPropertyName</span><span class="p">(</span><span class="n">c_buf</span><span class="o">.</span><span class="n">value</span><span class="p">)]</span> <span class="o">=</span> <span class="n">prop_id</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getnextpropertyid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                   <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                                   <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAMPROP_OPTION_NEXT</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="n">DCAMERR_NOERROR</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="s2">&quot;dcam_getnextpropertyid&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getpropertyname</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                            <span class="n">prop_id</span><span class="p">,</span>
+                                                            <span class="n">c_buf</span><span class="p">,</span>
+                                                            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)),</span>
+                             <span class="s2">&quot;dcam_getpropertyname&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">properties</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.fireTrigger"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.fireTrigger">[docs]</a>    <span class="k">def</span> <span class="nf">fireTrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Triggers the camera when in software mode.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_firetrigger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span> <span class="s2">&quot;dcam_firetrigger&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;TRIG&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getFrames"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getFrames">[docs]</a>    <span class="k">def</span> <span class="nf">getFrames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all of the available frames.</span>
+<span class="sd">        This will block waiting for new frames even if</span>
+<span class="sd">        there new frames available when it is called.</span>
+<span class="sd">        @return [frames, [frame x size, frame y size]].&quot;&quot;&quot;</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">newFrames</span><span class="p">():</span>
+            <span class="c1"># Lock the frame in the camera buffer &amp; get address.</span>
+            <span class="n">data_address</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">row_bytes</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_lockdata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">data_address</span><span class="p">),</span>
+                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">row_bytes</span><span class="p">),</span>
+                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span>
+                             <span class="s2">&quot;dcam_lockdata&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Create storage for the frame &amp; copy into this storage.</span>
+            <span class="n">hc_data</span> <span class="o">=</span> <span class="n">HCamData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span><span class="p">)</span>
+            <span class="n">hc_data</span><span class="o">.</span><span class="n">copyData</span><span class="p">(</span><span class="n">data_address</span><span class="p">)</span>
+
+            <span class="c1"># Unlock the frame.</span>
+            <span class="c1">#</span>
+            <span class="c1"># According to the documentation, this would be done automatically</span>
+            <span class="c1"># on the next call to lockdata, but we do this anyway.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_unlockdata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                             <span class="s2">&quot;dcam_unlockdata&quot;</span><span class="p">)</span>
+
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hc_data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">frames</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getModelInfo"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getModelInfo">[docs]</a>    <span class="k">def</span> <span class="nf">getModelInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the model of the camera</span>
+<span class="sd">        @param camera_id The (integer) camera id number.</span>
+<span class="sd">        @return A string containing the camera name.&quot;&quot;&quot;</span>
+
+        <span class="n">c_buf_len</span> <span class="o">=</span> <span class="mi">20</span>
+        <span class="n">c_buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getmodelinfo</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">camera_id</span><span class="p">),</span>
+                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAM_IDSTR_MODEL</span><span class="p">),</span>
+                                                     <span class="n">c_buf</span><span class="p">,</span>
+                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_getmodelinfo&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c_buf</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getProperties"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getProperties">[docs]</a>    <span class="k">def</span> <span class="nf">getProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the list of camera properties. This is the one to call if you</span>
+<span class="sd">        want to know the camera properties.</span>
+<span class="sd">        @return A dictionary of camera properties.&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getPropertyAttribute"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the attribute structure of a particular property.</span>
+<span class="sd">        FIXME (OPTIMIZATION): Keep track of known attributes?</span>
+<span class="sd">        @param property_name The name of the property to get the attributes of.</span>
+<span class="sd">        @return A DCAM_PARAM_PROPERTYATTR object.&quot;&quot;&quot;</span>
+
+        <span class="n">p_attr</span> <span class="o">=</span> <span class="n">DCAM_PARAM_PROPERTYATTR</span><span class="p">()</span>
+        <span class="n">p_attr</span><span class="o">.</span><span class="n">cbSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">p_attr</span><span class="p">)</span>
+        <span class="n">p_attr</span><span class="o">.</span><span class="n">iProp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getpropertyattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                              <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">p_attr</span><span class="p">)),</span>
+                               <span class="s2">&quot;dcam_getpropertyattr&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; property </span><span class="si">%s</span><span class="s2"> is not supported&quot;</span> <span class="o">%</span> <span class="n">property_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">p_attr</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getPropertyText"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyText">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the text options of a property (if any).</span>
+<span class="sd">        @param property_name The name of the property to get the text values of.</span>
+<span class="sd">        @return A dictionary of text properties (which may be empty).&quot;&quot;&quot;</span>
+
+        <span class="n">prop_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyAttribute</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">attribute</span> <span class="o">&amp;</span> <span class="n">DCAMPROP_ATTR_HASVALUETEXT</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Create property text structure.</span>
+            <span class="n">prop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">valuemin</span><span class="p">)</span>
+
+            <span class="n">prop_text</span> <span class="o">=</span> <span class="n">DCAM_PARAM_PROPERTYVALUETEXT</span><span class="p">()</span>
+            <span class="n">c_buf_len</span> <span class="o">=</span> <span class="mi">64</span>
+            <span class="n">c_buf</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">create_string_buffer</span><span class="p">(</span><span class="n">c_buf_len</span><span class="p">)</span>
+            <span class="c1"># prop_text.text = ctypes.c_char_p(ctypes.addressof(c_buf))</span>
+            <span class="n">prop_text</span><span class="o">.</span><span class="n">cbSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">prop_text</span><span class="p">))</span>
+            <span class="n">prop_text</span><span class="o">.</span><span class="n">iProp</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">prop_id</span><span class="p">)</span>
+            <span class="n">prop_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="n">prop_text</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">addressof</span><span class="p">(</span><span class="n">c_buf</span><span class="p">)</span>
+            <span class="n">prop_text</span><span class="o">.</span><span class="n">textbytes</span> <span class="o">=</span> <span class="n">c_buf_len</span>
+
+            <span class="c1"># Collect text options.</span>
+            <span class="n">done</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">text_options</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+                <span class="c1"># Get text of current value.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getpropertyvaluetext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                                     <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">prop_text</span><span class="p">)),</span>
+                                 <span class="s2">&quot;dcam_getpropertyvaluetext&quot;</span><span class="p">)</span>
+                <span class="n">text_options</span><span class="p">[</span><span class="n">prop_text</span><span class="o">.</span><span class="n">text</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="c1"># Get next value.</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_querypropertyvalue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">v</span><span class="p">),</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAMPROP_OPTION_NEXT</span><span class="p">))</span>
+                <span class="n">prop_text</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+                <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="n">text_options</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getPropertyRange"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRange">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyRange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the range for an attribute.</span>
+<span class="sd">        @param property_name The name of the property (as a string).</span>
+<span class="sd">        @return [minimum value, maximum value].&quot;&quot;&quot;</span>
+
+        <span class="n">prop_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyAttribute</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">prop_attr</span><span class="o">.</span><span class="n">attribute</span> <span class="o">&amp;</span> <span class="n">DCAMPROP_TYPE_MASK</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">temp</span> <span class="o">==</span> <span class="n">DCAMPROP_TYPE_REAL</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">valuemin</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">valuemax</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">valuemin</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">valuemax</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getPropertyRW"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRW">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyRW</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return if a property is readable / writeable.</span>
+<span class="sd">        @return [True/False (readable), True/False (writeable)].&quot;&quot;&quot;</span>
+
+        <span class="n">prop_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyAttribute</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+        <span class="n">rw</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Check if the property is readable.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">attribute</span> <span class="o">&amp;</span> <span class="n">DCAMPROP_ATTR_READABLE</span><span class="p">):</span>
+            <span class="n">rw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Check if the property is writeable.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">prop_attr</span><span class="o">.</span><span class="n">attribute</span> <span class="o">&amp;</span> <span class="n">DCAMPROP_ATTR_WRITABLE</span><span class="p">):</span>
+            <span class="n">rw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rw</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.getPropertyValue"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyValue">[docs]</a>    <span class="k">def</span> <span class="nf">getPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the current setting of a particular property.</span>
+<span class="sd">        @param property_name The name of the property.</span>
+<span class="sd">        @return [the property value, the property type].&quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the property exists.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; unknown property name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">property_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">prop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span>
+
+        <span class="c1"># Get the property attributes.</span>
+        <span class="n">prop_attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyAttribute</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+
+        <span class="c1"># Get the property value.</span>
+        <span class="n">c_value</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_getpropertyvalue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                                         <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">c_value</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_getpropertyvalue&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Convert type based on attribute type.</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">prop_attr</span><span class="o">.</span><span class="n">attribute</span> <span class="o">&amp;</span> <span class="n">DCAMPROP_TYPE_MASK</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">temp</span> <span class="o">==</span> <span class="n">DCAMPROP_TYPE_MODE</span><span class="p">):</span>
+            <span class="n">prop_type</span> <span class="o">=</span> <span class="s2">&quot;MODE&quot;</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">c_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">temp</span> <span class="o">==</span> <span class="n">DCAMPROP_TYPE_LONG</span><span class="p">):</span>
+            <span class="n">prop_type</span> <span class="o">=</span> <span class="s2">&quot;LONG&quot;</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">c_value</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">temp</span> <span class="o">==</span> <span class="n">DCAMPROP_TYPE_REAL</span><span class="p">):</span>
+            <span class="n">prop_type</span> <span class="o">=</span> <span class="s2">&quot;REAL&quot;</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="n">c_value</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prop_type</span> <span class="o">=</span> <span class="s2">&quot;NONE&quot;</span>
+            <span class="n">prop_value</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">prop_value</span><span class="p">,</span> <span class="n">prop_type</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.isCameraProperty"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.isCameraProperty">[docs]</a>    <span class="k">def</span> <span class="nf">isCameraProperty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if a property name is supported by the camera.</span>
+<span class="sd">        @param property_name The name of the property.</span>
+<span class="sd">        return True/False if property_name is a supported camera property.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.newFrames"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.newFrames">[docs]</a>    <span class="k">def</span> <span class="nf">newFrames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of the ids of all the new frames since the last check.</span>
+<span class="sd">        This will block waiting for at least one new frame.</span>
+<span class="sd">        @return [id of the first frame, .. , id of the last frame]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Wait for a new frame.</span>
+        <span class="n">dwait</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">DCAMCAP_EVENT_FRAMEREADY</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_wait</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                             <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">dwait</span><span class="p">),</span>
+                                             <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">DCAMWAIT_TIMEOUT_INFINITE</span><span class="p">),</span>
+                                             <span class="kc">None</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_wait&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check how many new frames there are.</span>
+        <span class="n">b_index</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Is pointer to receive the number of the frame in which the most recent data is stored.</span>
+        <span class="n">f_count</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span>
+            <span class="mi">0</span><span class="p">)</span>  <span class="c1"># is pointer to receive the number of frames captured since the capture operation was begun. If no frames have been captured, a value of –1 is returned</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_gettransferinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">b_index</span><span class="p">),</span>
+                                                        <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">f_count</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_gettransferinfo&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check that we have not acquired more frames than we can store in our buffer.</span>
+        <span class="c1"># Keep track of the maximum backlog.</span>
+        <span class="n">cur_frame_number</span> <span class="o">=</span> <span class="n">f_count</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">backlog</span> <span class="o">=</span> <span class="n">cur_frame_number</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_frame_number</span>
+        <span class="k">if</span> <span class="n">backlog</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;warning: hamamatsu camera frame buffer overrun detected!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">backlog</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span> <span class="o">=</span> <span class="n">backlog</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_frame_number</span> <span class="o">=</span> <span class="n">cur_frame_number</span>
+
+        <span class="n">cur_buffer_index</span> <span class="o">=</span> <span class="n">b_index</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="c1"># Create a list of the new frames.</span>
+        <span class="n">new_frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">cur_buffer_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span><span class="p">):</span>
+                <span class="n">new_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cur_buffer_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">new_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span><span class="p">,</span> <span class="n">cur_buffer_index</span><span class="p">):</span>
+                <span class="n">new_frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer_index</span> <span class="o">=</span> <span class="n">cur_buffer_index</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">new_frames</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_frames</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.setPropertyValue"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setPropertyValue">[docs]</a>    <span class="k">def</span> <span class="nf">setPropertyValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">property_name</span><span class="p">,</span> <span class="n">property_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the value of a property.</span>
+<span class="sd">        @param property_name The name of the property.</span>
+<span class="sd">        @param property_value The value to set the property to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if the property exists.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">property_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; unknown property name: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">property_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># If the value is text, figure out what the</span>
+        <span class="c1"># corresponding numerical property value is.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">property_value</span><span class="p">)</span> <span class="o">==</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)):</span>
+            <span class="n">text_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyText</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">property_value</span> <span class="ow">in</span> <span class="n">text_values</span><span class="p">):</span>
+                <span class="n">property_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">text_values</span><span class="p">[</span><span class="n">property_value</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; unknown property text value: </span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">property_value</span><span class="p">,</span> <span class="n">property_name</span><span class="p">))</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Check that the property is within range.</span>
+        <span class="p">[</span><span class="n">pv_min</span><span class="p">,</span> <span class="n">pv_max</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyRange</span><span class="p">(</span><span class="n">property_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">property_value</span> <span class="o">&lt;</span> <span class="n">pv_min</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; set property value </span><span class="si">%s</span><span class="s2"> is less than minimum of </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> setting to minimum&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">property_value</span><span class="p">,</span> <span class="n">pv_min</span><span class="p">,</span> <span class="n">property_name</span><span class="p">))</span>
+            <span class="n">property_value</span> <span class="o">=</span> <span class="n">pv_min</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">property_value</span> <span class="o">&gt;</span> <span class="n">pv_max</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; set property value </span><span class="si">%s</span><span class="s2"> is greater than maximum of </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> setting to maximum&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">property_value</span><span class="p">,</span> <span class="n">pv_min</span><span class="p">,</span> <span class="n">property_name</span><span class="p">))</span>
+            <span class="n">property_value</span> <span class="o">=</span> <span class="n">pv_max</span>
+
+        <span class="c1"># Set the property value, return what it was set too.</span>
+        <span class="n">prop_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span>
+        <span class="n">p_value</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span><span class="p">(</span><span class="n">property_value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_setgetpropertyvalue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">prop_id</span><span class="p">),</span>
+                                                            <span class="n">ctypes</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">p_value</span><span class="p">),</span>
+                                                            <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="n">DCAM_DEFAULT_ARG</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_setgetpropertyvalue&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p_value</span><span class="o">.</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.setSubArrayMode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setSubArrayMode">[docs]</a>    <span class="k">def</span> <span class="nf">setSubArrayMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This sets the sub-array mode as appropriate based on the current ROI.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Check ROI properties.</span>
+        <span class="n">roi_w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_hsize&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">roi_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_vsize&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># If the ROI is smaller than the entire frame turn on subarray mode</span>
+        <span class="k">if</span> <span class="n">roi_w</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_width</span> <span class="ow">and</span> <span class="n">roi_h</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_height</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_mode&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># OFF</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_mode&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># ON</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.startAcquisition"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.startAcquisition">[docs]</a>    <span class="k">def</span> <span class="nf">startAcquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Start data acquisition.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">captureSetup</span><span class="p">()</span>
+
+        <span class="c1"># Allocate Hamamatsu image buffers.</span>
+        <span class="c1"># We allocate enough to buffer 2 seconds of data.</span>
+        <span class="n">n_buffers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="s2">&quot;internal_frame_rate&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span> <span class="o">=</span> <span class="n">n_buffers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_allocframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                   <span class="n">ctypes</span><span class="o">.</span><span class="n">c_int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_allocframe&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Start acquisition.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_capture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_capture&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.stopAcquisition"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.stopAcquisition">[docs]</a>    <span class="k">def</span> <span class="nf">stopAcquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop data acquisition.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_idle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_idle&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max camera backlog was </span><span class="si">%s</span><span class="s2"> of </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Free image buffers.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_freeframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_freeframe&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HamamatsuCamera.shutdown"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Close down the connection to the camera.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_close&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="HamamatsuCameraMR"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR">[docs]</a><span class="k">class</span> <span class="nc">HamamatsuCameraMR</span><span class="p">(</span><span class="n">HamamatsuCamera</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;# Memory recycling camera class.</span>
+<span class="sd">    This version allocates &quot;user memory&quot; for the Hamamatsu camera</span>
+<span class="sd">    buffers. This memory is also the location of the storage for</span>
+<span class="sd">    the np_array element of a HCamData() class. The memory is</span>
+<span class="sd">    allocated once at the beginning, then recycled. This means</span>
+<span class="sd">    that there is a lot less memory allocation &amp; shuffling compared</span>
+<span class="sd">    to the basic class, which performs one allocation and (I believe)</span>
+<span class="sd">    two copies for each frame that is acquired.</span>
+<span class="sd">    WARNING: There is the potential here for chaos. Since the memory</span>
+<span class="sd">      is now shared there is the possibility that downstream code</span>
+<span class="sd">      will try and access the same bit of memory at the same time</span>
+<span class="sd">      as the camera and this could end badly.</span>
+<span class="sd">    FIXME: Use lockbits (and unlockbits) to avoid memory clashes?</span>
+<span class="sd">      This would probably also involve some kind of reference counting</span>
+<span class="sd">      scheme.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;@param camera_id The id of the camera.&quot;&quot;&quot;</span>
+
+        <span class="n">HamamatsuCamera</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">hcam_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">old_frame_bytes</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;output_trigger_kind[0]&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HamamatsuCameraMR.getFrames"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.getFrames">[docs]</a>    <span class="k">def</span> <span class="nf">getFrames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets all of the available frames.</span>
+<span class="sd">        This will block waiting for new frames even if there new frames</span>
+<span class="sd">        available when it is called.</span>
+<span class="sd">        FIXME: It does not always seem to block? The length of frames can</span>
+<span class="sd">               be zero. Are frames getting dropped? Some sort of race condition?</span>
+<span class="sd">        return [frames, [frame x size, frame y size]]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">newFrames</span><span class="p">():</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hcam_data</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">frames</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_y</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="HamamatsuCameraMR.startAcquisition"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.startAcquisition">[docs]</a>    <span class="k">def</span> <span class="nf">startAcquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allocate as many frames as will fit in 2GB of memory and start data acquisition.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">captureSetup</span><span class="p">()</span>
+
+        <span class="c1"># Allocate new image buffers if necessary.</span>
+        <span class="c1"># Allocate as many frames as can fit in 2GB of memory.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">old_frame_bytes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span><span class="p">):</span>
+
+            <span class="n">n_buffers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="mf">0.1</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span> <span class="o">=</span> <span class="n">n_buffers</span>
+
+            <span class="c1"># Allocate new image buffers.</span>
+            <span class="n">ptr_array</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_void_p</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span> <span class="o">=</span> <span class="n">ptr_array</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">hcam_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_image_buffers</span><span class="p">):</span>
+                <span class="n">hc_data</span> <span class="o">=</span> <span class="n">HCamData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hc_data</span><span class="o">.</span><span class="n">getDataPtr</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hcam_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hc_data</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">old_frame_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_bytes</span>
+
+        <span class="c1"># Attach image buffers.</span>
+        <span class="c1">#</span>
+        <span class="c1"># We need to attach &amp; release for each acquisition otherwise</span>
+        <span class="c1"># we&#39;ll get an error if we try to change the ROI in any way</span>
+        <span class="c1"># between acquisitions.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_attachbuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span><span class="p">,</span>
+                                                <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span><span class="p">)),</span>
+                         <span class="s2">&quot;dcam_attachbuffer&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Start acquisition.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_capture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_capture&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HamamatsuCameraMR.stopAcquisition"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.hamamatsu.html#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.stopAcquisition">[docs]</a>    <span class="k">def</span> <span class="nf">stopAcquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stops the acquisition and releases the memory associated with the frames.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Stop acquisition.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_idle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                         <span class="s2">&quot;dcam_idle&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Release image buffers.</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hcam_ptr</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">checkStatus</span><span class="p">(</span><span class="n">dcam</span><span class="o">.</span><span class="n">dcam_releasebuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_handle</span><span class="p">),</span>
+                             <span class="s2">&quot;dcam_releasebuffer&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;max camera backlog was: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_backlog</span> <span class="o">=</span> <span class="mi">0</span></div></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># Testing.</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MAIN&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;found: </span><span class="si">%s</span><span class="s2"> cameras&quot;</span> <span class="o">%</span> <span class="n">n_cameras</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n_cameras</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+
+        <span class="n">hcam</span> <span class="o">=</span> <span class="n">HamamatsuCamera</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;defect_correct_mode&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;camera 0 model:&quot;</span><span class="p">,</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getModelInfo</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># List support properties.</span>
+        <span class="k">if</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Supported properties:&quot;</span><span class="p">)</span>
+            <span class="n">props</span> <span class="o">=</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getProperties</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">id_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">props</span><span class="o">.</span><span class="n">keys</span><span class="p">())):</span>
+                <span class="p">[</span><span class="n">p_value</span><span class="p">,</span> <span class="n">p_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">id_name</span><span class="p">)</span>
+                <span class="n">p_rw</span> <span class="o">=</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getPropertyRW</span><span class="p">(</span><span class="n">id_name</span><span class="p">)</span>
+                <span class="n">read_write</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">p_rw</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">read_write</span> <span class="o">+=</span> <span class="s2">&quot;read&quot;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">p_rw</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">read_write</span> <span class="o">+=</span> <span class="s2">&quot;, write&quot;</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">%s</span><span class="s2">)</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2"> type is:</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">id_name</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">p_type</span><span class="p">,</span> <span class="n">read_write</span><span class="p">))</span>
+                <span class="n">text_values</span> <span class="o">=</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getPropertyText</span><span class="p">(</span><span class="n">id_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">text_values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;          option / value&quot;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">text_values</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">text_values</span><span class="o">.</span><span class="n">get</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;         </span><span class="si">%s</span><span class="s2">/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">text_values</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+        <span class="c1"># Test setting &amp; getting some parameters.</span>
+        <span class="k">if</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;exposure_time&quot;</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">))</span>
+
+            <span class="c1"># print(hcam.setPropertyValue(&quot;subarray_hsize&quot;, 2048))</span>
+            <span class="c1"># print(hcam.setPropertyValue(&quot;subarray_vsize&quot;, 2048))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_hpos&quot;</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_vpos&quot;</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_hsize&quot;</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;subarray_vsize&quot;</span><span class="p">,</span> <span class="mi">1024</span><span class="p">))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;binning&quot;</span><span class="p">,</span> <span class="s2">&quot;1x1&quot;</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">hcam</span><span class="o">.</span><span class="n">setPropertyValue</span><span class="p">(</span><span class="s2">&quot;readout_speed&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="n">hcam</span><span class="o">.</span><span class="n">setSubArrayMode</span><span class="p">()</span>
+            <span class="n">hcam</span><span class="o">.</span><span class="n">startAcquisition</span><span class="p">()</span>
+            <span class="n">hcam</span><span class="o">.</span><span class="n">stopAcquisition</span><span class="p">()</span>
+
+            <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;internal_frame_rate&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;timing_readout_time&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;exposure_time&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;image_height&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;image_width&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;image_framebytes&quot;</span><span class="p">,</span>
+                      <span class="c1"># &quot;buffer_framebytes&quot;,</span>
+                      <span class="c1"># &quot;buffer_rowbytes&quot;,</span>
+                      <span class="c1"># &quot;buffer_top_offset_bytes&quot;,</span>
+                      <span class="s2">&quot;subarray_hsize&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;subarray_vsize&quot;</span><span class="p">,</span>
+                      <span class="s2">&quot;binning&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getPropertyValue</span><span class="p">(</span><span class="n">param</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># Test acquisition.</span>
+        <span class="k">if</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+            <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+            <span class="n">hcam</span><span class="o">.</span><span class="n">startAcquisition</span><span class="p">()</span>
+            <span class="n">cnt</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">300</span><span class="p">):</span>
+                <span class="p">[</span><span class="n">frames</span><span class="p">,</span> <span class="n">dims</span><span class="p">]</span> <span class="o">=</span> <span class="n">hcam</span><span class="o">.</span><span class="n">getFrames</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">aframe</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">aframe</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">5</span><span class="p">])</span>
+                    <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">hcam</span><span class="o">.</span><span class="n">stopAcquisition</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">aframe</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># The MIT License</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (c) 2013 Zhuang Lab, Harvard University</span>
+<span class="c1">#</span>
+<span class="c1"># Permission is hereby granted, free of charge, to any person obtaining a copy</span>
+<span class="c1"># of this software and associated documentation files (the &quot;Software&quot;), to deal</span>
+<span class="c1"># in the Software without restriction, including without limitation the rights</span>
+<span class="c1"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</span>
+<span class="c1"># copies of the Software, and to permit persons to whom the Software is</span>
+<span class="c1"># furnished to do so, subject to the following conditions:</span>
+<span class="c1">#</span>
+<span class="c1"># The above copyright notice and this permission notice shall be included in</span>
+<span class="c1"># all copies or substantial portions of the Software.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</span>
+<span class="c1"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</span>
+<span class="c1"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</span>
+<span class="c1"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</span>
+<span class="c1"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</span>
+<span class="c1"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</span>
+<span class="c1"># THE SOFTWARE.</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.old package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pynta.view.GUI.old.Monitor package" href="pynta.view.GUI.old.Monitor.html" />
+    <link rel="prev" title="pynta.view.GUI package" href="pynta.view.GUI.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Information for Developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#view">View</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pynta.html">pynta package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta.config">pynta.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="modules.html">pynta</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html">pynta package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Information for Developers</a> &raquo;</li>
+        
+          <li><a href="pynta.html">pynta package</a> &raquo;</li>
+        
+          <li><a href="pynta.view.html">pynta.view package</a> &raquo;</li>
+        
+          <li><a href="pynta.view.GUI.html">pynta.view.GUI package</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.old package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.view.GUI.old.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-view-gui-old-package">
+<h1>pynta.view.GUI.old package<a class="headerlink" href="#pynta-view-gui-old-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html">pynta.view.GUI.old.Monitor package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.LocateParticle">pynta.view.GUI.old.Monitor.LocateParticle module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#opencet-view-locateparticle-py">openCET.View.LocateParticle.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.cameraViewer">pynta.view.GUI.old.Monitor.cameraViewer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-cameraviewer-py">UUTrack.View.Camera.cameraViewer.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.clearQueueThread">pynta.view.GUI.old.Monitor.clearQueueThread module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-clearqueuethread-py">UUTrack.View.Camera.clearQueueThread.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.crossCut">pynta.view.GUI.old.Monitor.crossCut module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-crosscut-py">UUTrack.View.Camera.crossCut.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.popOut">pynta.view.GUI.old.Monitor.popOut module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-monitor-popout-py">UUTrack.View.Monitor.popOut.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.resources">pynta.view.GUI.old.Monitor.resources module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-monitor-resources-py">UUTrack.View.Monitor.resources.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.specialTaskTrack">pynta.view.GUI.old.Monitor.specialTaskTrack module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-specialtaskworker-py">UUTrack.View.Camera.specialTaskWorker.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="pynta-view-gui-old-mainwindow-module">
+<h2>pynta.view.GUI.old.mainwindow module<a class="headerlink" href="#pynta-view-gui-old-mainwindow-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.messageWidget">
+<span id="pynta-view-gui-old-messagewidget-module"></span><h2>pynta.view.GUI.old.messageWidget module<a class="headerlink" href="#module-pynta.view.GUI.old.messageWidget" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-messagewidget-py">
+<h3>UUTrack.View.Camera.messageWidget.py<a class="headerlink" href="#uutrack-view-camera-messagewidget-py" title="Permalink to this headline">¶</a></h3>
+<p>Simple widget that holds an HTML box to display messages to the user. Example of usage would be,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">messageWidget</span><span class="o">.</span><span class="n">updateProcessor</span><span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">cpu_percent</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;b&gt;Error&lt;/b&gt;: This is an error message.&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">msg</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&lt;i&gt;Info&lt;/i&gt;: This is a test message.&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">messageWidget</span><span class="o">.</span><span class="n">updateMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The main objective of this widget is to confirm to the user that something was triggered and to have a permanent way of seeing it.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>This widget capabilities could be combined with some logging capabilities.</p>
+</div>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Change colors for error, info and debug messages.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.messageWidget.</code><code class="sig-name descname">messageWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Widget that holds text boxes for displaying information to the user.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.appendLog">
+<code class="sig-name descname">appendLog</code><span class="sig-paren">(</span><em class="sig-param">cat</em>, <em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.appendLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.appendLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Appends to the log the desired message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cat</strong> – Category of the message (i,w.e)</p></li>
+<li><p><strong>msg</strong> – Message to display</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.categories">
+<code class="sig-name descname">categories</code><em class="property"> = {'e': 'Error', 'i': 'Info', 'w': 'Warning'}</em><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.categories" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.logMaxLength">
+<code class="sig-name descname">logMaxLength</code><em class="property"> = 20</em><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.logMaxLength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.logTitle">
+<code class="sig-name descname">logTitle</code><em class="property"> = 'Log'</em><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.logTitle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.messageTitle">
+<code class="sig-name descname">messageTitle</code><em class="property"> = 'Status'</em><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.messageTitle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.setupLog">
+<code class="sig-name descname">setupLog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.setupLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.setupLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the log box with a title that will always be displayed on top.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.setupMessage">
+<code class="sig-name descname">setupMessage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.setupMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.setupMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the message box with a title that will always be displayed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.setupStyles">
+<code class="sig-name descname">setupStyles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.setupStyles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.setupStyles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setups three styles for the bars: Red, Yellow and Default. It is meant to be more graphical to the user regarding
+the availability of resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.updateLog">
+<code class="sig-name descname">updateLog</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.updateLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.updateLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the log displayed to the user by prepending the desired message to the available messages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>string</em><em> or </em><em>array.</em>) – every item will be displayed in a new line</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.updateMemory">
+<code class="sig-name descname">updateMemory</code><span class="sig-paren">(</span><em class="sig-param">percentage</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.updateMemory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.updateMemory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the progress bar that displays how much memory is available to the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percentage</strong> – Percentage of memory used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.updateMessage">
+<code class="sig-name descname">updateMessage</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.updateMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.updateMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the message displayed to the user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>string</em><em> or </em><em>array.</em>) – string or array, in which case every item will be displayed in a new line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.messageWidget.messageWidget.updateProcessor">
+<code class="sig-name descname">updateProcessor</code><span class="sig-paren">(</span><em class="sig-param">percentage</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/messageWidget.html#messageWidget.updateProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.messageWidget.messageWidget.updateProcessor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the progress bar that displays how much of the processor is in use.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percentage</strong> – Percentage of memory used.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.trajectoryWidget">
+<span id="pynta-view-gui-old-trajectorywidget-module"></span><h2>pynta.view.GUI.old.trajectoryWidget module<a class="headerlink" href="#module-pynta.view.GUI.old.trajectoryWidget" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-trajectorywidget-py">
+<h3>UUTrack.View.Camera.trajectoryWidget.py<a class="headerlink" href="#uutrack-view-camera-trajectorywidget-py" title="Permalink to this headline">¶</a></h3>
+<p>This widget only displays the output of the special worker. It is mainly for prototyping purposes. It displays a scatter 2D plot because it is the current output of the special task worker, but in principle it can be adapted to any other need.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>adapt this widget for a useful case.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.trajectoryWidget.trajectoryWidget">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.trajectoryWidget.</code><code class="sig-name descname">trajectoryWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/trajectoryWidget.html#trajectoryWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.trajectoryWidget.trajectoryWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pyqtgraph.widgets.GraphicsView.GraphicsView</span></code></p>
+<p>Simple plot class for showing the 2D trajectory</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.waterfallWidget">
+<span id="pynta-view-gui-old-waterfallwidget-module"></span><h2>pynta.view.GUI.old.waterfallWidget module<a class="headerlink" href="#module-pynta.view.GUI.old.waterfallWidget" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-waterfallwidget-py">
+<h3>UUTrack.View.Camera.waterfallWidget.py<a class="headerlink" href="#uutrack-view-camera-waterfallwidget-py" title="Permalink to this headline">¶</a></h3>
+<p>Widget for displaying a 2D image. It shouldn’t do much, but is thought for displaying a waterfall kind of image.</p>
+<div class="admonition-todo admonition" id="id4">
+<p class="admonition-title">Todo</p>
+<p>displaying 2D data is ubiquitous in this program; there should be a unified widget to such ends.</p>
+</div>
+<div class="admonition-todo admonition" id="id5">
+<p class="admonition-title">Todo</p>
+<p>Unify the 2D displaying of <code class="xref py py-mod docutils literal notranslate"><span class="pre">camera</span> <span class="pre">Main</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">camera</span> <span class="pre">Viewer</span></code>.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.waterfallWidget.waterfallWidget">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.waterfallWidget.</code><code class="sig-name descname">waterfallWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/waterfallWidget.html#waterfallWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.waterfallWidget.waterfallWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Widget for plotting a waterfall plot.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.workerThread">
+<span id="pynta-view-gui-old-workerthread-module"></span><h2>pynta.view.GUI.old.workerThread module<a class="headerlink" href="#module-pynta.view.GUI.old.workerThread" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-workerthread">
+<h3>UUTrack.View.Camera.workerThread<a class="headerlink" href="#uutrack-view-camera-workerthread" title="Permalink to this headline">¶</a></h3>
+<p>Thread that acquires continuously data until a variable is changed. This enables to acquire at any frame rate without freezing the GUI or overloading it with data being acquired too fast.</p>
+<dl class="class">
+<dt id="pynta.view.GUI.old.workerThread.workThread">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.workerThread.</code><code class="sig-name descname">workThread</code><span class="sig-paren">(</span><em class="sig-param">_session</em>, <em class="sig-param">camera</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/workerThread.html#workThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.workerThread.workThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtCore.QThread</span></code></p>
+<p>Thread for acquiring from the camera. If the exposure time is long, this is
+needed to avoid freezing the GUI.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.workerThread.workThread.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/workerThread.html#workThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.workerThread.workThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers the Monitor to acquire a new Image.
+the QThread defined .start() method is a special method that sets up the thread and
+calls our implementation of the run() method.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.view.GUI.old" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pynta.view.GUI.old.Monitor.html" class="btn btn-neutral float-right" title="pynta.view.GUI.old.Monitor package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pynta.view.GUI.html" class="btn btn-neutral float-left" title="pynta.view.GUI package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

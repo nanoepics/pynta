@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The Config File &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="Installing" href="installing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The Config File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-format">The Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#real-cameras">Real Cameras</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>The Config File</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/example_config.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-config-file">
+<span id="example-config"></span><h1>The Config File<a class="headerlink" href="#the-config-file" title="Permalink to this headline">¶</a></h1>
+<p>To start the program, it is necessary to define a configuration file. You can <a class="reference download internal" download="" href="_downloads/eb270f06ffe27168f64d858e97171d8c/example_config.yml"><code class="xref download docutils literal notranslate"><span class="pre">get</span> <span class="pre">a</span> <span class="pre">config</span> <span class="pre">file</span> <span class="pre">here</span></code></a>. However, the best place to find the latest examples of config files is on the
+<a class="reference external" href="https://www.github.com/nanoepics/pynta">Github Repository</a>. The idea behind the config file is that it makes it
+transparent both to the end user and to the developer the different settings available throughout the program.</p>
+<p>The example config files only show the minimum possible contents. You are free to add as many entries as you would like.
+However, they are not going to be displayed in the GUI, nor will be used automatically. They will, however, be stored as
+metadata together with all the files. You could use the config file in order to annotate your experiments, for example.</p>
+<div class="section" id="the-format">
+<h2>The Format<a class="headerlink" href="#the-format" title="Permalink to this headline">¶</a></h2>
+<p>The config file is formatted as a YAML file. These files are very easy to transform into python dictionaries and are very
+easy to type. So, for example, to change how the tracking algorithm works, one would change the following lines:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">tracking</span><span class="p">:</span>
+  <span class="nt">locate</span><span class="p">:</span>
+    <span class="nt">diameter</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">11</span>  <span class="c1"># Diameter of the particles (in pixels) to track, has to be an odd number</span>
+    <span class="nt">invert</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">False</span>
+    <span class="nt">minmass</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
+</pre></div>
+</div>
+<p>Note that for the file to make sense, it has to be indexed with 2 spaces. When reading it, it automatically converts some
+data types. For example, diameter will be available as <code class="docutils literal notranslate"><span class="pre">config['tracking']['locate']['diameter']</span></code> and will be of type
+integer. <code class="docutils literal notranslate"><span class="pre">invert</span></code> will be a boolean, etc. If the data type is not clear, the default is a string. So, for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">camera</span><span class="p">:</span>
+  <span class="nt">exposure_time</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30ms</span> <span class="c1"># Initial exposure time (in ms)</span>
+</pre></div>
+</div>
+<p>Will generate a <code class="docutils literal notranslate"><span class="pre">config['camera']['exposure_time']</span></code> of type string, that will need to be transformed to a quantity
+later on. Note also that comments are ignored (after the <code class="docutils literal notranslate"><span class="pre">#</span></code> nothing is read).</p>
+</div>
+<div class="section" id="real-cameras">
+<h2>Real Cameras<a class="headerlink" href="#real-cameras" title="Permalink to this headline">¶</a></h2>
+<p>Currently Pynta supports a handful of cameras. If you would like to load a hamamatsu camera, you should change the following line:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">camera</span><span class="p">:</span>
+  <span class="nt">model</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">dummy_camera</span>
+</pre></div>
+</div>
+<p>with the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">camera</span><span class="p">:</span>
+<span class="hll">  <span class="nt">model</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hamamatsu</span>
+</span></pre></div>
+</div>
+<p>If you would like to understand how the loading of the camera works, in order to add your own, you can check <code class="xref py py-func docutils literal notranslate"><span class="pre">initialize_camera()</span></code>.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installing.html" class="btn btn-neutral float-left" title="Installing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

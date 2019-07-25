@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installing &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The Config File" href="example_config.html" />
+    <link rel="prev" title="PyNTA: Python Nanoparticle Tracking Analysis" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#trackpy">Trackpy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pyqt5-and-pyqtgraph">PyQt5 and Pyqtgraph</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#operating-system-support">Operating System Support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Installing</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/installing.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installing">
+<span id="id1"></span><h1>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h1>
+<p>Pynta can be installed directly with pip. The first step is to create a virtual environment on your machine in order to
+avoid clashes with the versions of the dependencies. Virtual Environments are must-have tool, regardless of what you are
+doing. You can read a discussion about them directly on
+<a class="reference external" href="https://www.pythonforthelab.com/blog/virtual-environment-is-a-must-have-tool/">Python For The Lab</a>. You can also see
+how to create a virtual environment <a class="reference internal" href="making_virtual_environment.html#python-virtual-environment"><span class="std std-ref">Setting up a Python Virtual Environment</span></a>.</p>
+<p>To install PyNTA you can run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nanoepics</span><span class="o">/</span><span class="n">pynta</span>
+</pre></div>
+</div>
+<p>This will get you the latest stable version of Pynta. If you, however, would like to test new features, you can download
+the development branch of the program:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nanoepics</span><span class="o">/</span><span class="n">pynta</span><span class="nd">@develop</span>
+</pre></div>
+</div>
+<p>Especially if you want to try the development version, you should install it in a virtual environment. We can’t guarantee
+that the development will be future compatible, i.e. that the program stays compatible with itself over time. One of the
+highest risks is that an upgrade on the development branch may brake your config files or customizations you have done.</p>
+<p>Moreover there is the risk of requiring dependencies that are not fully supported or that are later dropped.</p>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>By default, when you install PyNTA, the following dependencies will be installed on your computer:</p>
+<ul class="simple">
+<li><p>trackpy</p></li>
+<li><p>pyqt5&lt;5.11</p></li>
+<li><p>numpy</p></li>
+<li><p>pyqtgraph</p></li>
+<li><p>pint</p></li>
+<li><p>h5py</p></li>
+<li><p>pandas</p></li>
+<li><p>pyyaml</p></li>
+<li><p>pyzmq</p></li>
+<li><p>numba</p></li>
+</ul>
+<p>However, not all dependencies are mandatory for the program to work. For instance, if you are not interested in the GUI
+but are planning to run the program from the command line, you are free to skip PyQt5, Pyqtgraph.</p>
+<p><strong>Numba</strong> is used because it accelerates the tracking of particles with <strong>trackpy</strong>. But if it is not available on the
+computer, the program will run anyways.</p>
+<div class="section" id="trackpy">
+<h3>Trackpy<a class="headerlink" href="#trackpy" title="Permalink to this headline">¶</a></h3>
+<p>Trackpy is instrumental for the program to work correctly. This package is able to detect particles on an image based on
+few parameters but also to link the particles together, building up single-particle traces. PyNTA uses trackpy to perform
+all the detection and analysis in real time.</p>
+<p>One of the constrains of trackpy is that it depends heavily on Pandas, which is a great tool while working in combination
+with Jupyter notebooks, but is not that great for user interfaces. Which require to transform from Pandas Data Frames to
+numpy arrays all the time.</p>
+</div>
+<div class="section" id="pyqt5-and-pyqtgraph">
+<h3>PyQt5 and Pyqtgraph<a class="headerlink" href="#pyqt5-and-pyqtgraph" title="Permalink to this headline">¶</a></h3>
+<p>The user interface is built on PyQt5 in combination with PyQtGraph. PyQt5 versions newer than 5.11 fail at installing
+through the setup process (but they do work if installed directly with pip). If this bug is resolved, the constrain on the
+version of PyQt to use should be lifted. Moreover, it is desirable to switch to PySide2 as soon as the project is mature.</p>
+</div>
+</div>
+<div class="section" id="operating-system-support">
+<h2>Operating System Support<a class="headerlink" href="#operating-system-support" title="Permalink to this headline">¶</a></h2>
+<p>PyNTA was tested both on Linux and Windows machines. However, the main environment for PyNTA to run is Windows 10. There
+are some very fundamental differences on how processes are started between Linux and Windows that have mutual drawbacks.
+For example, on Windows processes are spawned, meaning that classes are re-imported and not instantiated. Therefore,
+processes don’t start with a shared state. This prevents, for example, to start a new process for a method of a class.</p>
+<p>This forced the architecture of the program to rely heavily on functions and not methods, making the code slightly more
+convoluted than what was desirable. The approach works on Linux also, but the performance may not be optimal.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="example_config.html" class="btn btn-neutral float-right" title="The Config File" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="PyNTA: Python Nanoparticle Tracking Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

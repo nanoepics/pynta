@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.main &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.view.main</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.view.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">pynta.view.GUI.main_window</span> <span class="k">import</span> <span class="n">MainWindowGUI</span>
+<span class="kn">from</span> <span class="nn">pynta.view.subscriber_thread</span> <span class="k">import</span> <span class="n">SubscriberThread</span>
+
+
+<div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">MainWindowGUI</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param nanoparticle_tracking.model.experiment.win_nanocet.NPTracking experiment: Experiment class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">experiment</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;GUI&#39;</span><span class="p">][</span><span class="s1">&#39;refresh_time&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span> <span class="o">=</span> <span class="n">experiment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">setup_roi_lines</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">max_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">max_height</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_tracking_widget</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;tracking&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_histogram_worker</span> <span class="o">=</span> <span class="n">SubscriberThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">publisher</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="s1">&#39;histogram&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_histogram_worker</span><span class="o">.</span><span class="n">data_received</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_histogram</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_histogram_worker</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MainWindow.initialize_camera"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.initialize_camera">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">initialize_camera</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.snap"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.snap">[docs]</a>    <span class="k">def</span> <span class="nf">snap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">snap</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_gui"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.update_gui">[docs]</a>    <span class="k">def</span> <span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">temp_image</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">update_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">temp_image</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">tracking</span><span class="p">:</span>
+                <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">temp_locations</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">draw_target_pointer</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.start_movie"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.start_movie">[docs]</a>    <span class="k">def</span> <span class="nf">start_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">free_run_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_movie</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">start_free_run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Movie</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Stop Movie&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.stop_movie"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.stop_movie">[docs]</a>    <span class="k">def</span> <span class="nf">stop_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">stop_free_run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Movie</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Start Movie&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.set_roi"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.set_roi">[docs]</a>    <span class="k">def</span> <span class="nf">set_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">get_roi_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">set_roi</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">Y</span>
+        <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">set_roi_lines</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.clear_roi"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.clear_roi">[docs]</a>    <span class="k">def</span> <span class="nf">clear_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">clear_roi</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="o">.</span><span class="n">set_roi_lines</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">max_width</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">max_height</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.save_image"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">save_image</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.start_continuous_saves"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.start_continuous_saves">[docs]</a>    <span class="k">def</span> <span class="nf">start_continuous_saves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">save_stream_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_continuous_saves</span><span class="p">()</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">save_stream</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Continuous_Saves</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Stop Continuous Saves&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.stop_continuous_saves"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.stop_continuous_saves">[docs]</a>    <span class="k">def</span> <span class="nf">stop_continuous_saves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">stop_save_stream</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Continuous_Saves</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Start Continuous Saves&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.start_tracking"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.start_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">start_tracking</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tracking</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MainWindow.start_saving_tracks"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.start_saving_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">start_saving_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">start_saving_location</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.stop_saving_tracks"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.stop_saving_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">stop_saving_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">stop_saving_location</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.start_linking"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.start_linking">[docs]</a>    <span class="k">def</span> <span class="nf">start_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">link_particles_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_linking</span><span class="p">()</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">start_linking_locations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Linking</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Stop Linking&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.stop_linking"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.stop_linking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">stop_linking_locations</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Linking</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s1">&#39;Start Linking&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.calculate_histogram"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.calculate_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">calculating_histograms</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">calculate_histogram</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_histogram"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.update_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">update_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">)[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="n">vals</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">vals</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span><span class="o">.</span><span class="n">histogram_widget</span><span class="o">.</span><span class="n">update_distribution</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_tracks"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.update_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">update_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">locations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">relevant_tracks</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span><span class="o">.</span><span class="n">tracks_widget</span><span class="o">.</span><span class="n">plot_trajectories</span><span class="p">(</span><span class="n">locations</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_tracking_config"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.update_tracking_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_tracking_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">tracking</span><span class="o">=</span><span class="n">config</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_config"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">update_config</span><span class="p">(</span><span class="o">**</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.closeEvent"><a class="viewcode-back" href="../../../developers/pynta.view.html#pynta.view.main.MainWindow.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+        <span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

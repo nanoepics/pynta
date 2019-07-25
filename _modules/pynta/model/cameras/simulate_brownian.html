@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model.cameras.simulate_brownian &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.model.cameras.simulate_brownian</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.model.cameras.simulate_brownian</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    simulate_brownian.py</span>
+<span class="sd">    ====================</span>
+<span class="sd">    The SimBrownian class generates synthetic images corresponding to particles performing a thermal Brownian</span>
+<span class="sd">    motion. This class was designed in order to make explicit the real parameters of the particles (i.e. the diffusion</span>
+<span class="sd">    coefficient in real-space) with the magnification of the microscope. The PSF on the camera is derived from the</span>
+<span class="sd">    pixel size, the wavelength and the numerical aperture of the objective.</span>
+<span class="sd">    If the parameter frames_to_accumulate is set to a positive value, memory will be allocated in order to store the first</span>
+<span class="sd">    N simulated frames. Once that number is achieved, the frames will keep looping between the already generated data.</span>
+<span class="sd">    The decision not to simulate the frames a-priori was to give a better feeling regarding the user-interface. It is</span>
+<span class="sd">    also assumed that frames are of datatype np.int16, which is a sensible default for most cameras, although int8 can</span>
+<span class="sd">    also be useful for speeding up the trackpy algorithm.</span>
+
+<span class="sd">    .. warning:: There is no memory check regarding the accumulated frames.</span>
+
+<span class="sd">    .. TODO:: Think how to add noise, background, and intensity fluuctuations to the particles.</span>
+
+<span class="sd">    :copyright:  Aquiles Carattino &lt;aquiles@aquicarattino.com&gt;</span>
+<span class="sd">    :license: GPLv3, see LICENSE for more details</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="SimBrownian"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.simulate_brownian.SimBrownian">[docs]</a><span class="k">class</span> <span class="nc">SimBrownian</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param tuple camera_size: number of pixels in the x and y direction</span>
+<span class="sd">    :return: generated an image with specified noise and particles displaced accordingly</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: Number of particles per frame</span>
+    <span class="n">num_particles</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="c1">#: Diffusion coefficient um^2/s</span>
+    <span class="n">dif_coef</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">dif_coef_2</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># For a second population of particles. Set to 0 if only one population</span>
+    <span class="c1">#: Magnification of the microscope</span>
+    <span class="n">magnification</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="c1">#: In real space, um</span>
+    <span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="c1">#: Numerical aperture of the objective, used to estimate PSF</span>
+    <span class="n">NA</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1">#: um, used to estimate PSF</span>
+    <span class="n">wavelength</span> <span class="o">=</span> <span class="o">.</span><span class="mi">500</span>
+    <span class="c1">#: Peak intensity for a particle</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="mi">300</span>
+    <span class="c1">#: Background noise</span>
+    <span class="c1">#: TODO: Needs to be implemented</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#: Time step in the simulation. Should be set to the acquisition rate if used for a camera, seconds</span>
+    <span class="n">time_step</span> <span class="o">=</span> <span class="mf">0.03</span>
+
+    <span class="c1">#: Number of pixels used to calculate the PSF of the particle</span>
+    <span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="c1">#: Number of frames will be accumulated in order to speed up simulations</span>
+    <span class="c1">#: (they will be an infinite loop). Set to 0 in order to avoid accumulating frames</span>
+    <span class="n">frames_to_accumulate</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_size</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)):</span>
+        <span class="c1"># camera and monitor parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">camera_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_particles</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">real_space_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camera_size</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">magnification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">magnification</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_space_size</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_particles</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_random_step</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">psf_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">magnification</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelength</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">NA</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span>  <span class="c1"># In pixels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">camera_size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">camera_size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SimBrownian.resize_view"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.simulate_brownian.SimBrownian.resize_view">[docs]</a>    <span class="k">def</span> <span class="nf">resize_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera_size</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;SimulateBrownian.resizeView() adjusts the coordinates of the moving particles such that they</span>
+<span class="sd">        fit into the desired framesize of the simulated dummycamera&quot;&quot;&quot;</span>
+        <span class="c1"># self.camera_size = np.array(camera_size)</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="SimBrownian.next_random_step"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.simulate_brownian.SimBrownian.next_random_step">[docs]</a>    <span class="k">def</span> <span class="nf">next_random_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dif_coef_2</span><span class="p">:</span>
+            <span class="n">dr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dif_coef</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_particles</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dr_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dif_coef</span><span class="p">),</span>
+                                                              <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_particles</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">dr_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dif_coef_2</span><span class="p">),</span>
+                                                              <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num_particles</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">dr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">dr_1</span><span class="p">,</span> <span class="n">dr_2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localization</span> <span class="o">+=</span> <span class="n">dr</span>
+        <span class="n">rem_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localization</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_space_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span>
+        <span class="n">rem_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">localization</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_space_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">real_space_margin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localization</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rem_x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">localization</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rem_y</span></div>
+
+<div class="viewcode-block" id="SimBrownian.gen_image"><a class="viewcode-back" href="../../../../developers/pynta.model.cameras.html#pynta.model.cameras.simulate_brownian.SimBrownian.gen_image">[docs]</a>    <span class="k">def</span> <span class="nf">gen_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: generated image with specified noise and particles position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_random_step</span><span class="p">()</span>
+            <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_size</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">localization</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">magnification</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">pixel_size</span>  <span class="c1"># In units of pixels (with sub-px accuracy)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">positions</span><span class="p">:</span>
+                <span class="n">p_x</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">p_y</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">pix_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">pix_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">s_img</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">psf_width</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">xx</span> <span class="o">-</span> <span class="n">p_x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">yy</span> <span class="o">-</span> <span class="n">p_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">psf_width</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+                <span class="n">img</span><span class="p">[</span><span class="n">pix_x</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">:</span><span class="n">pix_x</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">pix_y</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">:</span><span class="n">pix_y</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">s_img</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="p">]</span> <span class="o">=</span> <span class="n">img</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">img</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">signal</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">curr_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">%</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span> <span class="o">&gt;</span> <span class="n">curr_frame</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span><span class="p">:</span>
+                <span class="n">curr_frame</span> <span class="o">=</span> <span class="p">(</span><span class="n">curr_frame</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[:,:,</span><span class="o">-</span><span class="n">curr_frame</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">curr_frame</span> <span class="o">=</span> <span class="n">curr_frame</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames_to_accumulate</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">curr_frame</span><span class="p">]</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="n">sb</span> <span class="o">=</span> <span class="n">SimBrownian</span><span class="p">()</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">gen_image</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sb</span><span class="o">.</span><span class="n">next_random_step</span><span class="p">()</span>
+    <span class="n">img2</span><span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="n">gen_image</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

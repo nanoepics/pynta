@@ -1,0 +1,376 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.main_window &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.main_window</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.view.GUI.main_window</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="k">import</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QTimer</span><span class="p">,</span> <span class="n">Qt</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QHBoxLayout</span><span class="p">,</span> <span class="n">QPushButton</span><span class="p">,</span> <span class="n">QSplitter</span>
+
+<span class="kn">from</span> <span class="nn">pynta.view.GUI</span> <span class="k">import</span> <span class="n">resources</span> <span class="c1"># This is what allows the icons to show up even if not explicitly used in the code</span>
+<span class="kn">from</span> <span class="nn">pynta.util.log</span> <span class="k">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span> <span class="nn">pynta.view.GUI.camera_viewer_widget</span> <span class="k">import</span> <span class="n">CameraViewerWidget</span>
+<span class="kn">from</span> <span class="nn">pynta.view.GUI.config_tracking_widget</span> <span class="k">import</span> <span class="n">ConfigTrackingWidget</span>
+<span class="kn">from</span> <span class="nn">pynta.view.GUI.config_widget</span> <span class="k">import</span> <span class="n">ConfigWidget</span>
+<span class="kn">from</span> <span class="nn">pynta.view.GUI.histogram_tracks_widget</span> <span class="k">import</span> <span class="n">HistogramTracksWidget</span>
+
+
+<div class="viewcode-block" id="MainWindowGUI"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI">[docs]</a><span class="k">class</span> <span class="nc">MainWindowGUI</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refresh_time</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;designer&#39;</span><span class="p">,</span> <span class="s1">&#39;MainWindow.ui&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">central_layout</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_splitter</span> <span class="o">=</span> <span class="n">QSplitter</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span> <span class="o">=</span> <span class="n">CameraViewerWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span> <span class="o">=</span> <span class="n">HistogramTracksWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_viewer_widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_splitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widget_splitter</span><span class="o">.</span><span class="n">setSizes</span><span class="p">((</span><span class="mi">750</span><span class="p">,</span> <span class="mi">750</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">central_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widget_splitter</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span> <span class="o">=</span> <span class="n">ConfigWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_tracking_widget</span> <span class="o">=</span> <span class="n">ConfigTrackingWidget</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_gui</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">refresh_time</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">showMaximized</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_actions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_buttons</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MainWindowGUI.update_gui"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.update_gui">[docs]</a>    <span class="k">def</span> <span class="nf">update_gui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Update gui not defined&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.connect_signals"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.connect_signals">[docs]</a>    <span class="k">def</span> <span class="nf">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_tracking_widget</span><span class="o">.</span><span class="n">apply_config</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_tracking_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span><span class="o">.</span><span class="n">apply_config</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.connect_buttons"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.connect_buttons">[docs]</a>    <span class="k">def</span> <span class="nf">connect_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span><span class="o">.</span><span class="n">button_histogram</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_histogram</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">histogram_tracks_widget</span><span class="o">.</span><span class="n">button_tracks</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_tracks</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.connect_actions"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.connect_actions">[docs]</a>    <span class="k">def</span> <span class="nf">connect_actions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionClose</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">safe_close</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionLoad_Config</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSave_Image</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionLoad_Data</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSnap_Photo</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Movie</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_movie</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStop_Movie</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_movie</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Continuous_Saves</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_continuous_saves</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStop_Continuous_Saves</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_continuous_saves</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSet_ROI</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_roi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionClear_ROI</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clear_roi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionConfiguration</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionToggle_bg_reduction</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background_reduction</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Tracking</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_tracking</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStop_Tracking</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_tracking</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStart_Linking</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_linking</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionStop_Linking</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_linking</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionSave_Tracks</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_saving_tracks</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionShow_Cheatsheet</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_cheat_sheet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionAbout</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_about</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionInitialize_Camera</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initialize_camera</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionUpdate_Histogram</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_histogram</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionTracking_Config</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_tracking_widget</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actionConfiguration</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span><span class="o">.</span><span class="n">show</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.initialize_camera"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.initialize_camera">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_camera</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Initialize Camera&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.show_about"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.show_about">[docs]</a>    <span class="k">def</span> <span class="nf">show_about</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Showing About&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.load_config"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.load_config">[docs]</a>    <span class="k">def</span> <span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loading config&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.snap"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.snap">[docs]</a>    <span class="k">def</span> <span class="nf">snap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Snapped a photo&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.save_image"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.save_image">[docs]</a>    <span class="k">def</span> <span class="nf">save_image</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Saved an image&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.start_movie"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.start_movie">[docs]</a>    <span class="k">def</span> <span class="nf">start_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Start a movie&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.stop_movie"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.stop_movie">[docs]</a>    <span class="k">def</span> <span class="nf">stop_movie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Stop movie not defined&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.start_continuous_saves"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.start_continuous_saves">[docs]</a>    <span class="k">def</span> <span class="nf">start_continuous_saves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started continuous saves&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.stop_continuous_saves"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.stop_continuous_saves">[docs]</a>    <span class="k">def</span> <span class="nf">stop_continuous_saves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Stop continuous Saves not implemented&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.start_tracking"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.start_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">start_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started tracking particles&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.stop_tracking"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.stop_tracking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_tracking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Stopped tracking particles&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.start_saving_tracks"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.start_saving_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">start_saving_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started saving tracks&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.stop_saving_tracks"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.stop_saving_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">stop_saving_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Stopped saving tracks&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.start_linking"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.start_linking">[docs]</a>    <span class="k">def</span> <span class="nf">start_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started linking particles&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.stop_linking"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.stop_linking">[docs]</a>    <span class="k">def</span> <span class="nf">stop_linking</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Stopped linking&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.configure"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Showed the config window&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.set_roi"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.set_roi">[docs]</a>    <span class="k">def</span> <span class="nf">set_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Setting the ROI&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.clear_roi"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.clear_roi">[docs]</a>    <span class="k">def</span> <span class="nf">clear_roi</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Resetting the ROI&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.background_reduction"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.background_reduction">[docs]</a>    <span class="k">def</span> <span class="nf">background_reduction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Setting background reduction&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.show_cheat_sheet"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.show_cheat_sheet">[docs]</a>    <span class="k">def</span> <span class="nf">show_cheat_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Showing the cheat sheet&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.load_data"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.load_data">[docs]</a>    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loading data&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.safe_close"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.safe_close">[docs]</a>    <span class="k">def</span> <span class="nf">safe_close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Closing the program&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.calculate_histogram"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.calculate_histogram">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_histogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Update Histogram method not defiend&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.update_tracks"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.update_tracks">[docs]</a>    <span class="k">def</span> <span class="nf">update_tracks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Update tracks method not defined&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.update_tracking_config"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.update_tracking_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_tracking_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Update Tracking config method not defined&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.update_config"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Update Config method not defined&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindowGUI.closeEvent"><a class="viewcode-back" href="../../../../developers/pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI.closeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_widget</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_tracking_widget</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MainWindowGUI</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="k">import</span> <span class="n">QApplication</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+    <span class="n">win</span> <span class="o">=</span> <span class="n">MainWindowGUI</span><span class="p">()</span>
+    <span class="n">win</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

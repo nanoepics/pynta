@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.model package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pynta.model.cameras package" href="pynta.model.cameras.html" />
+    <link rel="prev" title="pynta.exceptions package" href="pynta.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Information for Developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#view">View</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pynta.html">pynta package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta.config">pynta.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="modules.html">pynta</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html">pynta package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Information for Developers</a> &raquo;</li>
+        
+          <li><a href="pynta.html">pynta package</a> &raquo;</li>
+        
+      <li>pynta.model package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-model-package">
+<h1>pynta.model package<a class="headerlink" href="#pynta-model-package" title="Permalink to this headline">¶</a></h1>
+<p>Models are the place to develop the logic of how the devices are used and how the experiment is performed. You will find models for cameras and daqs. Cameras are heavily used in PyNTA, while DAQs where inherited from a previous incarnation and were left behind as a reference and to speed up future developments in which not only a camera has to be controlled but an external trigger or a different signal is required.</p>
+<p>The model for the experiment is the easiest place where the developer can have a sense of what is going on under-the-hood. You can check, for example, <a class="reference internal" href="pynta.model.experiment.nano_cet.html#pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking" title="pynta.model.experiment.nanoparticle_tracking.np_tracking.NPTracking"><code class="xref py py-mod docutils literal notranslate"><span class="pre">NPTracking</span></code></a> in order to see the steps that make a tracking measurement. Remember that the program runs with different threads and processes in parallel, and therefore the behavior may not be trivial to understand.</p>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pynta.model.cameras.html">pynta.model.cameras package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras.dummy_camera">pynta.model.cameras.dummy_camera module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.cameras.html#dummycamera-py">dummyCamera.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras.basler">pynta.model.cameras.basler module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.cameras.html#basler-camera-model">Basler Camera Model</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.cameras.html#some-assumptions">Some assumptions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras.hamamatsu">pynta.model.cameras.hamamatsu module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.cameras.html#hamamatsu-py">hamamatsu.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras.psi">pynta.model.cameras.psi module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.cameras.html#psi-py">psi.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras.simulate_brownian">pynta.model.cameras.simulate_brownian module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.cameras.html#simulate-brownian-py">simulate_brownian.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#pynta-model-cameras-skeleton-module">pynta.model.cameras.skeleton module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.cameras.html#module-pynta.model.cameras">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pynta.model.daqs.html">pynta.model.daqs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.daqs.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.daqs.html#pynta-model-daqs-ni-module">pynta.model.daqs.NI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.daqs.html#module-pynta.model.daqs.daq_dummy">pynta.model.daqs.daq_dummy module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.daqs.html#nanoparticle-tracking-model-daqs-daq-dummy-py">nanoparticle_tracking.model.daqs.daq_dummy.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.daqs.html#module-pynta.model.daqs.skeleton">pynta.model.daqs.skeleton module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.daqs.html#base-camera-py">base_camera.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.daqs.html#module-pynta.model.daqs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pynta.model.experiment.html">pynta.model.experiment package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.experiment.nano_cet.html">pynta.model.experiment.nano_cet package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.decorators">pynta.model.experiment.nano_cet.decorators module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#nano-cet-decorators">Nano CET decorators</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.exceptions">pynta.model.experiment.nano_cet.exceptions module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#nano-cet-exceptions">Nano CET exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.localization">pynta.model.experiment.nano_cet.localization module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#localization-routines">Localization Routines</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.np_tracking">pynta.model.experiment.nano_cet.nano_cet module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#nanoparticle-tracking-py">nanoparticle_tracking.py</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.saver">pynta.model.experiment.nano_cet.saver module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#nanoparticle-tracking-model-experiment-workersaver">nanoparticle_tracking.model.experiment.workerSaver</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.waterfall_worker">pynta.model.experiment.nano_cet.waterfall_worker module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking.np_tracking">pynta.model.experiment.nano_cet.win_nanocet module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#id9">nanoparticle_tracking.py</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.model.experiment.nano_cet.html#module-pynta.model.experiment.nanoparticle_tracking">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#module-pynta.model.experiment.base_experiment">pynta.model.experiment.base_experiment module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.experiment.html#base-experiment-py">base_experiment.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#module-pynta.model.experiment.publisher">pynta.model.experiment.publisher module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.experiment.html#publisher">Publisher</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#module-pynta.model.experiment.subscriber">pynta.model.experiment.subscriber module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.model.experiment.html#subscriber-py">subscriber.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.model.experiment.html#module-pynta.model.experiment">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-pynta.model">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.model" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pynta.model.cameras.html" class="btn btn-neutral float-right" title="pynta.model.cameras package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pynta.exceptions.html" class="btn btn-neutral float-left" title="pynta.exceptions package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

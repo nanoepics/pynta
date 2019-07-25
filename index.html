@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>PyNTA: Python Nanoparticle Tracking Analysis &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installing" href="installing.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>PyNTA: Python Nanoparticle Tracking Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-python-nanoparticle-tracking-analysis">
+<h1>PyNTA: Python Nanoparticle Tracking Analysis<a class="headerlink" href="#pynta-python-nanoparticle-tracking-analysis" title="Permalink to this headline">¶</a></h1>
+<p>Nanoparticle tracking analysis refers to a technique used for characterizing small objects optically. The base principle
+is that by following the movement of nanoparticles over time, it is possible to calculate their diffusion properties and
+thus derive their size.</p>
+<p>PyNTA aims at bridging the gap between experiments and results by combining data acquisition and analysis in one simple
+to use program.</p>
+<p>PyNTA is shipped as a package that can be installed into a virtual environment with the use of pip. It can be both
+triggered with a built in function or can be included into larger projects.</p>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>The best place to look for the code of the program is the repository at
+<a class="reference external" href="https://github.com/nanoepics/pynta">https://github.com/nanoepics/pynta</a>. In short, if you want to install PyNTA you
+can run the following command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">nanoepics</span><span class="o">/</span><span class="n">pynta</span>
+</pre></div>
+</div>
+<p>If you need further assistance with the installation of the code, please check <a class="reference internal" href="installing.html#installing"><span class="std std-ref">Installing</span></a>.</p>
+</div>
+<div class="section" id="start-the-program">
+<h2>Start the program<a class="headerlink" href="#start-the-program" title="Permalink to this headline">¶</a></h2>
+<p>After installing, the program can be started from the command line by running the following:</p>
+<blockquote>
+<div><p>python -m pynta -c config.yml</p>
+</div></blockquote>
+<p>Remember that config.yml needs to exist. To create your own configuration file, you can start with the example provided
+in the <a class="reference external" href="https://github.com/nanoepics/pynta/tree/master/examples">examples folder</a>. Once the program starts, it will
+look like the following:</p>
+<div class="figure align-default">
+<a class="reference internal image-reference" href="_images/screenshot_01.png"><img alt="screenshot" src="_images/screenshot_01.png" style="width: 834.5px; height: 493.5px;" /></a>
+</div>
+</div>
+<div class="section" id="contributing-to-the-program">
+<h2>Contributing to the Program<a class="headerlink" href="#contributing-to-the-program" title="Permalink to this headline">¶</a></h2>
+<p>The program is open source and therefore you can modify it in any way that you see fit. You have to remember that the
+code was written with a specific experiment in mind and therefore it may not fulfill or the requirements of more
+advanced imaging software.</p>
+<p>However the design of the program is such that would allow its expansion to meet future needs. In case you are wondering
+how the code can be improved you can start by reading <a class="reference internal" href="contribute_codebase.html#improving"><span class="std std-ref">How to Contribute Code</span></a>, or directly submerge yourself in the
+documentation of the different classes <span class="xref std std-ref">PyNTA</span>.</p>
+<p>If you want to start right away to improve the code, you can always look at the <a class="reference internal" href="list_todo.html#todo"><span class="std std-ref">List of Todo’s</span></a>.</p>
+</div>
+<div class="section" id="acknowledgements">
+<h2>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h2>
+<p>This program was developed by Aquiles Carattino with the support of funding from NWO, The Netherlands Scientific
+Organization, under VICI grant (PI: Prof. Allard Mosk) and Projectruimte FOM.PR1.005 grant (PI: Dr. Sanli Faez) . This work was carried on at Utrecht University in the months between June 2018 and June 2019.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installing.html">Installing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installing.html#operating-system-support">Operating System Support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example_config.html">The Config File</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_config.html#the-format">The Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_config.html#real-cameras">Real Cameras</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#opening-the-program">Opening the Program</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#the-tools">The Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#tracking-and-linking">Tracking and Linking</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers/index.html">Information for Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers/index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developers/index.html#model">Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developers/index.html#view">View</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="list_todo.html">List of Todo’s</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installing.html" class="btn btn-neutral float-right" title="Installing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

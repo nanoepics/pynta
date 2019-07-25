@@ -1,0 +1,473 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view.GUI.old.Monitor package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pynta" href="modules.html" />
+    <link rel="prev" title="pynta.view.GUI.old package" href="pynta.view.GUI.old.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Information for Developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#view">View</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pynta.html">pynta package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta.config">pynta.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="modules.html">pynta</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html">pynta package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Information for Developers</a> &raquo;</li>
+        
+          <li><a href="pynta.html">pynta package</a> &raquo;</li>
+        
+          <li><a href="pynta.view.html">pynta.view package</a> &raquo;</li>
+        
+          <li><a href="pynta.view.GUI.html">pynta.view.GUI package</a> &raquo;</li>
+        
+          <li><a href="pynta.view.GUI.old.html">pynta.view.GUI.old package</a> &raquo;</li>
+        
+      <li>pynta.view.GUI.old.Monitor package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.view.GUI.old.Monitor.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-view-gui-old-monitor-package">
+<h1>pynta.view.GUI.old.Monitor package<a class="headerlink" href="#pynta-view-gui-old-monitor-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.LocateParticle">
+<span id="pynta-view-gui-old-monitor-locateparticle-module"></span><h2>pynta.view.GUI.old.Monitor.LocateParticle module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.LocateParticle" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="opencet-view-locateparticle-py">
+<h3>openCET.View.LocateParticle.py<a class="headerlink" href="#opencet-view-locateparticle-py" title="Permalink to this headline">¶</a></h3>
+<p>The LocateParticle class contains necessary methods for localizing centroid of a particle and following its track.
+the idea is to make the output suitable for analysis with TrackPy of similar open-source tracking packages</p>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.LocateParticle.</code><code class="sig-name descname">LocatingParticle</code><span class="sig-paren">(</span><em class="sig-param">psize</em>, <em class="sig-param">step</em>, <em class="sig-param">noiselvl</em>, <em class="sig-param">imgsize</em>, <em class="sig-param">iniloc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/LocateParticle.html#LocatingParticle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>initiate the localization requirements
+:param psize: expected particle size (e.g. point spread function)
+:param step: expected step size for searching for next location
+:param noiselvl: noise level below which all image data will be set to zero
+:param iniloc: starting position [row, column] of the track passed by the monitoring routine
+:param imgsize: [number of rows, number of columns] in the analyzed image array
+[not implemented] consistently return success/failure messages regarding locating the particle</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.Locate">
+<code class="sig-name descname">Locate</code><span class="sig-paren">(</span><em class="sig-param">data_o</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/LocateParticle.html#LocatingParticle.Locate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.Locate" title="Permalink to this definition">¶</a></dt>
+<dd><p>extracts the particle localization information close the lastly known location (self.loc) and updates it</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.centroid">
+<code class="sig-name descname">centroid</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/LocateParticle.html#LocatingParticle.centroid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.centroid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.findParticleSize">
+<code class="sig-name descname">findParticleSize</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">location</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/LocateParticle.html#LocatingParticle.findParticleSize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.findParticleSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimates size of the PSF of the particle at the specified :location: in the :image:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.pointspread">
+<code class="sig-name descname">pointspread</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">cx</em>, <em class="sig-param">cy</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/LocateParticle.html#LocatingParticle.pointspread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.LocateParticle.LocatingParticle.pointspread" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.cameraViewer">
+<span id="pynta-view-gui-old-monitor-cameraviewer-module"></span><h2>pynta.view.GUI.old.Monitor.cameraViewer module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.cameraViewer" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-cameraviewer-py">
+<h3>UUTrack.View.Camera.cameraViewer.py<a class="headerlink" href="#uutrack-view-camera-cameraviewer-py" title="Permalink to this headline">¶</a></h3>
+<p>Independent window for viewing the camera. It is useful since it allows to quickly check the full CCD without changing the parameters of the main window. 
+It could have been design in such a way that can be run independently, for fast visualization without the need of controlling.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>The viewer should inherit from <code class="xref py py-mod docutils literal notranslate"><span class="pre">UUTrack.Viewer.Camera.cameraMainWidget</span></code> in order to have the same interface and not replicate code.</p>
+</div>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>Unify the main viewer with this one.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.cameraViewer.</code><code class="sig-name descname">cameraViewer</code><span class="sig-paren">(</span><em class="sig-param">session</em>, <em class="sig-param">camera</em>, <em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<p>Main window for the viewer.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.closeEvent">
+<code class="sig-name descname">closeEvent</code><span class="sig-paren">(</span><em class="sig-param">evnt</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggered at closing. If it is running as main window or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.closeViewer">
+<code class="sig-name descname">closeViewer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.closeViewer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.closeViewer" title="Permalink to this definition">¶</a></dt>
+<dd><p>What to do when the viewer is triggered to close from outside.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.getData">
+<code class="sig-name descname">getData</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">origin</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.getData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.getData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the data that is being gathered by the working thread.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.startCamera">
+<code class="sig-name descname">startCamera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.startCamera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.startCamera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a continuous acquisition of the camera.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.stopCamera">
+<code class="sig-name descname">stopCamera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.stopCamera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.stopCamera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the acquisition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.updateGUI">
+<code class="sig-name descname">updateGUI</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#cameraViewer.updateGUI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.cameraViewer.updateGUI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the GUI at regular intervals.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.cameraViewer.viewerWidget">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.cameraViewer.</code><code class="sig-name descname">viewerWidget</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/cameraViewer.html#viewerWidget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.cameraViewer.viewerWidget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Widget for holding the GUI elements of the viewer.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.clearQueueThread">
+<span id="pynta-view-gui-old-monitor-clearqueuethread-module"></span><h2>pynta.view.GUI.old.Monitor.clearQueueThread module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.clearQueueThread" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-clearqueuethread-py">
+<h3>UUTrack.View.Camera.clearQueueThread.py<a class="headerlink" href="#uutrack-view-camera-clearqueuethread-py" title="Permalink to this headline">¶</a></h3>
+<p>If one desires to clear the Queue without saving it, a thread should read all the elements of the Queue until it is empty. The documentation on Queues and Processes is a bit obscure as to know if there is a better way of deleting a Queue preserving its integrity.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If this Thread is run while the save thread is running there will be data loss without warning. Moreover, of the clear queue destroys the last element of the Queue before the saver arrives to it, te saver will not stop.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.clearQueueThread.clearQueueThread">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.clearQueueThread.</code><code class="sig-name descname">clearQueueThread</code><span class="sig-paren">(</span><em class="sig-param">q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/clearQueueThread.html#clearQueueThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.clearQueueThread.clearQueueThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtCore.QThread</span></code></p>
+<p>Clears the Queue.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.clearQueueThread.clearQueueThread.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/clearQueueThread.html#clearQueueThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.clearQueueThread.clearQueueThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears the queue.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.crossCut">
+<span id="pynta-view-gui-old-monitor-crosscut-module"></span><h2>pynta.view.GUI.old.Monitor.crossCut module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.crossCut" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-crosscut-py">
+<h3>UUTrack.View.Camera.crossCut.py<a class="headerlink" href="#uutrack-view-camera-crosscut-py" title="Permalink to this headline">¶</a></h3>
+<p>Window that displays a 1D plot of a cross cut on the main window.</p>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.crossCut.crossCutWindow">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.crossCut.</code><code class="sig-name descname">crossCutWindow</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/crossCut.html#crossCutWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.crossCut.crossCutWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<p>Simple window that relies on its parent for updating a 1-D plot.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.crossCut.crossCutWindow.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/crossCut.html#crossCutWindow.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.crossCut.crossCutWindow.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the 1-D plot. It is called externally from the main window.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.popOut">
+<span id="pynta-view-gui-old-monitor-popout-module"></span><h2>pynta.view.GUI.old.Monitor.popOut module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.popOut" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-monitor-popout-py">
+<h3>UUTrack.View.Monitor.popOut.py<a class="headerlink" href="#uutrack-view-monitor-popout-py" title="Permalink to this headline">¶</a></h3>
+<p>Pop-out window that can show predefined messages</p>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.popOut.popOutWindow">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.popOut.</code><code class="sig-name descname">popOutWindow</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/popOut.html#popOutWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.popOut.popOutWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QWidget</span></code></p>
+<p>Simple window that contains the message text.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupMessage">
+<code class="sig-name descname">setupMessage</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/popOut.html#popOutWindow.setupMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupMessage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the message box with a title that will always be displayed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupStyles">
+<code class="sig-name descname">setupStyles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/popOut.html#popOutWindow.setupStyles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.popOut.popOutWindow.setupStyles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setups three styles for the bars: Red, Yellow and Default. It is meant to be more graphical to the user regarding
+the availability of resources.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.resources">
+<span id="pynta-view-gui-old-monitor-resources-module"></span><h2>pynta.view.GUI.old.Monitor.resources module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.resources" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-monitor-resources-py">
+<h3>UUTrack.View.Monitor.resources.py<a class="headerlink" href="#uutrack-view-monitor-resources-py" title="Permalink to this headline">¶</a></h3>
+<p>Resource object code</p>
+<p>Created by: The Resource Compiler for PyQt4 (Qt v4.8.7)</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All changes made in this file will be lost!</p>
+</div>
+<dl class="function">
+<dt id="pynta.view.GUI.old.Monitor.resources.qCleanupResources">
+<code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.resources.</code><code class="sig-name descname">qCleanupResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/resources.html#qCleanupResources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.resources.qCleanupResources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pynta.view.GUI.old.Monitor.resources.qInitResources">
+<code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.resources.</code><code class="sig-name descname">qInitResources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/resources.html#qInitResources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.resources.qInitResources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor.specialTaskTrack">
+<span id="pynta-view-gui-old-monitor-specialtasktrack-module"></span><h2>pynta.view.GUI.old.Monitor.specialTaskTrack module<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor.specialTaskTrack" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="uutrack-view-camera-specialtaskworker-py">
+<h3>UUTrack.View.Camera.specialTaskWorker.py<a class="headerlink" href="#uutrack-view-camera-specialtaskworker-py" title="Permalink to this headline">¶</a></h3>
+<p>Similar to the <span class="xref std std-ref">UUTrack.View.Camera.workerThread</span>, the special task worker is designed for running in a separate thread a task other than just acquiring from the camera.
+For example, one can use this to activate some feedback loop.
+In order to see this in action, check <code class="xref py py-meth docutils literal notranslate"><span class="pre">startSpecialTask</span></code></p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Make something out of this class more than just extracting the centroid.</p>
+</div>
+<dl class="class">
+<dt id="pynta.view.GUI.old.Monitor.specialTaskTrack.specialTaskTracking">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.GUI.old.Monitor.specialTaskTrack.</code><code class="sig-name descname">specialTaskTracking</code><span class="sig-paren">(</span><em class="sig-param">_session</em>, <em class="sig-param">camera</em>, <em class="sig-param">noiselvl</em>, <em class="sig-param">imgsize</em>, <em class="sig-param">iniloc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/specialTaskTrack.html#specialTaskTracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.specialTaskTrack.specialTaskTracking" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtCore.QThread</span></code></p>
+<p>Thread for performing a specific task, for example tracking of a particle in ‘real-time’.
+It takes as an input variables _session, camera,  and inipos: x, y, particle position.
+What the coordinates are, depends on specific applications.</p>
+<dl class="method">
+<dt id="pynta.view.GUI.old.Monitor.specialTaskTrack.specialTaskTracking.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/GUI/old/Monitor/specialTaskTrack.html#specialTaskTracking.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.GUI.old.Monitor.specialTaskTrack.specialTaskTracking.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a task after calling the start() method, for example acquires an image and computes the centroid.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view.GUI.old.Monitor">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.view.GUI.old.Monitor" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="pynta" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pynta.view.GUI.old.html" class="btn btn-neutral float-left" title="pynta.view.GUI.old package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

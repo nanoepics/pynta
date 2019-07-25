@@ -1,0 +1,648 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.controller.devices.hamamatsu package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>pynta.controller.devices.hamamatsu package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.controller.devices.hamamatsu.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-controller-devices-hamamatsu-package">
+<h1>pynta.controller.devices.hamamatsu package<a class="headerlink" href="#pynta-controller-devices-hamamatsu-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.controller.devices.hamamatsu.hamamatsu_camera">
+<span id="pynta-controller-devices-hamamatsu-hamamatsu-camera-module"></span><h2>pynta.controller.devices.hamamatsu.hamamatsu_camera module<a class="headerlink" href="#module-pynta.controller.devices.hamamatsu.hamamatsu_camera" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="hamamatsu-camera-py">
+<h3>hamamatsu_camera.py<a class="headerlink" href="#hamamatsu-camera-py" title="Permalink to this headline">¶</a></h3>
+<p>File taken from <a class="reference external" href="https://github.com/ZhuangLab/storm-control">ZhuangLab</a></p>
+<p>A ctypes based interface to Hamamatsu cameras.
+(tested on a sCMOS Flash 4.0).</p>
+<p>The documentation is a little confusing to me on this subject..
+I used c_int32 when this is explicitly specified, otherwise I use c_int.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>I’m using the “old” functions because these are documented. Switch to the “new” functions at some point.</p>
+</div>
+<div class="admonition-todo admonition" id="id2">
+<p class="admonition-title">Todo</p>
+<p>How to stream 2048 x 2048 at max frame rate to the flash disk? The Hamamatsu software can do this.</p>
+</div>
+<p>Copyright: Hazen Babcock
+This file was adapted to Python 3 and documented in the numpy style by Aquiles Carattino &lt;<a class="reference external" href="mailto:aquiles&#37;&#52;&#48;aquicarattino&#46;com">aquiles<span>&#64;</span>aquicarattino<span>&#46;</span>com</a>&gt;</p>
+<dl class="exception">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAMException">
+<em class="property">exception </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">DCAMException</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#DCAMException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAMException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Monitor exceptions.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">DCAM_PARAM_PROPERTYATTR</code><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#DCAM_PARAM_PROPERTYATTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ctypes.Structure</span></code></p>
+<p>The dcam property attribute structure.</p>
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.attribute">
+<code class="sig-name descname">attribute</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.attribute2">
+<code class="sig-name descname">attribute2</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.attribute2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.cbSize">
+<code class="sig-name descname">cbSize</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.cbSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iGroup">
+<code class="sig-name descname">iGroup</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp">
+<code class="sig-name descname">iProp</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iPropStep_Element">
+<code class="sig-name descname">iPropStep_Element</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iPropStep_Element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp_ArrayBase">
+<code class="sig-name descname">iProp_ArrayBase</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp_ArrayBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp_NumberOfElement">
+<code class="sig-name descname">iProp_NumberOfElement</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iProp_NumberOfElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iReserved1">
+<code class="sig-name descname">iReserved1</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iReserved1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iReserved3">
+<code class="sig-name descname">iReserved3</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iReserved3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iUnit">
+<code class="sig-name descname">iUnit</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.iUnit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.nMaxChannel">
+<code class="sig-name descname">nMaxChannel</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.nMaxChannel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.nMaxView">
+<code class="sig-name descname">nMaxView</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.nMaxView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.option">
+<code class="sig-name descname">option</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuedefault">
+<code class="sig-name descname">valuedefault</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuedefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuemax">
+<code class="sig-name descname">valuemax</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuemax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuemin">
+<code class="sig-name descname">valuemin</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuemin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuestep">
+<code class="sig-name descname">valuestep</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYATTR.valuestep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">DCAM_PARAM_PROPERTYVALUETEXT</code><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#DCAM_PARAM_PROPERTYVALUETEXT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_ctypes.Structure</span></code></p>
+<p>The dcam text property structure.</p>
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.cbSize">
+<code class="sig-name descname">cbSize</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.cbSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.iProp">
+<code class="sig-name descname">iProp</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.iProp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.text">
+<code class="sig-name descname">text</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.textbytes">
+<code class="sig-name descname">textbytes</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.textbytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.value">
+<code class="sig-name descname">value</code><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.DCAM_PARAM_PROPERTYVALUETEXT.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Structure/Union member</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">HCamData</code><span class="sig-paren">(</span><em class="sig-param">size</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HCamData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Hamamatsu camera data object.
+Initially I tried to use create_string_buffer() to allocate storage for the
+data from the camera but this turned out to be too slow. The software
+kept falling behind the camera and create_string_buffer() seemed to be the
+bottleneck.</p>
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.copyData">
+<code class="sig-name descname">copyData</code><span class="sig-paren">(</span><em class="sig-param">address</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HCamData.copyData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.copyData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getData">
+<code class="sig-name descname">getData</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HCamData.getData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getDataPtr">
+<code class="sig-name descname">getDataPtr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HCamData.getDataPtr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HCamData.getDataPtr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">HamamatsuCamera</code><span class="sig-paren">(</span><em class="sig-param">camera_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.CAPTUREMODE_SEQUENCE">
+<code class="sig-name descname">CAPTUREMODE_SEQUENCE</code><em class="property"> = 1</em><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.CAPTUREMODE_SEQUENCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Basic camera interface class.
+This version uses the Hamamatsu library to allocate camera buffers.
+Storage for the data from the camera is allocated dynamically and
+copied out of the camera buffers.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.CAPTUREMODE_SNAP">
+<code class="sig-name descname">CAPTUREMODE_SNAP</code><em class="property"> = 0</em><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.CAPTUREMODE_SNAP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.captureSetup">
+<code class="sig-name descname">captureSetup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.captureSetup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.captureSetup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Capture setup (internal use only). This is called at the start
+of new acquisition sequence to determine the current ROI and
+get the camera configured properly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.checkStatus">
+<code class="sig-name descname">checkStatus</code><span class="sig-paren">(</span><em class="sig-param">fn_return</em>, <em class="sig-param">fn_name='unknown'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.checkStatus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.checkStatus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check return value of the dcam function call.
+Throw an error if not as expected?
+&#64;return The return value of the function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.fireTrigger">
+<code class="sig-name descname">fireTrigger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.fireTrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.fireTrigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triggers the camera when in software mode.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getCameraProperties">
+<code class="sig-name descname">getCameraProperties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getCameraProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getCameraProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ids &amp; names of all the properties that the camera supports. This
+is used at initialization to populate the self.properties attribute.
+&#64;return A python dictionary of camera properties.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getFrames">
+<code class="sig-name descname">getFrames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getFrames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getFrames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all of the available frames.
+This will block waiting for new frames even if
+there new frames available when it is called.
+&#64;return [frames, [frame x size, frame y size]].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getModelInfo">
+<code class="sig-name descname">getModelInfo</code><span class="sig-paren">(</span><em class="sig-param">camera_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getModelInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getModelInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the model of the camera
+&#64;param camera_id The (integer) camera id number.
+&#64;return A string containing the camera name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getProperties">
+<code class="sig-name descname">getProperties</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getProperties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getProperties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the list of camera properties. This is the one to call if you
+want to know the camera properties.
+&#64;return A dictionary of camera properties.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyAttribute">
+<code class="sig-name descname">getPropertyAttribute</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getPropertyAttribute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the attribute structure of a particular property.
+FIXME (OPTIMIZATION): Keep track of known attributes?
+&#64;param property_name The name of the property to get the attributes of.
+&#64;return A DCAM_PARAM_PROPERTYATTR object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRW">
+<code class="sig-name descname">getPropertyRW</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getPropertyRW"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return if a property is readable / writeable.
+&#64;return [True/False (readable), True/False (writeable)].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRange">
+<code class="sig-name descname">getPropertyRange</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getPropertyRange"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyRange" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the range for an attribute.
+&#64;param property_name The name of the property (as a string).
+&#64;return [minimum value, maximum value].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyText">
+<code class="sig-name descname">getPropertyText</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getPropertyText"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the text options of a property (if any).
+&#64;param property_name The name of the property to get the text values of.
+&#64;return A dictionary of text properties (which may be empty).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyValue">
+<code class="sig-name descname">getPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.getPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.getPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current setting of a particular property.
+&#64;param property_name The name of the property.
+&#64;return [the property value, the property type].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.initCamera">
+<code class="sig-name descname">initCamera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.initCamera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.initCamera" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.isCameraProperty">
+<code class="sig-name descname">isCameraProperty</code><span class="sig-paren">(</span><em class="sig-param">property_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.isCameraProperty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.isCameraProperty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a property name is supported by the camera.
+&#64;param property_name The name of the property.
+return True/False if property_name is a supported camera property.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.newFrames">
+<code class="sig-name descname">newFrames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.newFrames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.newFrames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of the ids of all the new frames since the last check.
+This will block waiting for at least one new frame.
+&#64;return [id of the first frame, .. , id of the last frame]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setPropertyValue">
+<code class="sig-name descname">setPropertyValue</code><span class="sig-paren">(</span><em class="sig-param">property_name</em>, <em class="sig-param">property_value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.setPropertyValue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setPropertyValue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the value of a property.
+&#64;param property_name The name of the property.
+&#64;param property_value The value to set the property to.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setSubArrayMode">
+<code class="sig-name descname">setSubArrayMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.setSubArrayMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setSubArrayMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>This sets the sub-array mode as appropriate based on the current ROI.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setmode">
+<code class="sig-name descname">setmode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.setmode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.setmode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the acquisition mode of the camera.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.settrigger">
+<code class="sig-name descname">settrigger</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.settrigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.settrigger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.shutdown">
+<code class="sig-name descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.shutdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.shutdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close down the connection to the camera.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.startAcquisition">
+<code class="sig-name descname">startAcquisition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.startAcquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.startAcquisition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start data acquisition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.stopAcquisition">
+<code class="sig-name descname">stopAcquisition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCamera.stopAcquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera.stopAcquisition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop data acquisition.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">HamamatsuCameraMR</code><span class="sig-paren">(</span><em class="sig-param">camera_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCameraMR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera" title="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCamera</span></code></a></p>
+<p># Memory recycling camera class.
+This version allocates “user memory” for the Hamamatsu camera
+buffers. This memory is also the location of the storage for
+the np_array element of a HCamData() class. The memory is
+allocated once at the beginning, then recycled. This means
+that there is a lot less memory allocation &amp; shuffling compared
+to the basic class, which performs one allocation and (I believe)
+two copies for each frame that is acquired.
+WARNING: There is the potential here for chaos. Since the memory</p>
+<blockquote>
+<div><p>is now shared there is the possibility that downstream code
+will try and access the same bit of memory at the same time
+as the camera and this could end badly.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>FIXME: Use lockbits (and unlockbits) to avoid memory clashes?</dt><dd><p>This would probably also involve some kind of reference counting
+scheme.</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.getFrames">
+<code class="sig-name descname">getFrames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCameraMR.getFrames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.getFrames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets all of the available frames.
+This will block waiting for new frames even if there new frames
+available when it is called.
+FIXME: It does not always seem to block? The length of frames can</p>
+<blockquote>
+<div><p>be zero. Are frames getting dropped? Some sort of race condition?</p>
+</div></blockquote>
+<p>return [frames, [frame x size, frame y size]]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.startAcquisition">
+<code class="sig-name descname">startAcquisition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCameraMR.startAcquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.startAcquisition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allocate as many frames as will fit in 2GB of memory and start data acquisition.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.stopAcquisition">
+<code class="sig-name descname">stopAcquisition</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#HamamatsuCameraMR.stopAcquisition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.HamamatsuCameraMR.stopAcquisition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stops the acquisition and releases the memory associated with the frames.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pynta.controller.devices.hamamatsu.hamamatsu_camera.convertPropertyName">
+<code class="sig-prename descclassname">pynta.controller.devices.hamamatsu.hamamatsu_camera.</code><code class="sig-name descname">convertPropertyName</code><span class="sig-paren">(</span><em class="sig-param">p_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/controller/devices/hamamatsu/hamamatsu_camera.html#convertPropertyName"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.controller.devices.hamamatsu.hamamatsu_camera.convertPropertyName" title="Permalink to this definition">¶</a></dt>
+<dd><p>“Regularizes” a property name. We are using all lowercase names with
+the spaces replaced by underscores.
+&#64;param p_name The property name string to regularize.
+&#64;return The regularized property name.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.controller.devices.hamamatsu">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.controller.devices.hamamatsu" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

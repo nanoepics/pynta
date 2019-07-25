@@ -1,0 +1,1075 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.controller.devices.photonicscience.scmoscam &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../../../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developers/index.html">Information for Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../../../index.html">Module code</a> &raquo;</li>
+        
+      <li>pynta.controller.devices.photonicscience.scmoscam</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for pynta.controller.devices.photonicscience.scmoscam</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    scmoscam.py</span>
+<span class="sd">    ~~~~~~~~~~~</span>
+<span class="sd">    Driver for Photonic Science Cameras (Pleora GEV). This driver was originally written by Perceval Guillou</span>
+<span class="sd">    &lt;perceval@photonic-science.com&gt;, in Py2 and has been successfully tested with scmoscontrol.dll SCMOS Pleora (GEV)</span>
+<span class="sd">    control dll (x86 )v5.6.0.0 (date modified 10/2/2013)</span>
+
+<span class="sd">    This version copyright: Sanli Faez &lt;s.faez@uu.nl&gt;</span>
+
+<span class="sd">    .. todo:: The coding style is not in line with the rest of PyNTA. The GEVSMOS class can be cleaned up and documented</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ctypes</span> <span class="k">as</span> <span class="nn">C</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">sys</span> <span class="k">import</span> <span class="n">platform</span>
+
+<span class="k">if</span> <span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux&quot;</span> <span class="ow">or</span> <span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;linux2&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;darwin&quot;</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">elif</span> <span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">_ctypes</span> <span class="k">import</span> <span class="n">LoadLibrary</span><span class="p">,</span> <span class="n">FreeLibrary</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="n">NUMPY_MODES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s2">&quot;I;16&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="GEVSCMOS"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS">[docs]</a><span class="k">class</span> <span class="nc">GEVSCMOS</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cwd_path</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span> <span class="o">=</span> <span class="n">cwd_path</span>  <span class="c1"># working directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>  <span class="c1"># Monitor name = folder where DLL and settings are stored</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="se">\\</span><span class="s2">PSL_camera_files</span><span class="se">\\</span><span class="s2">ps_setup.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cwd_path</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetDLL</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LoadCamDLL</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ResetOptions</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Monitor setting located in </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg</span>
+
+<div class="viewcode-block" id="GEVSCMOS.GetDLL"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLL">[docs]</a>    <span class="k">def</span> <span class="nf">GetDLL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">FileList</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">FileList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.dll&quot;</span><span class="p">:</span>
+                <span class="n">dll_name</span> <span class="o">=</span> <span class="n">file</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Check in &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">!!!CAMERA CONTROL DLL NOT FOUND!!!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">elif</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Check in &#39;</span><span class="si">%s</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">!!!ONLY ONE DLL FILE MUST EXIST IN THE CAMERA FOLDER!!!&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dll_name</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.LoadCamDLL"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.LoadCamDLL">[docs]</a>    <span class="k">def</span> <span class="nf">LoadCamDLL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">libHandle</span> <span class="o">=</span> <span class="n">LoadLibrary</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll_name</span><span class="p">))</span>
+        <span class="c1"># self.libHandle = C.windll.kernel32.LoadLibraryA(&#39;%s\\%s\\%s&#39;%(self.cwd_path,self.name,self.dll_name))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">CDLL</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">handle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">libHandle</span><span class="p">)</span>  <span class="c1"># cdecl</span>
+        <span class="c1"># self.dll = C.WinDLL(None, handle=self.libHandle)  #stdcall</span>
+        <span class="c1"># self.dll = C.CDLL(&#39;%s\\%s\\%s&#39;%(self.cwd_path,self.name,self.dll_name))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">InitFunctions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.UnloadCamDLL"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UnloadCamDLL">[docs]</a>    <span class="k">def</span> <span class="nf">UnloadCamDLL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">FreeLibrary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">libHandle</span><span class="p">)</span></div>
+        <span class="c1"># C.windll.kernel32.FreeLibrary(self.libHandle)</span>
+
+<div class="viewcode-block" id="GEVSCMOS.ResetOptions"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.ResetOptions">[docs]</a>    <span class="k">def</span> <span class="nf">ResetOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;I;16&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizemax</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1919</span><span class="p">,</span> <span class="mi">1079</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abort_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remapping</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SubArea</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SoftBin</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">expous</span> <span class="o">=</span> <span class="mi">100000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FlatAverage</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GlobalRemap</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempread</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># self.is2tap = False</span>
+
+        <span class="c1"># 0 = gain mode 1 - 16 bit</span>
+        <span class="c1"># 1 = gain mode 2 - 16 bit</span>
+        <span class="c1"># 2 = gain mode 10 - 16 bit</span>
+        <span class="c1"># 3 = gain mode 30 - 16 bit</span>
+        <span class="c1"># 4 = combined (1 and 30) in software - 24 =&gt; Demangle =&gt; 16 bit</span>
+        <span class="c1"># 5 = combined in hardware - 16 bit</span>
+        <span class="c1"># 6 = gain mode 1 - 8 bit</span>
+        <span class="c1"># 7 = gain mode 2 - 8 bit</span>
+        <span class="c1"># 8 = gain mode 10 - 8 bit</span>
+        <span class="c1"># 9 = gain mode 30 - 8 bit</span>
+        <span class="c1"># 10= combined in hardware - 8bit</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">IsInCamCor</span><span class="p">():</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Has8bitGainModes</span><span class="p">():</span>
+                <span class="n">gainmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gain1&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2&#39;</span><span class="p">,</span> <span class="s1">&#39;gain10&#39;</span><span class="p">,</span> <span class="s1">&#39;gain30&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1+30_Hardware&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1_8b&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2_8b&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;gain10_8b&#39;</span><span class="p">,</span> <span class="s1">&#39;gain30_8b&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1+30_8b&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gainmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gain1&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2&#39;</span><span class="p">,</span> <span class="s1">&#39;gain10&#39;</span><span class="p">,</span> <span class="s1">&#39;gain30&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1+30_Hardware&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">Has8bitGainModes</span><span class="p">():</span>
+                <span class="n">gainmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gain1&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2&#39;</span><span class="p">,</span> <span class="s1">&#39;gain10&#39;</span><span class="p">,</span> <span class="s1">&#39;gain30&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1+30&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1_8b&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2_8b&#39;</span><span class="p">,</span> <span class="s1">&#39;gain10_8b&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;gain30_8b&#39;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gainmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gain1&#39;</span><span class="p">,</span> <span class="s1">&#39;gain2&#39;</span><span class="p">,</span> <span class="s1">&#39;gain10&#39;</span><span class="p">,</span> <span class="s1">&#39;gain30&#39;</span><span class="p">,</span> <span class="s1">&#39;gain1+30&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">HasClockSpeedLimit</span><span class="p">():</span>
+            <span class="n">clockspeedmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;50MHz&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">clockspeedmodes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;50MHz&#39;</span><span class="p">,</span> <span class="s1">&#39;100MHz&#39;</span><span class="p">]</span>  <span class="c1"># ,&#39;200MHz&#39;</span>
+
+        <span class="c1"># self.flipdata = self.IsFlipped()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">Options</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;TriggerMode&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;FreeRunning&#39;</span><span class="p">,</span> <span class="s1">&#39;Software&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;Hardware_Falling&#39;</span><span class="p">,</span> <span class="s1">&#39;Hardware_Rising&#39;</span><span class="p">],</span>
+            <span class="s1">&#39;ClockSpeedMode&#39;</span><span class="p">:</span> <span class="n">clockspeedmodes</span><span class="p">,</span>
+            <span class="s1">&#39;GainMode&#39;</span><span class="p">:</span> <span class="n">gainmodes</span><span class="p">,</span>
+            <span class="s1">&#39;PowerSavingMode&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;PowerOn&#39;</span><span class="p">,</span> <span class="s1">&#39;PowerOff&#39;</span><span class="p">,</span> <span class="s1">&#39;CoolingOff&#39;</span><span class="p">],</span>
+            <span class="c1"># &#39;VideoGain&#39;          :[0,100],</span>
+            <span class="s1">&#39;IntensifierGain&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+            <span class="c1"># &#39;ChipGain&#39;           :[1,100],</span>
+            <span class="s1">&#39;SoftBin&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1040</span><span class="p">,</span> <span class="mi">1040</span><span class="p">)],</span>
+            <span class="s1">&#39;SubArea&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+            <span class="s1">&#39;Exposure&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;Millisec&#39;</span><span class="p">),</span> <span class="p">(</span><span class="mi">4294967</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Microsec&#39;</span><span class="p">,</span> <span class="s1">&#39;Millisec&#39;</span><span class="p">,</span> <span class="s1">&#39;Second&#39;</span><span class="p">])],</span>
+            <span class="s1">&#39;Temperature&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;Offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;BrightPixel&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s1">&#39;FlatField&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;MakeFlat&#39;</span><span class="p">:</span> <span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+            <span class="s1">&#39;FlatAverage&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+            <span class="s1">&#39;Remapping&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;Smooth&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;Clip&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;Sharpening&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;AutoLevel&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;ALC_maxexp&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">65535</span><span class="p">],</span>
+            <span class="s1">&#39;ALC_win&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1919</span><span class="p">,</span> <span class="mi">1079</span><span class="p">)],</span>
+            <span class="s1">&#39;BestFit&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;BF_Peek&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">65535</span><span class="p">],</span>
+            <span class="s1">&#39;IF_delay&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">65535</span><span class="p">],</span>
+            <span class="s1">&#39;BinningFilter&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;AutoBinning&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;Gamma&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s1">&#39;GammaPeak&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+            <span class="s1">&#39;GammaBright&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+            <span class="c1"># &#39;FlickerMode&#39;        :[&#39;Off&#39;,&#39;50MHz&#39;,&#39;60MHz&#39;],</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.InitFunctions"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitFunctions">[docs]</a>    <span class="k">def</span> <span class="nf">InitFunctions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_image_pointer</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_demangle_rgb24_into_16bit_image</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_remap_image</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_pointer_to_safebufferA</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_pointer_to_safebufferB</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_pointer_to_safebufferC</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">POINTER</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_char</span><span class="p">)</span>  <span class="c1"># ushort</span>
+        <span class="c1"># Bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Open</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_open_map</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Close</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_speed</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_video_gain</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_chip_gain</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_exposure</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_sub_area_coordinates</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_offset_subtraction</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_bright_pixel_correction</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_flat_field_correction</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Snap_and_return</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Get_snap_status</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_abort_snap</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_apply_post_snap_processing</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_gamma</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gamma_gain_bright</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gamma_gain_brightness</span><span class="o">.</span><span class="n">restype</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_bool</span></div>
+        <span class="c1"># self.dll.PSL_VHR_set_flicker_mode.restype = C.c_bool</span>
+
+<div class="viewcode-block" id="GEVSCMOS.IsInCamCor"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsInCamCor">[docs]</a>    <span class="k">def</span> <span class="nf">IsInCamCor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">isincamcor</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;onboardcorrectionssupported&quot;</span><span class="p">,</span> <span class="s2">&quot;incameracorrections&quot;</span><span class="p">]:</span>
+                    <span class="n">isincamcor</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">isincamcor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.IsFlipped"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsFlipped">[docs]</a>    <span class="k">def</span> <span class="nf">IsFlipped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">isflip</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;swflipimage&quot;</span><span class="p">]:</span>
+                    <span class="n">isflip</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">isflip</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetRemapSize"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRemapSize">[docs]</a>    <span class="k">def</span> <span class="nf">GetRemapSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">remapsize</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Submapwidth&quot;</span><span class="p">,</span> <span class="s2">&quot;submapwidth&quot;</span><span class="p">]:</span>
+                    <span class="n">Nx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Submapheight&quot;</span><span class="p">,</span> <span class="s2">&quot;submapheight&quot;</span><span class="p">]:</span>
+                    <span class="n">Ny</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+            <span class="n">remapsize</span> <span class="o">=</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># print &quot;remap size is (%s,%s)&quot;%remapsize</span>
+
+        <span class="k">return</span> <span class="n">remapsize</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.HasIntensifier"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasIntensifier">[docs]</a>    <span class="k">def</span> <span class="nf">HasIntensifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">intensifier_value</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;intensifiergaincanbeset&quot;</span><span class="p">,</span> <span class="s2">&quot;IntensifierGainCanBeSet&quot;</span><span class="p">,</span> <span class="s2">&quot;HasIntensifier&quot;</span><span class="p">,</span> <span class="s2">&quot;hasintensifier&quot;</span><span class="p">]:</span>
+                    <span class="n">intensifier_value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">intensifier_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.HasTemperature"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasTemperature">[docs]</a>    <span class="k">def</span> <span class="nf">HasTemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tempset</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">tempread</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TemperatureCanBeSet&quot;</span><span class="p">,</span> <span class="s2">&quot;temperaturecanbeset&quot;</span><span class="p">]:</span>
+                    <span class="n">tempset</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;TemperatureCanBeRead&quot;</span><span class="p">,</span> <span class="s2">&quot;temperaturecanberead&quot;</span><span class="p">]:</span>
+                    <span class="n">tempread</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">tempset</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">tempset</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">tempread</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">tempread</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.HasHPMapping"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasHPMapping">[docs]</a>    <span class="k">def</span> <span class="nf">HasHPMapping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">use_hpm_remap</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;viewer_use_hp_mapping&quot;</span><span class="p">]:</span>
+                    <span class="n">use_hpm_remap</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;HasHPMapping: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">use_hpm_remap</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.HasBinning"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasBinning">[docs]</a>    <span class="k">def</span> <span class="nf">HasBinning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">use_binning</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;binning_supported&quot;</span><span class="p">]:</span>
+                    <span class="n">use_binning</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;HasBinning: </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">use_binning</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.HasClockSpeedLimit"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.HasClockSpeedLimit">[docs]</a>    <span class="k">def</span> <span class="nf">HasClockSpeedLimit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">clockspeedlimit</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;hasclockspeedlimit&quot;</span><span class="p">,</span> <span class="s2">&quot;clockspeedlimit&quot;</span><span class="p">]:</span>
+                    <span class="n">clockspeedlimit</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">clockspeedlimit</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.Has8bitGainModes"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Has8bitGainModes">[docs]</a>    <span class="k">def</span> <span class="nf">Has8bitGainModes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">has8bit</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setup_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;remove_8bit_gainmodes&quot;</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">has8bit</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">has8bit</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">break</span>
+
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">has8bit</span><span class="p">)</span></div>
+
+    <span class="c1"># ------ CAMERA PROPERTIES ---------------------------------</span>
+<div class="viewcode-block" id="GEVSCMOS.GetName"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetName">[docs]</a>    <span class="k">def</span> <span class="nf">GetName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetDLLName"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetDLLName">[docs]</a>    <span class="k">def</span> <span class="nf">GetDLLName</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll_name</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetMode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetMode">[docs]</a>    <span class="k">def</span> <span class="nf">GetMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetState"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetState">[docs]</a>    <span class="k">def</span> <span class="nf">GetState</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetPedestal"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetPedestal">[docs]</a>    <span class="k">def</span> <span class="nf">GetPedestal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pedestal</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetOptions"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetOptions">[docs]</a>    <span class="k">def</span> <span class="nf">GetOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Options</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetSize"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSize">[docs]</a>    <span class="k">def</span> <span class="nf">GetSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetSizeMax"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSizeMax">[docs]</a>    <span class="k">def</span> <span class="nf">GetSizeMax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sizemax</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.UpdateSizeMax"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSizeMax">[docs]</a>    <span class="k">def</span> <span class="nf">UpdateSizeMax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Nx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_maximum_width</span><span class="p">()</span>
+        <span class="n">Ny</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_maximum_height</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizemax</span> <span class="o">=</span> <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sizemax</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.UpdateSize"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.UpdateSize">[docs]</a>    <span class="k">def</span> <span class="nf">UpdateSize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Nx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_width</span><span class="p">()</span>
+        <span class="n">Ny</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_height</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span></div>
+
+    <span class="c1"># ----- Specificities -----------------------------------------------------------------</span>
+<div class="viewcode-block" id="GEVSCMOS.SelectIportDevice"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SelectIportDevice">[docs]</a>    <span class="k">def</span> <span class="nf">SelectIportDevice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="se">\\</span><span class="s2">IPconf.dat&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">IP_add</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mac_add</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">IsIport</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">fich</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">fich</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">fich</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;MAC&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mac_add</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">elif</span> <span class="n">option</span> <span class="o">==</span> <span class="s2">&quot;IP&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">IP_add</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mac_add</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">IP_add</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_select_IPORT_device</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_select_IPORT_device</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mac_add</span><span class="p">,</span> <span class="s2">&quot;[</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">IP_add</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">IsIport</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="c1"># -------- CAMERA STANTARD FUNCTIONS ------------------</span>
+<div class="viewcode-block" id="GEVSCMOS.Open"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Open">[docs]</a>    <span class="k">def</span> <span class="nf">Open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="se">\\</span><span class="si">%s</span><span class="se">\\</span><span class="s2">PSL_camera_files&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cwd_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SelectIportDevice</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenMap</span><span class="p">():</span>
+                <span class="c1"># del self.Options[&#39;Remapping&#39;]</span>
+                <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">IsIntensifier</span><span class="p">():</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">Options</span><span class="p">[</span><span class="s1">&#39;IntensifierGain&#39;</span><span class="p">]</span>
+
+            <span class="n">Temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">HasTemperature</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">Temp</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tempread</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tempread</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">UpdateSizeMax</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Options</span><span class="p">[</span><span class="s2">&quot;SubArea&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Options</span><span class="p">[</span><span class="s2">&quot;ALC_win&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">SetSubArea</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">UpdateSize</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.Close"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Close">[docs]</a>    <span class="k">def</span> <span class="nf">Close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UnloadCamDLL</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetSubArea"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSubArea">[docs]</a>    <span class="k">def</span> <span class="nf">SetSubArea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SubArea</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_sub_area_coordinates</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">top</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">UpdateSize</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rep</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetSoftBin"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetSoftBin">[docs]</a>    <span class="k">def</span> <span class="nf">SetSoftBin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Sx</span><span class="p">,</span> <span class="n">Sy</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SoftBin</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sx</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetExposure"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetExposure">[docs]</a>    <span class="k">def</span> <span class="nf">SetExposure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expo</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;Second&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expous</span> <span class="o">=</span> <span class="n">expo</span> <span class="o">*</span> <span class="mi">1000000</span>
+        <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;Millisec&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expous</span> <span class="o">=</span> <span class="n">expo</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;Microsec&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">expous</span> <span class="o">=</span> <span class="n">expo</span>
+
+        <span class="n">ans</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_exposure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">expous</span><span class="p">)</span>
+
+        <span class="c1"># print &quot;SetExposure &quot;,self.name,expo,unit,self.expous,type(self.expous),ans</span>
+
+        <span class="k">return</span> <span class="n">ans</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetTrigger"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTrigger">[docs]</a>    <span class="k">def</span> <span class="nf">SetTrigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;FreeRunning&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Software&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Hardware_Falling&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Hardware_Rising&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Pipeline_Master&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;Pipeline_Slave&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_trigger_mode</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Trigger mode not valid&quot;</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetGainMode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGainMode">[docs]</a>    <span class="k">def</span> <span class="nf">SetGainMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># 0 = gain mode 1 - 16 bit</span>
+        <span class="c1"># 1 = gain mode 2 - 16 bit</span>
+        <span class="c1"># 2 = gain mode 10 - 16 bit</span>
+        <span class="c1"># 3 = gain mode 30 - 16 bit</span>
+        <span class="c1"># 4 = combined (1 and 30) in software - 24 =&gt; Demangle =&gt; 16 bit</span>
+        <span class="c1"># 5 = combined in hardware - 16 bit</span>
+        <span class="c1"># 6 = gain mode 1 - 8 bit</span>
+        <span class="c1"># 7 = gain mode 2 - 8 bit</span>
+        <span class="c1"># 8 = gain mode 10 - 8 bit</span>
+        <span class="c1"># 9 = gain mode 30 - 8 bit</span>
+        <span class="c1"># 10= combined in hardware - 8bit</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain1&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain2&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain10&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain30&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain1+30&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">4</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain1+30_Hardware&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">5</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain1_8b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain2_8b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">7</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain10_8b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">8</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain30_8b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">9</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;gain1+30_8b&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">=</span> <span class="mi">10</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gain_mode</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rep</span> <span class="o">=</span> <span class="s2">&quot;Gain mode not valid&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;I;16&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;L&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">UpdateSize</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rep</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetVideoGain"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetVideoGain">[docs]</a>    <span class="k">def</span> <span class="nf">SetVideoGain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gain</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_video_gain</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetChipGain"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetChipGain">[docs]</a>    <span class="k">def</span> <span class="nf">SetChipGain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gain</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_chip_gain</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.IsIntensifier"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.IsIntensifier">[docs]</a>    <span class="k">def</span> <span class="nf">IsIntensifier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">HasIntensifier</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetIntensifierGain"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIntensifierGain">[docs]</a>    <span class="k">def</span> <span class="nf">SetIntensifierGain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gain</span><span class="p">):</span>  <span class="c1"># SetChipGain</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_chip_gain</span><span class="p">(</span><span class="n">gain</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetClockSpeed"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetClockSpeed">[docs]</a>    <span class="k">def</span> <span class="nf">SetClockSpeed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;200MHz&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_speed</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;100MHz&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_speed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;50MHz&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_speed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetTemperature"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetTemperature">[docs]</a>    <span class="k">def</span> <span class="nf">GetTemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempread</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_read_CCD_temperature</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetTemperature"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetTemperature">[docs]</a>    <span class="k">def</span> <span class="nf">SetTemperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temp</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetPowerSavingMode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetPowerSavingMode">[docs]</a>    <span class="k">def</span> <span class="nf">SetPowerSavingMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;PowerOn&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_power_saving_mode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;PowerOff&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_power_saving_mode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;CoolingOff&#39;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_power_saving_mode</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Cannot apply PowerSavingMode </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">mode</span><span class="p">)</span></div>
+
+    <span class="c1"># -------- IMAGE ACQUISITION--------------------------------</span>
+<div class="viewcode-block" id="GEVSCMOS.Snap"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Snap">[docs]</a>    <span class="k">def</span> <span class="nf">Snap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abort_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Snap_and_return</span><span class="p">()</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Get_snap_status</span><span class="p">():</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">rep</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SnapAndReturn"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapAndReturn">[docs]</a>    <span class="k">def</span> <span class="nf">SnapAndReturn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abort_flag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Snap_and_return</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rep</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetStatus"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetStatus">[docs]</a>    <span class="k">def</span> <span class="nf">GetStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_Get_snap_status</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.AbortSnap"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AbortSnap">[docs]</a>    <span class="k">def</span> <span class="nf">AbortSnap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abort_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_abort_snap</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetImagePointer"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImagePointer">[docs]</a>    <span class="k">def</span> <span class="nf">GetImagePointer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_image_pointer</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_transfer_to_safebufferC</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_get_pointer_to_safebufferC</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetRawImage"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetRawImage">[docs]</a>    <span class="k">def</span> <span class="nf">GetRawImage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetImagePointer</span><span class="p">()</span>
+        <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetSize</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="p">((</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">),</span> <span class="n">imp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">depth</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetImage"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetImage">[docs]</a>    <span class="k">def</span> <span class="nf">GetImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">imp</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetImagePointer</span><span class="p">()</span>
+
+        <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">GetSize</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_apply_post_snap_processing</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">),</span> <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Demangle</span><span class="p">(</span><span class="n">imp</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_apply_post_snap_processing</span><span class="p">(</span><span class="n">imp</span><span class="p">)</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+            <span class="n">depth</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remapping</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">GlobalRemap</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">),</span> <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Remap</span><span class="p">(</span><span class="n">imp</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">SoftBin</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SoftBinImage</span><span class="p">(</span><span class="n">imp</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">((</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">),</span> <span class="n">imp</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">depth</span> <span class="o">*</span> <span class="n">Nx</span> <span class="o">*</span> <span class="n">Ny</span><span class="p">])</span></div>
+
+    <span class="c1"># -------- CAMERA CORRECTION FUNCTIONS -------------</span>
+
+<div class="viewcode-block" id="GEVSCMOS.SoftBinImage"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SoftBinImage">[docs]</a>    <span class="k">def</span> <span class="nf">SoftBinImage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_pointer</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">):</span>
+        <span class="n">newX</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Nx</span><span class="p">)</span>
+        <span class="n">newY</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Ny</span><span class="p">)</span>
+        <span class="n">Sx</span><span class="p">,</span> <span class="n">Sy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">SoftBin</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gainmode</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_software_bin_8bit_image</span><span class="p">(</span><span class="n">image_pointer</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newX</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newY</span><span class="p">),</span> <span class="n">Sx</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_software_bin_image</span><span class="p">(</span><span class="n">image_pointer</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newX</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newY</span><span class="p">),</span> <span class="n">Sx</span><span class="p">,</span> <span class="n">Sy</span><span class="p">)</span>
+
+        <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span> <span class="o">=</span> <span class="n">newX</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">newY</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.OpenMap"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.OpenMap">[docs]</a>    <span class="k">def</span> <span class="nf">OpenMap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s2">&quot;distortion.map&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_open_map</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.Remap"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Remap">[docs]</a>    <span class="k">def</span> <span class="nf">Remap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_pointer</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">):</span>
+        <span class="n">newX</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Nx</span><span class="p">)</span>
+        <span class="n">newY</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Ny</span><span class="p">)</span>
+
+        <span class="c1"># if self.is2tap:</span>
+        <span class="c1">#    imp = self.dll.PSL_VHR_remap_double_image(image_pointer,C.byref(newX),C.byref(newY),self.smooth, self.clip)</span>
+        <span class="c1"># else:</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_remap_image</span><span class="p">(</span><span class="n">image_pointer</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newX</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newY</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">clip</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">((</span><span class="n">newX</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">newY</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">imp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.Demangle"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.Demangle">[docs]</a>    <span class="k">def</span> <span class="nf">Demangle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_pointer</span><span class="p">,</span> <span class="n">Nx</span><span class="p">,</span> <span class="n">Ny</span><span class="p">):</span>
+        <span class="n">newX</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Nx</span><span class="p">)</span>
+        <span class="n">newY</span> <span class="o">=</span> <span class="n">C</span><span class="o">.</span><span class="n">c_int</span><span class="p">(</span><span class="n">Ny</span><span class="p">)</span>
+        <span class="n">imp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_demangle_rgb24_into_16bit_image</span><span class="p">(</span><span class="n">image_pointer</span><span class="p">,</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newX</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="n">newY</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">newX</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">newY</span><span class="o">.</span><span class="n">value</span><span class="p">),</span> <span class="n">imp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableRemapping"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableRemapping">[docs]</a>    <span class="k">def</span> <span class="nf">EnableRemapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remapping</span> <span class="o">=</span> <span class="n">enable</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableSmooth"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSmooth">[docs]</a>    <span class="k">def</span> <span class="nf">EnableSmooth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smooth</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableClip"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableClip">[docs]</a>    <span class="k">def</span> <span class="nf">EnableClip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableOffset"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableOffset">[docs]</a>    <span class="k">def</span> <span class="nf">EnableOffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_offset_subtraction</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableBrightPixel"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBrightPixel">[docs]</a>    <span class="k">def</span> <span class="nf">EnableBrightPixel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_bright_pixel_correction</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableFlatField"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableFlatField">[docs]</a>    <span class="k">def</span> <span class="nf">EnableFlatField</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_flat_field_correction</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.MakeFlatField"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.MakeFlatField">[docs]</a>    <span class="k">def</span> <span class="nf">MakeFlatField</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_generate_flat_field_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FlatAverage</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetFlatAverage"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlatAverage">[docs]</a>    <span class="k">def</span> <span class="nf">SetFlatAverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">average_number</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FlatAverage</span> <span class="o">=</span> <span class="n">average_number</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableStreaming"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableStreaming">[docs]</a>    <span class="k">def</span> <span class="nf">EnableStreaming</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_image_streaming</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_bool</span><span class="p">(</span><span class="n">enable</span><span class="p">))</span>
+        <span class="c1"># print &quot;Streaming&quot;,enable,self</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.InitSequence"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.InitSequence">[docs]</a>    <span class="k">def</span> <span class="nf">InitSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imnum</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SeqLen</span> <span class="o">=</span> <span class="n">imnum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_initialise_sequence_storage</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_uint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SeqLen</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SnapSequence"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SnapSequence">[docs]</a>    <span class="k">def</span> <span class="nf">SnapSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_snap_sequence</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_uint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SeqLen</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.GetSequencePointer"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.GetSequencePointer">[docs]</a>    <span class="k">def</span> <span class="nf">GetSequencePointer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PSL_VHR_get_sequence_image_pointer</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">byref</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">safe</span><span class="p">),</span> <span class="n">C</span><span class="o">.</span><span class="n">c_uint</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">safe</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.FreeSequence"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.FreeSequence">[docs]</a>    <span class="k">def</span> <span class="nf">FreeSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_free_sequence_storage</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SaveSequence"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SaveSequence">[docs]</a>    <span class="k">def</span> <span class="nf">SaveSequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_save_sequence_as_multiple_flf_files</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">c_uint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SeqLen</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableSharpening"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableSharpening">[docs]</a>    <span class="k">def</span> <span class="nf">EnableSharpening</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_sharpening</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableAutoLevel"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableAutoLevel">[docs]</a>    <span class="k">def</span> <span class="nf">EnableAutoLevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_ALC</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetALCMaxExp"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCMaxExp">[docs]</a>    <span class="k">def</span> <span class="nf">SetALCMaxExp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxexp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_ALC_max_exp</span><span class="p">(</span><span class="n">maxexp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetALCWin"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetALCWin">[docs]</a>    <span class="k">def</span> <span class="nf">SetALCWin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_ALC_window_coords</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableBestFit"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBestFit">[docs]</a>    <span class="k">def</span> <span class="nf">EnableBestFit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_bestfit</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetBFPeek"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetBFPeek">[docs]</a>    <span class="k">def</span> <span class="nf">SetBFPeek</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peek</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_bestfit_peek</span><span class="p">(</span><span class="n">peek</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetIFDelay"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetIFDelay">[docs]</a>    <span class="k">def</span> <span class="nf">SetIFDelay</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_delay_between_images</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableBinningFilter"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableBinningFilter">[docs]</a>    <span class="k">def</span> <span class="nf">EnableBinningFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_binning_filter</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.AutoBinningFilter"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.AutoBinningFilter">[docs]</a>    <span class="k">def</span> <span class="nf">AutoBinningFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_auto_binning_filter</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.EnableGamma"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.EnableGamma">[docs]</a>    <span class="k">def</span> <span class="nf">EnableGamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enable</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_enable_gamma</span><span class="p">(</span><span class="n">enable</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetGammaPeak"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaPeak">[docs]</a>    <span class="k">def</span> <span class="nf">SetGammaPeak</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gamma_gain_bright</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetGammaBright"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGammaBright">[docs]</a>    <span class="k">def</span> <span class="nf">SetGammaBright</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_gamma_gain_brightness</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GEVSCMOS.SetFlickerMode"><a class="viewcode-back" href="../../../../../developers/pynta.controller.devices.photonicscience.html#pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetFlickerMode">[docs]</a>    <span class="k">def</span> <span class="nf">SetFlickerMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;Off&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_flicker_mode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;50MHz&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_flicker_mode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;60MHz&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dll</span><span class="o">.</span><span class="n">PSL_VHR_set_flicker_mode</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PIL</span> <span class="k">import</span> <span class="n">Image</span>
+    <span class="kn">import</span> <span class="nn">numpy</span>
+
+    <span class="n">NUMPY_MODES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;L&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="s2">&quot;I;16&quot;</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">}</span>
+
+
+    <span class="k">def</span> <span class="nf">PILfromArray</span><span class="p">(</span><span class="n">newarr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;I;16&#39;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Image</span><span class="o">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">newarr</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">arrayFromBuffer</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;I;16&#39;</span><span class="p">):</span>
+        <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">NUMPY_MODES</span><span class="p">[</span><span class="n">mode</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+
+
+    <span class="n">cam</span> <span class="o">=</span> <span class="n">GEVSCMOS</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;SCMOS&quot;</span><span class="p">)</span>
+
+    <span class="n">cam</span><span class="o">.</span><span class="n">Open</span><span class="p">()</span>
+
+    <span class="c1"># ======= Init camera setup</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">SetClockSpeed</span><span class="p">(</span><span class="s1">&#39;50MHz&#39;</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">SetGainMode</span><span class="p">(</span><span class="s2">&quot;gain1&quot;</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">SetTrigger</span><span class="p">(</span><span class="s2">&quot;FreeRunning&quot;</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">EnableAutoLevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">SetExposure</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Millisec&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ======= Acquire Image</span>
+    <span class="n">cam</span><span class="o">.</span><span class="n">Snap</span><span class="p">()</span>
+    <span class="c1"># cam.Snap()</span>
+    <span class="n">size</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">GetImage</span><span class="p">()</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">cam</span><span class="o">.</span><span class="n">GetMode</span><span class="p">()</span>
+
+    <span class="c1"># ====== Buffer to Numpy array</span>
+    <span class="n">arry</span> <span class="o">=</span> <span class="n">arrayFromBuffer</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">arry8</span> <span class="o">=</span> <span class="n">arry</span> <span class="o">*</span> <span class="p">(</span><span class="mi">255</span> <span class="o">/</span> <span class="mf">65535.</span><span class="p">)</span>
+    <span class="n">arry8</span> <span class="o">=</span> <span class="n">arry8</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+    <span class="c1"># ======== Array to PIL Image</span>
+    <span class="n">pil16</span> <span class="o">=</span> <span class="n">PILfromArray</span><span class="p">(</span><span class="n">arry</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>  <span class="c1"># 16bit image</span>
+    <span class="n">pil8</span> <span class="o">=</span> <span class="n">PILfromArray</span><span class="p">(</span><span class="n">arry8</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">)</span>  <span class="c1"># 8bit image</span>
+    <span class="c1"># save the images</span>
+    <span class="c1"># pil16.save(&quot;test16.tiff&quot;)</span>
+    <span class="n">pil8</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">pil8</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;test8.tiff&quot;</span><span class="p">)</span>
+
+    <span class="n">cam</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>pynta.view package &mdash; PyNTA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="pynta.view.GUI package" href="pynta.view.GUI.html" />
+    <link rel="prev" title="pynta.util package" href="pynta.util.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> PyNTA
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installing.html">Installing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_config.html">The Config File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_codebase.html">How to Contribute Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../making_virtual_environment.html">Setting up a Python Virtual Environment</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Information for Developers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#controller">Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="index.html#model">Model</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#view">View</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="pynta.html">pynta package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta.config">pynta.config module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.html#module-pynta">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="reference internal" href="modules.html">pynta</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="pynta.html">pynta package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../list_todo.html">List of Todo’s</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PyNTA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Information for Developers</a> &raquo;</li>
+        
+          <li><a href="pynta.html">pynta package</a> &raquo;</li>
+        
+      <li>pynta.view package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/developers/pynta.view.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pynta-view-package">
+<h1>pynta.view package<a class="headerlink" href="#pynta-view-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pynta.view.GUI.html">pynta.view.GUI package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.old.html">pynta.view.GUI.old package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html">pynta.view.GUI.old.Monitor package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.LocateParticle">pynta.view.GUI.old.Monitor.LocateParticle module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#opencet-view-locateparticle-py">openCET.View.LocateParticle.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.cameraViewer">pynta.view.GUI.old.Monitor.cameraViewer module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-cameraviewer-py">UUTrack.View.Camera.cameraViewer.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.clearQueueThread">pynta.view.GUI.old.Monitor.clearQueueThread module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-clearqueuethread-py">UUTrack.View.Camera.clearQueueThread.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.crossCut">pynta.view.GUI.old.Monitor.crossCut module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-crosscut-py">UUTrack.View.Camera.crossCut.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.popOut">pynta.view.GUI.old.Monitor.popOut module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-monitor-popout-py">UUTrack.View.Monitor.popOut.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.resources">pynta.view.GUI.old.Monitor.resources module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-monitor-resources-py">UUTrack.View.Monitor.resources.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor.specialTaskTrack">pynta.view.GUI.old.Monitor.specialTaskTrack module</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#uutrack-view-camera-specialtaskworker-py">UUTrack.View.Camera.specialTaskWorker.py</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="pynta.view.GUI.old.Monitor.html#module-pynta.view.GUI.old.Monitor">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#pynta-view-gui-old-mainwindow-module">pynta.view.GUI.old.mainwindow module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#module-pynta.view.GUI.old.messageWidget">pynta.view.GUI.old.messageWidget module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.view.GUI.old.html#uutrack-view-camera-messagewidget-py">UUTrack.View.Camera.messageWidget.py</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#module-pynta.view.GUI.old.trajectoryWidget">pynta.view.GUI.old.trajectoryWidget module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.view.GUI.old.html#uutrack-view-camera-trajectorywidget-py">UUTrack.View.Camera.trajectoryWidget.py</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#module-pynta.view.GUI.old.waterfallWidget">pynta.view.GUI.old.waterfallWidget module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.view.GUI.old.html#uutrack-view-camera-waterfallwidget-py">UUTrack.View.Camera.waterfallWidget.py</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#module-pynta.view.GUI.old.workerThread">pynta.view.GUI.old.workerThread module</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="pynta.view.GUI.old.html#uutrack-view-camera-workerthread">UUTrack.View.Camera.workerThread</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="pynta.view.GUI.old.html#module-pynta.view.GUI.old">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.camera_viewer_widget">pynta.view.GUI.camera_viewer_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.config_tracking_widget">pynta.view.GUI.config_tracking_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.config_widget">pynta.view.GUI.config_widget module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pynta.view.GUI.html#uutrack-view-monitor-config-widget-py">UUTrack.View.Monitor.config_widget.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.histogram_tracks_widget">pynta.view.GUI.histogram_tracks_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.histogram_widget">pynta.view.GUI.histogram_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.main_window">pynta.view.GUI.main_window module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.resources">pynta.view.GUI.resources module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI.tracks_widget">pynta.view.GUI.tracks_widget module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pynta.view.GUI.html#module-pynta.view.GUI">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pynta.view.main">
+<span id="pynta-view-main-module"></span><h2>pynta.view.main module<a class="headerlink" href="#module-pynta.view.main" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pynta.view.main.MainWindow">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.main.</code><code class="sig-name descname">MainWindow</code><span class="sig-paren">(</span><em class="sig-param">experiment</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pynta.view.GUI.html#pynta.view.GUI.main_window.MainWindowGUI" title="pynta.view.GUI.main_window.MainWindowGUI"><code class="xref py py-class docutils literal notranslate"><span class="pre">pynta.view.GUI.main_window.MainWindowGUI</span></code></a></p>
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.calculate_histogram">
+<code class="sig-name descname">calculate_histogram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.calculate_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.calculate_histogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.clear_roi">
+<code class="sig-name descname">clear_roi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.clear_roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.clear_roi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.closeEvent">
+<code class="sig-name descname">closeEvent</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">QCloseEvent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.closeEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.closeEvent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.initialize_camera">
+<code class="sig-name descname">initialize_camera</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.initialize_camera"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.initialize_camera" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.save_image">
+<code class="sig-name descname">save_image</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.save_image"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.save_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.set_roi">
+<code class="sig-name descname">set_roi</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.set_roi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.set_roi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.snap">
+<code class="sig-name descname">snap</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.snap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.snap" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.start_continuous_saves">
+<code class="sig-name descname">start_continuous_saves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.start_continuous_saves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.start_continuous_saves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.start_linking">
+<code class="sig-name descname">start_linking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.start_linking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.start_linking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.start_movie">
+<code class="sig-name descname">start_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.start_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.start_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.start_saving_tracks">
+<code class="sig-name descname">start_saving_tracks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.start_saving_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.start_saving_tracks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.start_tracking">
+<code class="sig-name descname">start_tracking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.start_tracking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.start_tracking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.stop_continuous_saves">
+<code class="sig-name descname">stop_continuous_saves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.stop_continuous_saves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.stop_continuous_saves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.stop_linking">
+<code class="sig-name descname">stop_linking</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.stop_linking"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.stop_linking" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.stop_movie">
+<code class="sig-name descname">stop_movie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.stop_movie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.stop_movie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.stop_saving_tracks">
+<code class="sig-name descname">stop_saving_tracks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.stop_saving_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.stop_saving_tracks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.update_config">
+<code class="sig-name descname">update_config</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.update_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.update_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.update_gui">
+<code class="sig-name descname">update_gui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.update_gui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.update_gui" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.update_histogram">
+<code class="sig-name descname">update_histogram</code><span class="sig-paren">(</span><em class="sig-param">values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.update_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.update_histogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.update_tracking_config">
+<code class="sig-name descname">update_tracking_config</code><span class="sig-paren">(</span><em class="sig-param">config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.update_tracking_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.update_tracking_config" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.main.MainWindow.update_tracks">
+<code class="sig-name descname">update_tracks</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/main.html#MainWindow.update_tracks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.main.MainWindow.update_tracks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pynta.view.subscriber_thread">
+<span id="pynta-view-subscriber-thread-module"></span><h2>pynta.view.subscriber_thread module<a class="headerlink" href="#module-pynta.view.subscriber_thread" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="subscriber-thread">
+<h3>Subscriber Thread<a class="headerlink" href="#subscriber-thread" title="Permalink to this headline">¶</a></h3>
+<p>Allows to transform topics coming from a socket (ZMQ) to Qt signals that can be connected to
+any method, etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">copyright</dt>
+<dd class="field-odd"><p>Aquiles Carattino &lt;<a class="reference external" href="mailto:aquiles&#37;&#52;&#48;aquicarattino&#46;com">aquiles<span>&#64;</span>aquicarattino<span>&#46;</span>com</a>&gt;</p>
+</dd>
+<dt class="field-even">license</dt>
+<dd class="field-even"><p>GPLv3, see LICENSE for more details</p>
+</dd>
+</dl>
+<dl class="class">
+<dt id="pynta.view.subscriber_thread.SubscriberThread">
+<em class="property">class </em><code class="sig-prename descclassname">pynta.view.subscriber_thread.</code><code class="sig-name descname">SubscriberThread</code><span class="sig-paren">(</span><em class="sig-param">port</em>, <em class="sig-param">topic</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/subscriber_thread.html#SubscriberThread"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.subscriber_thread.SubscriberThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtCore.QThread</span></code></p>
+<dl class="attribute">
+<dt id="pynta.view.subscriber_thread.SubscriberThread.data_received">
+<code class="sig-name descname">data_received</code><a class="headerlink" href="#pynta.view.subscriber_thread.SubscriberThread.data_received" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pynta.view.subscriber_thread.SubscriberThread.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynta/view/subscriber_thread.html#SubscriberThread.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pynta.view.subscriber_thread.SubscriberThread.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-pynta.view">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-pynta.view" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pynta.view.GUI.html" class="btn btn-neutral float-right" title="pynta.view.GUI package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pynta.util.html" class="btn btn-neutral float-left" title="pynta.util package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Aquiles Carattino
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
