@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-with open('nanoparticle_tracking/__init__.py', 'r') as f:
+with open('pynta/__init__.py', 'r') as f:
     version_line = f.readline()
 
 version = version_line.split('=')[1].strip().replace("'", "")
@@ -11,7 +11,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='nanoparticle_tracking',
+    name='PyNTA',
     version=version,
     description='Python Nanoparticle Tracking Analysis',
     packages=find_packages(),
