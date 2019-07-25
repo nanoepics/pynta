@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-    nano_cet.py
+    nanoparticle_tracking.py
     ===========
-    Capillary Electrokinetic Tracking of Nanoparticles (nanoCET) is a technique that allows to characterize very small
-    objects thanks to calculating their diffusion properties inside a capillary. The main advantage of the technique
-    is that objects remain in the Field of View for extended periods of time and thus their properties can be quantified
-    with a high accuracy.
+    Nanoparticle tracking is a technique that allows to measure the size of very small objects. The core idea is that
+    by locating objects subject to brownian motion, it is possible to reconstruct their movement, which in turn can be
+    fitted to a model which depends on properties of the medium (i.e. viscosity) and on  the diameter of the particles.
 
+    Nanoparticle tracking analysis (NTA) is a common name used to the entire cycle of data acquisition, localization,
+    and analysis. Commercial devices such as NanoSight and ZetaView provide a closed-solution to the problem. PyNTA aims
+    at providing a superior approach, allowing researchers to have real-time information on the sample studied and a
+    completely transparent approach regarding algorithms used.
 
     :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
     :license: GPLv3, see LICENSE for more details
@@ -27,20 +30,19 @@ from multiprocessing import Queue, Process
 
 from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import BaseExperiment
-from pynta.model.experiment.nano_cet.decorators import (check_camera,
-                                                        check_not_acquiring,
-                                                        make_async_thread)
+from pynta.model.experiment.nanoparticle_tracking.decorators import (check_camera,
+                                                                     check_not_acquiring,
+                                                                     make_async_thread)
 
-from pynta.model.experiment.nano_cet.localization import link_queue, calculate_locations_image, \
-    calculate_histogram_sizes, LocateParticles
+from pynta.model.experiment.nanoparticle_tracking.localization import link_queue, LocateParticles
 
-from pynta.model.experiment.nano_cet.saver import worker_listener
-from pynta.model.experiment.nano_cet.exceptions import StreamSavingRunning
+from pynta.model.experiment.nanoparticle_tracking.saver import worker_listener
+from pynta.model.experiment.nanoparticle_tracking.exceptions import StreamSavingRunning
 from pynta.util import get_logger
 import trackpy as tp
 
 
-class NanoCET(BaseExperiment):
+class NPTracking(BaseExperiment):
     """ Experiment class for performing a nanoCET measurement."""
     BACKGROUND_NO_CORRECTION = 0  # No backround correction
     BACKGROUND_SINGLE_SNAP = 1
@@ -94,9 +96,9 @@ class NanoCET(BaseExperiment):
     def initialize_camera(self):
         """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the
         configuration file and loaded with :meth:`~self.load_configuration`. It will load the camera assuming
-        it is located in pynta/model/cameras/[model].
+        it is located in nanoparticle_tracking/model/cameras/[model].
 
-        .. todo:: Define how to load models from outside of pynta. E.g. from a user-specified folder.
+        .. TODO:: Define how to load models from outside of PyNTA. E.g. from a user-specified folder.
         """
         try:
             self.logger.info('Importing camera model {}'.format(self.config['camera']['model']))
@@ -172,8 +174,7 @@ class NanoCET(BaseExperiment):
     @check_not_acquiring
     @make_async_thread
     def snap(self):
-        """ Snap a single frame. It is not an asynchronous method. To make it async, it should be placed within
-        a different thread.
+        """ Snap a single frame.
         """
         self.logger.info('Snapping a picture')
         self.camera.configure(self.config['camera'])
@@ -190,7 +191,7 @@ class NanoCET(BaseExperiment):
     @check_camera
     def start_free_run(self):
         """ Starts continuous acquisition from the camera, but it is not being saved. This method is the workhorse
-        of the program. While this method runs in its thread, it will broadcast the images to be consumed by other
+        of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other
         methods. In this way it is possible to continuously save to hard drive, track particles, etc.
         """
 
@@ -457,6 +458,4 @@ class NanoCET(BaseExperiment):
 
         if self.link_particles_running:
             self.stop_link_particles()
-
-        # super().__exit__(*args)
-
+        general_stop_event.set()

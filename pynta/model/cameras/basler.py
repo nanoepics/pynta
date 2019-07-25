@@ -7,7 +7,7 @@
 
     Some assumptions
     ----------------
-    The program forces software trigger during :meth:`~pynta.model.cameras.basler.Camera.initialize`.
+    The program forces software trigger during :meth:`~nanoparticle_tracking.model.cameras.basler.Camera.initialize`.
 """
 import logging
 

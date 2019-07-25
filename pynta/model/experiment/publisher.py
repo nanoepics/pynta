@@ -21,6 +21,7 @@ from time import sleep
 import zmq
 
 from pynta import general_stop_event
+from pynta.model.experiment import config
 from pynta.util.log import get_logger
 
 
@@ -29,20 +30,33 @@ class Publisher:
     It is important to have a new process, since the serialization/deserialization of messages from the QUEUE may be
     a bottleneck for performance.
     """
-    def __init__(self, port=5555):
+    def __init__(self, port=None):
         self.logger = get_logger(name=__name__)
-        self._port = port
+        if not port:
+            self._port = config.zmq_port
+        else:
+            self._port = port
         self._queue = Queue()  # The publisher will grab and broadcast the messages from this queue
         self._event = Event()   # This event is used to stop the process
-        self._process = Process(target=publisher, args=[self._queue, self._event, self._port])
-        self.logger.info('Initialized published on port {}'.format(port))
+        self._process = None
+        self.logger.info('Initialized publisher on port {}'.format(self._port))
 
     def start(self):
         """ Start a new process that will be responsible for broadcasting the messages.
+
+            .. TODO:: Find a way to start the publisher on a different port if the one specified is in use.
         """
         self._event.clear()
-        self._process.start()
-        sleep(1)  # This forces the start to block until the publisher is ready
+        try:
+            self._process = Process(target=publisher, args=[self._queue, self._event, self._port])
+            self._process.start()
+            return True
+        except zmq.ZMQError:
+            self._port += 1
+            config.zmq_port = self._port
+            return self.start()
+
+        # sleep(1)  # This forces the start to block until the publisher is ready
 
     def stop(self):
         self._event.set()
@@ -106,8 +120,10 @@ def publisher(queue, event, port):
     """
     logger = get_logger(name=__name__)
     port_pub = port
+    logger.debug(f'Binding publisher on port {port}')
     context = zmq.Context()
     socket = context.socket(zmq.PUB)
+    print(port_pub)
     socket.bind("tcp://*:%s" % port_pub)
     sleep(1)    # It takes a time for subscribers to propagate to the publisher.
                 # Without this sleep the first packages may be lost
@@ -128,7 +144,7 @@ def publisher(queue, event, port):
 
 
 if __name__ == "__main__":
-    logger = get_logger(name=__name__)  # 'pynta.model.experiment.nano_cet.saver'
+    logger = get_logger(name=__name__)  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)

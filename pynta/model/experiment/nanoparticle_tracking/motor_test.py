@@ -13,9 +13,9 @@ class MotorTestExperiment(BaseExperiment):
     def initialize_camera(self):
         try:
             self.logger.info('Importing camera model {}'.format(self.config['camera']['model']))
-            self.logger.debug('pynta.model.cameras.' + self.config['camera']['model'])
+            self.logger.debug('nanoparticle_tracking.model.cameras.' + self.config['camera']['model'])
 
-            camera_model_to_import = 'pynta.model.cameras.' + self.config['camera']['model']
+            camera_model_to_import = 'nanoparticle_tracking.model.cameras.' + self.config['camera']['model']
             cam_module = importlib.import_module(camera_model_to_import)
         except ModuleNotFoundError:
             self.logger.error('The model {} for the camera was not found'.format(self.config['camera']['model']))

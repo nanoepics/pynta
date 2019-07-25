@@ -10,9 +10,9 @@ the processes running. Moreover, there is a combination of threads and processes
 It has to be noted that Windows has a peculiar way of dealing with new processes that prevents us from using methods,
 but instead we are forced to use functions. This is very limiting but couldn't find a way around yet.
 
-The core idea is that the localization uses the data broadcasted by :class:`~pynta.model.experiment.publisher.Publisher`
+The core idea is that the localization uses the data broadcasted by :class:`~nanoparticle_tracking.model.experiment.publisher.Publisher`
 in order to collect new frames, or save localizations to disk. It uses the
-:class:`~pynta.model.experiment.subscriber.Subscriber` in order to listen for the new data, and in turn publishes it
+:class:`~nanoparticle_tracking.model.experiment.subscriber.Subscriber` in order to listen for the new data, and in turn publishes it
 with the Publisher.
 
 :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
@@ -31,8 +31,8 @@ from scipy.stats import stats
 from trackpy.linking import Linker
 
 from pynta import general_stop_event
-from pynta.model.experiment.nano_cet.decorators import make_async_thread
-from pynta.model.experiment.nano_cet.exceptions import DiameterNotDefined, LinkException
+from pynta.model.experiment.nanoparticle_tracking.decorators import make_async_thread
+from pynta.model.experiment.nanoparticle_tracking.exceptions import DiameterNotDefined, LinkException
 from pynta.model.experiment.subscriber import subscribe
 from pynta.util import get_logger
 
