@@ -101,11 +101,7 @@ class Arduino:
 if __name__ == '__main__':
     import logging
 
-<<<<<<< HEAD
-    logger = get_logger()  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
-=======
     logger = get_logger()  # 'pynta.model.experiment.nanoparticle_tracking.saver'
->>>>>>> master
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
