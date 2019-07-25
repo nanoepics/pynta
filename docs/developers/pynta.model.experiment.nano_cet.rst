@@ -55,7 +55,7 @@ pynta.model.experiment.nano\_cet.waterfall\_worker module
 pynta.model.experiment.nano\_cet.win\_nanocet module
 ----------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nanoparticle_tracking.win_nanocet
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.np_tracking
     :members:
     :undoc-members:
     :show-inheritance:

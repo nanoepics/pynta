@@ -62,3 +62,4 @@ The View is, as the name suggests, where the GUI is defined. Since we defined al
    :caption: Contents:
 
    pynta
+   modules
