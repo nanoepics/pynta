@@ -22,10 +22,10 @@ import numpy as np
 from pynta.model.cameras.simulate_brownian import SimBrownian
 from pynta.util.log import get_logger
 from pynta import Q_
-from .skeleton import cameraBase
+from .base_camera import BaseCamera
 
 
-class camera(cameraBase):
+class Camera(BaseCamera):
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
 
@@ -43,7 +43,7 @@ class camera(cameraBase):
         self.Y = [0, self.maxY-1]
         self.logger = get_logger(name=__name__)
 
-    def initializeCamera(self):
+    def initialize(self):
         """Initializes the camera.
         """
         self.logger.info('Initializing camera')
@@ -51,42 +51,42 @@ class camera(cameraBase):
         self.maxHeight = self.GetCCDHeight()
         return True
 
-    def triggerCamera(self):
+    def trigger_camera(self):
         """Triggers the camera.
         """
         return True
 
-    def setAcquisitionMode(self, mode):
+    def set_acquisition_mode(self, mode):
         """
         Set the readout mode of the camera: Single or continuous.
 
         :param: int mode: One of self.MODE_CONTINUOUS, self.MODE_SINGLE_SHOT
         """
         self.logger.debug('Setting acquisition mode')
-        return self.getAcquisitionMode()
+        return self.get_acquisition_mode()
 
-    def getAcquisitionMode(self):
+    def get_acquisition_mode(self):
         """Returns the acquisition mode, either continuous or single shot.
         """
         return self.MODE_CONTINUOUS
 
-    def acquisitionReady(self):
+    def acquisition_ready(self):
         """Checks if the acquisition in the camera is over.
         """
         return True
 
-    def setExposure(self, exposure):
+    def set_exposure(self, exposure):
         """Sets the exposure of the camera.
         """
         self.exposure = exposure
         self.sb.time_step = self.exposure.m_as('s')
 
-    def getExposure(self):
+    def get_exposure(self):
         """Gets the exposure time of the camera.
         """
         return self.exposure
 
-    def readCamera(self):
+    def read_camera(self):
         moment = time.time()
         sample = self.sb.gen_image()
         sample = sample.astype('uint8')
@@ -154,5 +154,5 @@ class camera(cameraBase):
     def stopAcq(self):
         pass
 
-    def stopCamera(self):
+    def stop_camera(self):
         pass

@@ -29,4 +29,4 @@ class WorkerThread(Thread):
         self.keep_alive = keep_alive
 
     def run(self):
-        self.camera.triggerCamera()
+        self.camera.trigger_camera()

@@ -33,10 +33,10 @@ class workThread(QtCore.QThread):
             if self.origin == 'snap':
                 self.keep_acquiring = False
             if first:
-                self.camera.setAcquisitionMode(self.camera.MODE_CONTINUOUS)
-                self.camera.triggerCamera()  # Triggers the camera only once
+                self.camera.set_acquisition_mode(self.camera.MODE_CONTINUOUS)
+                self.camera.trigger_camera()  # Triggers the camera only once
                 first = False
-            img = self.camera.readCamera()
+            img = self.camera.read_camera()
             
             self.emit(QtCore.SIGNAL('image'), img, self.origin)
         self.camera.stopAcq()

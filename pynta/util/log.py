@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    pynta.util.log.py
+    nanoparticle_tracking.util.log.py
     =================
 
     Adding log capacities to PyNTA
@@ -14,7 +14,7 @@ import logging
 
 DEFAULT_FMT = "[%(levelname)8s]%(asctime)s %(name)s: %(message)s"
 
-def get_logger(name='pynta', add_null_handler=True):
+def get_logger(name='nanoparticle_tracking', add_null_handler=True):
     logger = logging.getLogger(name) #, add_null_handler=add_null_handler)
     return logger
 

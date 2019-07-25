@@ -7,7 +7,7 @@ import pyqtgraph as pg
 from PyQt5.QtWidgets import QWidget, QGridLayout
 import numpy as np
 
-from pynta.model.experiment.nano_cet.decorators import make_async_thread
+from pynta.model.experiment.nanoparticle_tracking.decorators import make_async_thread
 
 
 class TracksWidget(QWidget):

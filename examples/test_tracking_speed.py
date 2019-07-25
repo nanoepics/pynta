@@ -3,14 +3,14 @@ from multiprocessing import freeze_support
 from time import sleep
 
 from pynta import BASE_DIR
-from pynta.model.experiment.nano_cet.win_nanocet import NanoCET
+from pynta.model.experiment.nanoparticle_tracking.np_tracking import NPTracking
 
 
 
 if __name__ == "__main__":
     freeze_support()
     config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
-    with NanoCET(config_file) as exp:
+    with NPTracking(config_file) as exp:
         exp.initialize_camera()
         exp.start_free_run()
         while exp.camera.sb.current_frame<exp.camera.sb.frames_to_accumulate:

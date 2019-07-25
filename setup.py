@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-with open('pynta/__init__.py', 'r') as f:
+with open('nanoparticle_tracking/__init__.py', 'r') as f:
     version_line = f.readline()
 
 version = version_line.split('=')[1].strip().replace("'", "")
@@ -11,7 +11,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='pynta',
+    name='nanoparticle_tracking',
     version=version,
     description='Python Nanoparticle Tracking Analysis',
     packages=find_packages(),
@@ -25,13 +25,13 @@ setup(
         'Programming Language :: Python',
     ],
     include_package_data=True,
-    install_requires=['pyqt5<5.11', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy==0.4.1', 'pandas', 'pyyaml',
+    install_requires=['pyqt5', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
                       'pyzmq', 'numba'],
     long_description=long_description,
     long_description_content_type="text/markdown",
     entry_points={
         "console_scripts": [
-            "pynta=pynta.__main__:main"
+            "nanoparticle_tracking=nanoparticle_tracking.__main__:main"
         ]
     }
 )
