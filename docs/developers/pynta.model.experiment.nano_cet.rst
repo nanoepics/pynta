@@ -7,7 +7,7 @@ Submodules
 pynta.model.experiment.nano\_cet.decorators module
 --------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.decorators
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.decorators
     :members:
     :undoc-members:
     :show-inheritance:
@@ -15,7 +15,7 @@ pynta.model.experiment.nano\_cet.decorators module
 pynta.model.experiment.nano\_cet.exceptions module
 --------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.exceptions
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.exceptions
     :members:
     :undoc-members:
     :show-inheritance:
@@ -23,7 +23,7 @@ pynta.model.experiment.nano\_cet.exceptions module
 pynta.model.experiment.nano\_cet.localization module
 ----------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.localization
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.localization
     :members:
     :undoc-members:
     :show-inheritance:
@@ -31,7 +31,7 @@ pynta.model.experiment.nano\_cet.localization module
 pynta.model.experiment.nano\_cet.nano\_cet module
 -------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.nano_cet
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.np_tracking
     :members:
     :undoc-members:
     :show-inheritance:
@@ -39,7 +39,7 @@ pynta.model.experiment.nano\_cet.nano\_cet module
 pynta.model.experiment.nano\_cet.saver module
 ---------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.saver
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.saver
     :members:
     :undoc-members:
     :show-inheritance:
@@ -47,7 +47,7 @@ pynta.model.experiment.nano\_cet.saver module
 pynta.model.experiment.nano\_cet.waterfall\_worker module
 ---------------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.waterfall_worker
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.waterfall_worker
     :members:
     :undoc-members:
     :show-inheritance:
@@ -55,7 +55,7 @@ pynta.model.experiment.nano\_cet.waterfall\_worker module
 pynta.model.experiment.nano\_cet.win\_nanocet module
 ----------------------------------------------------
 
-.. automodule:: pynta.model.experiment.nano_cet.win_nanocet
+.. automodule:: pynta.model.experiment.nanoparticle_tracking.win_nanocet
     :members:
     :undoc-members:
     :show-inheritance:
@@ -64,7 +64,7 @@ pynta.model.experiment.nano\_cet.win\_nanocet module
 Module contents
 ---------------
 
-.. automodule:: pynta.model.experiment.nano_cet
+.. automodule:: pynta.model.experiment.nanoparticle_tracking
     :members:
     :undoc-members:
     :show-inheritance:
