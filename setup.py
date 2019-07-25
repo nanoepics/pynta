@@ -11,7 +11,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='pynta',
+    name='PyNTA',
     version=version,
     description='Python Nanoparticle Tracking Analysis',
     packages=find_packages(),
@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python',
     ],
     include_package_data=True,
-    install_requires=['pyqt5<5.11', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy==0.4.1', 'pandas', 'pyyaml',
+    install_requires=['pyqt5', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
                       'pyzmq', 'numba'],
     long_description=long_description,
     long_description_content_type="text/markdown",

@@ -5,7 +5,7 @@ from time import sleep
 from pynta.model.experiment.base_experiment import BaseExperiment
 from pynta.util import get_logger
 
-logger = get_logger()#'pynta.model.experiment.nano_cet.worker_saver')
+logger = get_logger()#'nanoparticle_tracking.model.experiment.nanoparticle_tracking.worker_saver')
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)

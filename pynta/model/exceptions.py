@@ -3,3 +3,4 @@ class ModelException(Exception):
 
 class OutOfRange(ModelException):
     pass
+

@@ -18,8 +18,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph.dockarea import DockArea, Dock
-# from pynta.Model._session import _session
-# from pynta.View.hdfloader import HDFLoader
+# from nanoparticle_tracking.Model._session import _session
+# from nanoparticle_tracking.View.hdfloader import HDFLoader
 from pynta.view.GUI.camera_viewer_widget import MonitorMainWidget
 from pynta.view.GUI.old.waterfallWidget import waterfallWidget
 from pynta.view.GUI.old.Monitor import popOutWindow
@@ -165,7 +165,7 @@ class MainWindow(QMainWindow):
         # msgBox.setIcon(QtGui.QMessageBox.Information)
         # msgBox.setText("Keyboard shortcuts and Hotkeys")
         # msgBox.setInformativeText("Press details for a full list")
-        # msgBox.setWindowTitle("pynta CheatSheet")
+        # msgBox.setWindowTitle("nanoparticle_tracking CheatSheet")
         # msgBox.setDetailedText("""
         #     F1, Show cheatsheet\n
         #     F5, Snap image\n
@@ -192,17 +192,17 @@ class MainWindow(QMainWindow):
 
         :rtype: None
         """
-        self.exitAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/power-icon.png'), '&Exit', self)
+        self.exitAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/power-icon.png'), '&Exit', self)
         self.exitAction.setShortcut('Ctrl+Q')
         self.exitAction.setStatusTip('Exit application')
         self.exitAction.triggered.connect(self.exitSafe)
 
-        self.saveAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/floppy-icon.png'),'&Save image',self)
+        self.saveAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/floppy-icon.png'),'&Save image',self)
         self.saveAction.setShortcut('Ctrl+S')
         self.saveAction.setStatusTip('Save Image')
         self.saveAction.triggered.connect(self.saveImage)
 
-        self.showHelpAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/info-icon.png'),'Show cheatsheet',self)
+        self.showHelpAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/info-icon.png'),'Show cheatsheet',self)
         self.showHelpAction.setShortcut(QtCore.Qt.Key_F1)
         self.showHelpAction.setStatusTip('Show Cheatsheet')
         self.showHelpAction.triggered.connect(self.showHelp)
@@ -217,47 +217,47 @@ class MainWindow(QMainWindow):
         self.saveTrajectoryAction.setStatusTip('Save trajectory data to new file')
         self.saveTrajectoryAction.triggered.connect(self.saveTrajectory)
 
-        self.snapAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/snap.png'),'S&nap photo',self)
+        self.snapAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/snap.png'),'S&nap photo',self)
         self.snapAction.setShortcut(QtCore.Qt.Key_F5)
         self.snapAction.setStatusTip('Snap Image')
         self.snapAction.triggered.connect(self.snap)
 
-        self.movieAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/video-icon.png'),'Start &movie',self)
+        self.movieAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/video-icon.png'),'Start &movie',self)
         self.movieAction.setShortcut(QtCore.Qt.Key_F6)
         self.movieAction.setStatusTip('Start Movie')
         self.movieAction.triggered.connect(self.startMovie)
 
-        self.movieSaveStartAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Download-Database-icon.png'),'Continuous saves',self)
+        self.movieSaveStartAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Download-Database-icon.png'),'Continuous saves',self)
         self.movieSaveStartAction.setShortcut('Ctrl+M')
         self.movieSaveStartAction.setStatusTip('Continuous save to disk')
         self.movieSaveStartAction.triggered.connect(self.movieSave)
 
-        self.movieSaveStopAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Delete-Database-icon.png'),'Stop continuous saves',self)
+        self.movieSaveStopAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Delete-Database-icon.png'),'Stop continuous saves',self)
         self.movieSaveStopAction.setShortcut('Ctrl+N')
         self.movieSaveStopAction.setStatusTip('Stop continuous save to disk')
         self.movieSaveStopAction.triggered.connect(self.movieSaveStop)
 
-        self.startWaterfallAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Blue-Waterfall-icon.png'),'Start &Waterfall',self)
+        self.startWaterfallAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Blue-Waterfall-icon.png'),'Start &Waterfall',self)
         self.startWaterfallAction.setShortcut('Ctrl+W')
         self.startWaterfallAction.setStatusTip('Start Waterfall')
         self.startWaterfallAction.triggered.connect(self.startWaterfall)
 
-        self.toggleBGAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/noBg.png'), 'Toggle B&G-reduction', self)
+        self.toggleBGAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/noBg.png'), 'Toggle B&G-reduction', self)
         self.toggleBGAction.setShortcut('Ctrl+G')
         self.toggleBGAction.setStatusTip('Toggle Background Reduction')
         self.toggleBGAction.triggered.connect(self.start_tracking)
 
-        self.setROIAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Zoom-In-icon.png'),'Set &ROI',self)
+        self.setROIAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Zoom-In-icon.png'),'Set &ROI',self)
         self.setROIAction.setShortcut('Ctrl+T')
         self.setROIAction.setStatusTip('Set ROI')
         self.setROIAction.triggered.connect(self.getROI)
 
-        self.clearROIAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Zoom-Out-icon.png'),'Set R&OI',self)
+        self.clearROIAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Zoom-Out-icon.png'),'Set R&OI',self)
         self.clearROIAction.setShortcut('Ctrl+T')
         self.clearROIAction.setStatusTip('Clear ROI')
         self.clearROIAction.triggered.connect(self.clearROI)
 
-        self.accumulateBufferAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/disk-save.png'),'Accumulate buffer',self)
+        self.accumulateBufferAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/disk-save.png'),'Accumulate buffer',self)
         self.accumulateBufferAction.setShortcut('Ctrl+B')
         self.accumulateBufferAction.setStatusTip('Start or stop buffer accumulation')
         self.accumulateBufferAction.triggered.connect(self.bufferStatus)
@@ -276,7 +276,7 @@ class MainWindow(QMainWindow):
         self.dockAction = QtGui.QAction('Restore Docks', self)
         self.dockAction.triggered.connect(self.setupDocks)
 
-        self.crossCutAction = QtGui.QAction(QtGui.QIcon('pynta/View/GUI/Icons/Ruler-icon.png'),'Show cross cut', self)
+        self.crossCutAction = QtGui.QAction(QtGui.QIcon('nanoparticle_tracking/View/GUI/Icons/Ruler-icon.png'),'Show cross cut', self)
         # self.crossCutAction.triggered.connect(self.crossCut.show)
 
         self.settingsAction = QtGui.QAction('Load config', self)
@@ -382,7 +382,7 @@ class MainWindow(QMainWindow):
         self.connect(self.camWidget, QtCore.SIGNAL('specialTask'), self.startSpecialTask)
         self.connect(self.camWidget, QtCore.SIGNAL('stopSpecialTask'), self.stopSpecialTask)
         self.connect(self.camViewer, QtCore.SIGNAL('stopMainAcquisition'), self.stopMovie)
-        self.connect(self, QtCore.SIGNAL('stopChildMovie'), self.camViewer.stopCamera)
+        self.connect(self, QtCore.SIGNAL('stopChildMovie'), self.camViewer.stop_camera)
         self.connect(self, QtCore.SIGNAL('closeAll'), self.camViewer.closeViewer)
         self.connect(self.selectSettings, QtCore.SIGNAL("settings"), self.update_settings)
         self.connect(self, QtCore.SIGNAL('closeAll'), self.selectSettings.close)
@@ -788,7 +788,7 @@ class MainWindow(QMainWindow):
                 self.setROI(X, Y)
 
             if update_exposure:
-                new_exp = self.camera.setExposure(session.Camera['exposure_time'])
+                new_exp = self.camera.set_exposure(session.Camera['exposure_time'])
                 self._session.Camera = {'exposure_time': new_exp}
                 self.messageWidget.appendLog('i', 'Updated exposure: %s' % new_exp)
                 if self._session.Debug['to_screen']:

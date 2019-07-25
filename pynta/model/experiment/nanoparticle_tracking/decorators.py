@@ -12,7 +12,7 @@ from functools import wraps
 from multiprocessing import Process
 from threading import Thread
 
-from pynta.model.experiment.nano_cet.exceptions import CameraNotInitialized
+from pynta.model.experiment.nanoparticle_tracking.exceptions import CameraNotInitialized
 from pynta.util.log import get_logger
 
 

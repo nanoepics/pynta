@@ -31,8 +31,8 @@ from scipy.stats import stats
 from trackpy.linking import Linker
 
 from pynta import general_stop_event
-from pynta.model.experiment.nano_cet.decorators import make_async_thread
-from pynta.model.experiment.nano_cet.exceptions import DiameterNotDefined, LinkException
+from pynta.model.experiment.nanoparticle_tracking.decorators import make_async_thread
+from pynta.model.experiment.nanoparticle_tracking.exceptions import DiameterNotDefined, LinkException
 from pynta.model.experiment.subscriber import subscribe
 from pynta.util import get_logger
 
@@ -169,9 +169,9 @@ class LocateParticles:
         self.calculating_histograms = True
         locations = self.locations.copy()
         t1 = tp.filter_stubs(locations, self.config['process']['min_traj_length'])
-        # t2 = t1[((t1['mass'] > self.config['process']['min_mass']) & (t1['size'] < self.config['process']['max_size']) &
-        #          (t1['ecc'] < self.config['process']['max_ecc']))]
-        im = tp.imsd(t1, self.config['process']['um_pixel'], self.config['process']['fps'])
+        t2 = t1[((t1['mass'] > self.config['process']['min_mass']) & (t1['size'] < self.config['process']['max_size']) &
+                 (t1['ecc'] < self.config['process']['max_ecc']))]
+        im = tp.imsd(t2, self.config['process']['um_pixel'], self.config['process']['fps'])
         self.histogram_values = []
         for pcle in im:
             if general_stop_event.is_set():
@@ -227,11 +227,11 @@ def calculate_locations(port, topic, event, publisher_queue, **kwargs):
         socket.recv_string()
         data = socket.recv_pyobj()  # flags=0, copy=True, track=False)
         image = data[1]  # image[0] is the timestamp of the frame
-        t0 = time()
+        # t0 = time()
         locations = tp.locate(image, **kwargs)
-        loc_time = time()-t0
+        # loc_time = time()-t0
         publisher_queue.put({'topic': 'locations', 'data': locations})
-        publisher_queue.put({'topic': 'locations_time', 'data': [loc_time, len(locations)]})
+        # publisher_queue.put({'topic': 'locations_time', 'data': [loc_time, len(locations)]})
 
 
 def save_locations(file_path, meta, port, event, topic='locations'):

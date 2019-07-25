@@ -25,7 +25,7 @@ def main():
     args = parser.parse_args()
 
     if args.config_file is None:
-        config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
+        config_file = os.path.join(BASE_DIR, 'config', 'nanocet.yml')
     else:
         config_file = args.config_file
     exp = NPTracking(config_file)
