@@ -24,9 +24,9 @@ pandas==0.24.2
 Pint==0.9
 pycparser==2.19
 Pygments==2.4.2
--e git+git@github.com:aquilesC/pynta.git@f67fa3df1fa7cdbc5c98478cf43274725d48e098#egg=pynta
 pyOpenSSL==19.0.0
 pyparsing==2.4.1
+pypylon==1.4.0
 pyqt5==5.13.0
 pyqt5-sip==4.19.18
 pyqtgraph==0.10.0
