@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    simulate_brownian.py
-    ====================
+    Simulated Brownian Diffusion
+    ============================
     The SimBrownian class generates synthetic images corresponding to particles performing a thermal Brownian
     motion. This class was designed in order to make explicit the real parameters of the particles (i.e. the diffusion
     coefficient in real-space) with the magnification of the microscope. The PSF on the camera is derived from the
@@ -16,7 +16,7 @@
 
     .. TODO:: Think how to add noise, background, and intensity fluuctuations to the particles.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np

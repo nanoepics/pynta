@@ -5,7 +5,7 @@
 
     .. todo:: adapt this widget for a useful case.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 import pyqtgraph as pg

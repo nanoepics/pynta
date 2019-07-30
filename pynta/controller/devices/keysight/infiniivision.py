@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
 """
-    inifiniivision.py
-    ~~~~~~~~~~~~~~~~~
+    Keysight InfiniiVision
+    ======================
     Driver for the Keysight InfiniiVision DSOX2022A oscilloscope with function generation capabilities.
 
     Source: Programmers Guide, Version 02.39.0000 by Keysight Technologies
@@ -10,7 +9,7 @@
     .. note:: Not all functions were implemented in the code as methods in the class. However a fair amount of the most
         useful ones was formatted according to Lantz standards.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 

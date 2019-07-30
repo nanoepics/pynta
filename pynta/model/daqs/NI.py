@@ -27,8 +27,10 @@
     or renaming implies that you have to check all the downstream code, and being YML the first step, it will imply reviewing
     everything.
 
+    .. TODO:: National Instruments has releasedi its own Python driver (NIDAQmx-Python) which may be worth exploring for
+        future development
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 try:

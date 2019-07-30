@@ -1,0 +1,72 @@
+%YAML 1.2
+---
+# Default parameters for the Tracking program
+# All parameters can be changed to accommodate user needs.
+# All parameters can be changed at runtime with the appropriate config window
+user:
+  name: Aquiles
+
+saving:
+  auto_save: False
+  auto_save_waterfall: True
+  directory: C:\Users\carat002\Data
+  filename_video: Video # Can be the same filename for video and photo
+  filename_photo: Snap
+  filename_tracks: Tracks
+  filename_waterfall: Waterfall
+  filename_trajectory: Trajectory
+  filename_log: Log
+  max_memory: 200 # In megabytes
+
+GUI:
+  length_waterfall: 20 # Total length of the Waterfall (lines)
+  refresh_time: 50 # Refresh rate of the GUI (in ms)
+
+camera:
+  model: dummy_camera # Should be a python file in model/cameras
+  init: 0 # Initial arguments to pass when creating the camera
+  #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
+  model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
+  exposure_time: 30ms # Initial exposure time (in ms)
+  fps: 30  # Frames per second, should either be defined by the camera or within the model based on timing
+  binning_x: 1 # Binning
+  binning_y: 1
+  roi_x1: 0
+  roi_x2: 599
+  roi_y1: 0
+  roi_y2: 399
+  background: '' # Full path to background file, or empty for none.
+  background_method: [Method1, Method2]
+
+waterfall: # Parameters for calculating the waterfall plot
+  length: 20  # The total length of the waterfall (lines)
+  vertical_bin: 10  # Total number of lines of the CCD to integrate
+
+movie:
+  buffer_length: 1000 # Frames
+
+tracking:
+  locate:
+    diameter: 11  # Diameter of the particles (in pixels) to track, has to be an odd number
+    invert: False
+    minmass: 100
+  link:
+    memory: 3
+    search_range: 4
+  filter:  # Filter spurious trajectories
+    min_length: 25
+  process:
+    compute_drift: False
+    um_pixel: 0.01  # Microns per pixel (calibration of the microscope)
+    min_traj_length: 2
+    min_mass: 0.05
+    max_size: 50.0
+    max_ecc: 1
+    fps: 30
+  param_1: 0.
+  param_2: 0
+
+debug:
+  logging_level: Nothing # One of Nothing, Debug, Info, Warning, Error
+  queue_memory: False
+  to_screen: True

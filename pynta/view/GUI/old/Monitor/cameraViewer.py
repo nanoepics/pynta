@@ -8,7 +8,7 @@
     
     .. todo:: Unify the main viewer with this one.
     
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 import pyqtgraph as pg

@@ -11,3 +11,4 @@ def calculate_waterfall(in_queue, out_queue):
     :return:
     :rtype:
     """
+    pass
