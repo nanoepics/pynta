@@ -15,8 +15,6 @@ kiwisolver==1.1.0
 llvmlite==0.29.0
 MarkupSafe==1.1.1
 matplotlib==3.1.1
-mkl-fft==1.0.12
-mkl-random==1.0.2
 numba==0.45.0
 numpy==1.16.4
 packaging==19.0
@@ -25,8 +23,6 @@ Pint==0.9
 pycparser==2.19
 Pygments==2.4.2
 pyOpenSSL==19.0.0
-pyparsing==2.4.1
-pypylon==1.4.0
 pyqt5==5.13.0
 pyqt5-sip==4.19.18
 pyqtgraph==0.10.0
