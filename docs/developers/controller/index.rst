@@ -6,7 +6,8 @@ Pynta Controllers
     :undoc-members:
     :show-inheritance:
 
-.. automodule:: pynta.controller.devices.hamamatsu.hamamatsu_camera
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents
+
+   devices/index

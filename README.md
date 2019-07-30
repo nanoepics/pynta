@@ -1,9 +1,9 @@
 # PyNTA
 ## Particle tracking instrumentation and analysis in Python
 
-![Screenshot of the PyNTA software](doc/media/screenshot_01.png?raw=true "PyNTA acquiring")
+![Screenshot of the PyNTA software](docs/media/screenshot_01.png?raw=true "PyNTA acquiring")
 
-PyNTA aims at bridging the gap between data acquisition and analysis in nanoparticle tracking experiments. You can read more about the project at [http://nanoepics.github.io/pynta](http://nanoepics.github.io/pynta).
+PyNTA aims at bridging the gap between data acquisition and analysis in nanoparticle tracking experiments. You can read more about the project at [https://python-nta.readthedocs.io](https://python-nta.readthedocs.io).
 
 ## Installation
 Create a virtual environment in your own computer and run the following command to get the latest PyNTA version:

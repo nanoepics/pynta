@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    nanoparticle_tracking.py
-    ===========
+    Nanoparticle Tracking
+    =====================
     Nanoparticle tracking is a technique that allows to measure the size of very small objects. The core idea is that
     by locating objects subject to brownian motion, it is possible to reconstruct their movement, which in turn can be
     fitted to a model which depends on properties of the medium (i.e. viscosity) and on  the diameter of the particles.
@@ -11,7 +11,7 @@
     at providing a superior approach, allowing researchers to have real-time information on the sample studied and a
     completely transparent approach regarding algorithms used.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 import sys
@@ -48,12 +48,10 @@ class NPTracking(BaseExperiment):
     BACKGROUND_SINGLE_SNAP = 1
 
     def __init__(self, filename=None):
-        super().__init__()
+        super().__init__(filename)
         self.free_run_running = False
         self.saving_location = False
         self.logger = get_logger(name=__name__)
-
-        self.load_configuration(filename)
 
         self.dropped_frames = 0
         self.keep_acquiring = True
@@ -125,7 +123,7 @@ class NPTracking(BaseExperiment):
             self.camera = cam_module.Camera(cam_init_arguments)
 
         self.camera.initialize()
-        self.current_width, self.current_height = self.camera.getSize()
+        self.current_width, self.current_height = self.camera.get_size()
         self.logger.info('Camera sensor ROI: {}px X {}px'.format(self.current_width, self.current_height))
         self.max_width = self.camera.GetCCDWidth()
         self.max_height = self.camera.GetCCDHeight()
@@ -156,7 +154,7 @@ class NPTracking(BaseExperiment):
         """
 
         self.logger.debug('Setting new camera ROI to x={},y={}'.format(X, Y))
-        self.current_width, self.current_height = self.camera.setROI(X, Y)
+        self.current_width, self.current_height = self.camera.set_ROI(X, Y)
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
         self.temp_image = None
 
@@ -168,7 +166,7 @@ class NPTracking(BaseExperiment):
         self.logger.info('Clearing ROI settings')
         X = [0, self.max_width-1]
         Y = [0, self.max_height-1]
-        self.camera.setROI(X, Y)
+        self.camera.set_ROI(X, Y)
 
     @check_camera
     @check_not_acquiring

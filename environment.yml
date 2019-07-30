@@ -1,4 +1,4 @@
-name: nanoparticle_tracking
+name: pynta
 channels:
   - conda-forge
   - defaults

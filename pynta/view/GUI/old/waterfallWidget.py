@@ -7,7 +7,7 @@
     
     .. todo:: Unify the 2D displaying of :mod:`camera Main <UUTrack.View.Camera.cameraMain>` and :mod:`camera Viewer <UUTrack.View.Camera.cameraViewer>`.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 import pyqtgraph as pg

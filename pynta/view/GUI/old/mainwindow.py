@@ -2,7 +2,7 @@
     Main Window
     ===========
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 import os
@@ -514,7 +514,7 @@ class MainWindow(QMainWindow):
             self.area.addDock(self.dwaterfall, 'bottom', self.dmainImage)
             self.dwaterfall.addWidget(self.watWidget)
             self.show_waterfall = True
-            Sx, Sy = self.camera.getSize()
+            Sx, Sy = self.camera.get_size()
             self.waterfall_data = np.zeros((self._session.GUI['length_waterfall'], Sx))
             self.watWidget.img.setImage(np.transpose(self.waterfall_data), autoLevels=False, autoRange=False, autoHistogramRange=False)
             self.messageWidget.appendLog('i', 'Waterfall opened')
@@ -557,8 +557,8 @@ class MainWindow(QMainWindow):
             self.messageWidget.appendLog('i', 'Updated roi_y1: %s' % int(Y[0]))
             self.messageWidget.appendLog('i', 'Updated roi_y2: %s' % int(Y[1]))
 
-            Nx, Ny = self.camera.setROI(X, Y)
-            Sx, Sy = self.camera.getSize()
+            Nx, Ny = self.camera.set_ROI(X, Y)
+            Sx, Sy = self.camera.get_size()
             self.current_width = Sx
             self.current_height = Sy
 
@@ -796,7 +796,7 @@ class MainWindow(QMainWindow):
                     print(self._session)
 
             if update_binning:
-                self.camera.setBinning(session.Camera['binning_x'],session.Camera['binning_y'])
+                self.camera.set_binning(session.Camera['binning_x'], session.Camera['binning_y'])
 
         self.refreshTimer.stop()
         self.refreshTimer.start(session.GUI['refresh_time'])

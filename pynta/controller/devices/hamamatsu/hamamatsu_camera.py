@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    hamamatsu_camera.py
-    ~~~~~~~~~~~~~~~~~~~~
-    File taken from `ZhuangLab <https://github.com/ZhuangLab/storm-control>`_
+    Hamamatsu Driver
+    ================
+    Original file taken from `ZhuangLab <https://github.com/ZhuangLab/storm-control>`_
 
-    A ctypes based interface to Hamamatsu cameras.
-    (tested on a sCMOS Flash 4.0).
+    A ctypes based interface to Hamamatsu cameras. (tested on a sCMOS Flash 4.0).
 
     The documentation is a little confusing to me on this subject..
     I used c_int32 when this is explicitly specified, otherwise I use c_int.
@@ -14,9 +13,10 @@
 
     .. todo:: How to stream 2048 x 2048 at max frame rate to the flash disk? The Hamamatsu software can do this.
 
-    Copyright: Hazen Babcock
-    This file was adapted to Python 3 and documented in the numpy style by Aquiles Carattino <aquiles@aquicarattino.com>
+    This file was adapted to Python 3 and documented in the numpy style by Aquiles Carattino <aquiles@uetke.com>
 
+    :copyright:  Hazen Babcock
+    :license: The MIT License
 """
 
 import ctypes

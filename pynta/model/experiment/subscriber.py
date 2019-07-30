@@ -1,6 +1,6 @@
 """
-    subscriber.py
-    =============
+    Subscriber
+    ==========
     Example script on how to run separate processes to process the data coming from a publisher like the one on
     ``publisher.py``. The first process just grabs the frame and puts it in a Queue. The Queue is then used by
     another process in order to analyse, process, save, etc. It has to be noted that on UNIX systems, getting

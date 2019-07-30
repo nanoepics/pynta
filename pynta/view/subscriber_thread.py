@@ -5,7 +5,7 @@
     Allows to transform topics coming from a socket (ZMQ) to Qt signals that can be connected to
     any method, etc.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np

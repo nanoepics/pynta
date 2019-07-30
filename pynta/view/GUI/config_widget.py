@@ -6,7 +6,7 @@
 
     .. todo:: Remove the printing to screen of the parameters once the debugging is done.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 import os
 

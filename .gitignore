@@ -8,9 +8,9 @@ myenv
 *.exe
 *.pyc
 .idea
-build
-UUTracking.egg-info
-dist
+build/
+pynta.egg-info
+dist/
 venv/
 *.egg-info/
 _build/

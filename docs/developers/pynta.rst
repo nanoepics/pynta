@@ -1,35 +1,16 @@
-pynta package
-=============
+.. _PyNTA:
 
-Subpackages
------------
+PyNTA API
+=========
 
 .. toctree::
+    :maxdepth: 2
+    :caption: Contents:
 
-    pynta.controller
-    pynta.exceptions
-    pynta.model
+    controller/index
+    model/index
+    view/index
     pynta.tests
     pynta.tools
     pynta.util
-    pynta.view
-
-Submodules
-----------
-
-pynta.config module
--------------------
-
-.. automodule:: pynta.config
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: pynta
-    :members:
-    :undoc-members:
-    :show-inheritance:
+    pynta.exceptions
