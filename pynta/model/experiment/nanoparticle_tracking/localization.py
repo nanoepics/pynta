@@ -15,7 +15,7 @@ in order to collect new frames, or save localizations to disk. It uses the
 :class:`~nanoparticle_tracking.model.experiment.subscriber.Subscriber` in order to listen for the new data, and in turn publishes it
 with the Publisher.
 
-:copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+:copyright:  Aquiles Carattino <aquiles@uetke.com>
 :license: GPLv3, see LICENSE for more details
 """
 from copy import copy

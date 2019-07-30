@@ -18,7 +18,7 @@ setup(
     url='https://github.com/nanoepics/pynta',
     license='GPLv3',
     author='Aquiles Carattino',
-    author_email='aquiles@aquicarattino.com',
+    author_email='aquiles@uetke.com',
     classifiers=[
         'Intended Audience :: End Users/Desktop',
         'Operating System :: Microsoft :: Windows',

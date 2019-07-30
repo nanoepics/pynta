@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-    psi.py
-    ~~~~~~
+    Photonic Science GEV Model
+    ==========================
 
     Model for Photonic Science GEV Cameras. The model just implements the basic methods defined in the
-    :meth:`~nanoparticle_tracking.model.cameras.skeleton.BaseCamera` using a Photonic Sicence camera. The controller for this
-    camera is :mod:`~nanoparticle_tracking.controller.devices.photonicscience`
+    :meth:`~pynta.model.cameras.base_camera.BaseCamera` using a Photonic Sicence camera. The controller for this
+    camera is :mod:`~pynta.controller.devices.photonicscience`
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
@@ -28,7 +28,7 @@ class Camera(BaseCamera):
         """
         Initializes the camera.
 
-        .. todo:: :meth:`UUTrack.Controller.devices.PhotonicScience.scmoscam.GEVSCMOS.SetGainMode` behaves unexpectedly.
+        .. todo:: :meth:`pynta.controller.devices.photonicscience.scmoscam.GEVSCMOS.SetGainMode` behaves unexpectedly.
             One is forced to set the gain mode twice to have it right. So far, this is the only way to prevent the
             *weird lines* from appearing. Checking the meaning of the gains is a **must**.
 
@@ -42,9 +42,9 @@ class Camera(BaseCamera):
         self.camera.EnableAutoLevel(0)
         self.camera.SetExposure(10, "Millisec")
         self.trigger_camera()
-        size = self.getSize()
-        self.maxWidth = size[0]
-        self.maxHeight = size[1]
+        size = self.get_size()
+        self.max_width = size[0]
+        self.max_height = size[1]
         self.camera.SetGainMode("gain30")  # Change the gain here! Check scmoscam.py for information
 
     def trigger_camera(self):
@@ -73,7 +73,7 @@ class Camera(BaseCamera):
         img = np.array(img)
         return np.transpose(img)
 
-    def setROI(self, X, Y):
+    def set_ROI(self, X, Y):
         """Sets up the ROI.
         """
         X -= 1
@@ -86,7 +86,7 @@ class Camera(BaseCamera):
         self.camera.SetSubArea(l, t, r, b)
         return self.camera.GetSize()
 
-    def getSize(self):
+    def get_size(self):
         """Returns the size in pixels of the image being acquired.
         """
         return self.camera.GetSize()
@@ -117,11 +117,11 @@ class Camera(BaseCamera):
 
     def GetCCDWidth(self):
         """Gets the CCD width."""
-        return self.getSize()[0]
+        return self.get_size()[0]
 
     def GetCCDHeight(self):
         """Gets the CCD height."""
-        return self.getSize()[1]
+        return self.get_size()[1]
 
     def stopAcq(self):
         """Stop the acquisition even if ongoing."""

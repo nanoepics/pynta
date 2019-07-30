@@ -58,7 +58,7 @@ Organization, under VICI grant (PI: Prof. Allard Mosk) and Projectruimte FOM.PR1
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contents
 
    installing
    example_config

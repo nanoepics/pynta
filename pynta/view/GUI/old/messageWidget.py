@@ -15,7 +15,7 @@
 
     .. todo:: Change colors for error, info and debug messages.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 from datetime import datetime
 from pyqtgraph.Qt import QtGui

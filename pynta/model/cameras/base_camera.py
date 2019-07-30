@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    Base Camera
-    ===========
+    Base Camera Model
+    =================
     Camera class with the base methods. Having a base class exposes the general API for working with cameras.
     This file is important to keep track of the methods which are exposed to the View.
     The class BaseCamera should be subclassed when developing new Models for other cameras. This ensures that all the
@@ -22,7 +22,7 @@
 
     .. note:: **IMPORTANT** Whatever new function is implemented in a specific model, it should be first declared in the BaseCamera class. In this way the other models will have access to the method and the program will keep running (perhaps with non intended behavior though).
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
@@ -35,30 +35,32 @@ from pynta import Q_
 logger = get_logger(__name__)
 
 
-
 class BaseCamera:
     MODE_CONTINUOUS = 1
     MODE_SINGLE_SHOT = 0
+    ACQUISITION_MODE = {
+        MODE_CONTINUOUS: 'Continuous',
+        MODE_SINGLE_SHOT: 'Single'
+    }
 
     def __init__(self, camera):
         self.camera = camera
         self.running = False
-        self.maxWidth = 0
-        self.maxHeight = 0
+        self.max_width = 0
+        self.max_height = 0
         self.exposure = 0
         self.config = {}
         self.data_type = np.uint16 # The data type that the camera generates when acquiring images. It is very important to have it available in order to create the buffer and saving to disk.
 
         self.logger = get_logger(name=__name__)
 
-    def configure(self, properties):
+    def configure(self, properties: dict):
         self.logger.info('Updating config')
         update_cam = False
         update_roi = False
         update_exposure = False
-        update_binning = True
-        for k in properties:
-            new_prop = properties[k]
+        update_binning = False
+        for k, new_prop in properties.items():
             self.logger.debug('Updating {} to {}'.format(k, new_prop))
 
             update_cam = True
@@ -79,22 +81,24 @@ class BaseCamera:
 
         if update_cam:
             if update_roi:
-
-                X = np.sort([properties['roi_x1'], properties['roi_x2']])
-                Y = np.sort([properties['roi_y1'], properties['roi_y2']])
-                self.setROI(X, Y)
+                X = sorted([properties['roi_x1'], properties['roi_x2']])
+                Y = sorted([properties['roi_y1'], properties['roi_y2']])
+                self.set_ROI(X, Y)
                 self.config.update({'roi_x1': X[0],
                                     'roi_x2': X[1],
                                     'roi_y1': Y[0],
                                     'roi_y2': Y[1]})
 
             if update_exposure:
-                exposure = Q_(properties['exposure_time'])
+                exposure = properties['exposure_time']
+                if isinstance(exposure, str):
+                    exposure = Q_(exposure)
+
                 new_exp = self.set_exposure(exposure)
                 self.config['exposure_time'] = new_exp
 
             if update_binning:
-                self.setBinning(properties['binning_x'], properties['binning_y'])
+                self.set_binning(properties['binning_x'], properties['binning_y'])
                 self.config.update({'binning_x': properties['binning_x'],
                                     'binning_y': properties['binning_y']})
 
@@ -103,8 +107,8 @@ class BaseCamera:
         """
         Initializes the camera.
         """
-        self.maxWidth = self.GetCCDWidth()
-        self.maxHeight = self.GetCCDHeight()
+        self.max_width = self.GetCCDWidth()
+        self.max_height = self.GetCCDHeight()
         return True
 
     @not_implemented
@@ -123,7 +127,6 @@ class BaseCamera:
         """
         self.mode = mode
 
-    @not_implemented
     def get_acquisition_mode(self):
         """
         Returns the acquisition mode, either continuous or single shot.
@@ -159,7 +162,7 @@ class BaseCamera:
         pass
 
     @not_implemented
-    def setROI(self, X, Y):
+    def set_ROI(self, X, Y):
         """ Sets up the ROI. Not all cameras are 0-indexed, so this is an important
         place to define the proper ROI.
 
@@ -170,14 +173,14 @@ class BaseCamera:
         return X, Y
 
 
-    def clearROI(self):
+    def clear_ROI(self):
         """
         Clears the ROI from the camera.
         """
-        self.setROI([0, self.maxWidth], [0, self.maxHeight])
+        self.set_ROI([0, self.max_width], [0, self.max_height])
 
     @not_implemented
-    def getSize(self):
+    def get_size(self):
         """Returns the size in pixels of the image being acquired. This is useful for checking the ROI settings.
         """
         pass
@@ -208,7 +211,7 @@ class BaseCamera:
         pass
 
     @not_implemented
-    def setBinning(self, xbin, ybin):
+    def set_binning(self, xbin, ybin):
         """
         Sets the binning of the camera if supported. Has to check if binning in X/Y can be different or not, etc.
 
@@ -219,9 +222,17 @@ class BaseCamera:
         pass
 
     @not_implemented
+    def clear_binning(self):
+        """
+        Clears the binning of the camera to its default value.
+        """
+        pass
+
+    @not_implemented
     def stop_camera(self):
         """Stops the acquisition and closes the connection with the camera.
         """
         pass
 
-
+    def __str__(self):
+        return f"Base Camera {self.camera}"

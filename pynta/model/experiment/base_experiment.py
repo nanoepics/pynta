@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     base_experiment.py
-    ~~~~~~~~~~~~~~~~~~
+    ==================
     Base class for the experiments. ``BaseExperiment`` defines the common patterns that every experiment should have.
     Importantly, it starts an independent process called publisher, that will be responsible for broadcasting messages
     that are appended to a queue. The messages rely on the pyZMQ library and should be tested further in order to
@@ -18,7 +18,7 @@
     .. TODO:: Check whether the serialization of objects with cPickle may be a bottleneck for performance.
 
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
 from multiprocessing import Process, Event
@@ -34,7 +34,7 @@ class BaseExperiment:
     """ Base class to define experiments. Should keep track of the basic methods needed regardless of the experiment
     to be performed. For instance, a way to start and a way to finalize a measurement.
     """
-    def __init__(self):
+    def __init__(self, filename=None):
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
         self._threads = []
@@ -43,6 +43,8 @@ class BaseExperiment:
 
         self._connections = []
         self.subscriber_events = []
+        if filename:
+            self.load_configuration(filename)
 
     def stop_publisher(self):
         """ Puts the proper data to the queue in order to stop the running publisher process

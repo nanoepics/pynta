@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    scmoscam.py
-    ~~~~~~~~~~~
+    Photonic Science GEVSCMOS
+    =========================
     Driver for Photonic Science Cameras (Pleora GEV). This driver was originally written by Perceval Guillou
     <perceval@photonic-science.com>, in Py2 and has been successfully tested with scmoscontrol.dll SCMOS Pleora (GEV)
     control dll (x86 )v5.6.0.0 (date modified 10/2/2013)

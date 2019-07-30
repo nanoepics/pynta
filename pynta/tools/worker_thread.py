@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     work_thread.py
-    ===========
+    ==============
     Running the acquisition on a separate thread gives a lot of flexibility when designing the program. It comes,
     however with some potential risks. First, threads are still running on the same Python interpreter. Therefore they
     do not overcome the GIL limitations. They are able to share memory, which makes them transparent to less experienced
@@ -10,7 +10,7 @@
     without user intervention for long periods of time.
 
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: AGPLv3, see LICENSE for more details
 """
 from threading import Thread

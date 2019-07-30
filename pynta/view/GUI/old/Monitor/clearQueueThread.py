@@ -5,7 +5,7 @@
 
     .. warning:: If this Thread is run while the save thread is running there will be data loss without warning. Moreover, of the clear queue destroys the last element of the Queue before the saver arrives to it, te saver will not stop.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 from pyqtgraph.Qt import QtCore

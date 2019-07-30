@@ -11,7 +11,7 @@ other processes listening.
     publisher and serialized again to be sent. These three steps could be simplify into one if, for example, one assumes
     that objects where pickled. There is also a possibility of assuming numpy arrays and using a zero-copy strategy.
 
-:copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+:copyright:  Aquiles Carattino <aquiles@uetke.com>
 :license: GPLv3, see LICENSE for more details
 """
 

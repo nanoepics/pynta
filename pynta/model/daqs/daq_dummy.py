@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-    nanoparticle_tracking.model.daqs.daq_dummy.py
-    ====================================
-    Dummy daq class for testing GUI and other functionalities. Based on the skeleton.
+    Dummy DAQ
+    =========
+    DAQ model for testing GUI and other functionalities. Based on the skeleton. It does not interact with any real
+    device, it just generates random data and accepts inputs which have no effect.
 
-    :copyright:  Aquiles Carattino <aquiles@aquicarattino.com>
+    :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
+from pynta.util import get_logger
 from .skeleton import DaqBase
+
+logger = get_logger(__name__)
 
 
 class DAQDummy(DaqBase):
     def __init__(self, dev_number=None):
-        print('Initialized device with number: %s' % dev_number)
+        super().__init__(dev_number)
+        logger.info('Initialized device with number: %s' % dev_number)
         self.test_value = 0
-        pass
 
     def triggerAnalog(self, conditions):
         """Triggers an analog measurement. It does not read the value.

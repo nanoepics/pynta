@@ -3,7 +3,7 @@
     ===================================
     Window that displays a 1D plot of a cross cut on the main window.
 
-    .. sectionauthor:: Aquiles Carattino <aquiles@aquicarattino.com>
+    .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
 """
 
 import pyqtgraph as pg
