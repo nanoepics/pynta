@@ -31,7 +31,7 @@ setup(
     long_description_content_type="text/markdown",
     entry_points={
         "console_scripts": [
-            "nanoparticle_tracking=nanoparticle_tracking.__main__:main"
+            "pynta=pynta.__main__:main"
         ]
     }
 )

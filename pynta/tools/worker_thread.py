@@ -21,7 +21,7 @@ class WorkerThread(Thread):
     to perform other tasks. It also allows to acquire continuously without freezing the rest of the program.
 
     .. TODO:: QThreads are much handier than Python threads. Should we put Qt as a requirement regardless of whether
-    the program runs on CLI or UI mode?
+        the program runs on CLI or UI mode?
     """
     def __init__(self, camera, keep_alive=False):
         super().__init__()

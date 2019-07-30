@@ -10,10 +10,10 @@
     determine whether there is a real improvement in performance.
 
     .. note:: Replacing send_pyobj by the nocopy option is faster, however it also requires to reshape the data, which
-    adds an overhead and eventually reaches equivalent bandwidths.
+        adds an overhead and eventually reaches equivalent bandwidths.
 
     .. warning:: This script consumes a lot of memory because it allocates a queue with thousands of elements in it. If
-    you have a more limited system, consider lowering the amount of elements or changing the data type.
+        you have a more limited system, consider lowering the amount of elements or changing the data type.
 
 """
 from time import time
