@@ -63,11 +63,12 @@ class GEVSCMOS:
             return dll_name
 
     def LoadCamDLL(self):
-        self.libHandle = LoadLibrary('%s\\%s\\%s' % (self.cwd_path, self.name, self.dll_name))
+        # self.libHandle = LoadLibrary('%s\\%s\\%s' % (self.cwd_path, self.name, self.dll_name))
         # self.libHandle = C.windll.kernel32.LoadLibraryA('%s\\%s\\%s'%(self.cwd_path,self.name,self.dll_name))
-        self.dll = C.CDLL(None, handle=self.libHandle)  # cdecl
+        # self.dll = C.CDLL(None, handle=self.libHandle)  # cdecl
         # self.dll = C.WinDLL(None, handle=self.libHandle)  #stdcall
         # self.dll = C.CDLL('%s\\%s\\%s'%(self.cwd_path,self.name,self.dll_name))
+        self.dll = C.WinDLL('%s\\%s\\%s' % (self.cwd_path, self.name, self.dll_name))
         self.InitFunctions()
 
     def UnloadCamDLL(self):
@@ -165,6 +166,8 @@ class GEVSCMOS:
 
     def InitFunctions(self):
         # Buffer
+        print('dll >>>>>>>>>>>>>', self.dll)
+        print('type >>>>>>>>>>>', type(self.dll))
         self.dll.PSL_VHR_get_image_pointer.restype = C.POINTER(C.c_char)  # ushort
         self.dll.PSL_VHR_demangle_rgb24_into_16bit_image.restype = C.POINTER(C.c_char)  # ushort
         self.dll.PSL_VHR_remap_image.restype = C.POINTER(C.c_char)  # ushort

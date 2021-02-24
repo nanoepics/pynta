@@ -20,8 +20,10 @@ NUMPY_MODES = {"L": np.uint8, "I;16": np.uint16}
 
 class Camera(BaseCamera):
     def __init__(self, camera):
+        super().__init__(camera)
         self.cam_num = camera
-        self.camera = GEVSCMOS(camera, 'SCMOS')
+        self.camera = GEVSCMOS(camera, 'SCMOS') # 'Binaries'
+        # self.camera = GEVSCMOS(camera, 'IPconf.dat')
         self.running = False
 
     def initialize(self):
@@ -76,13 +78,13 @@ class Camera(BaseCamera):
     def set_ROI(self, X, Y):
         """Sets up the ROI.
         """
-        X -= 1
-        Y -= 1
+        # X -= 1
+        # Y -= 1
         # Left, top, right, bottom
-        l = np.int(X[0])
-        t = np.int(Y[0])
-        r = np.int(X[1])
-        b = np.int(Y[1])
+        l = np.int(X[0]-1)
+        t = np.int(Y[0]-1)
+        r = np.int(X[1]-1)
+        b = np.int(Y[1]-1)
         self.camera.SetSubArea(l, t, r, b)
         return self.camera.GetSize()
 

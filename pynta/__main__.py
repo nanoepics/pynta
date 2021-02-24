@@ -9,7 +9,7 @@ from pynta.view.main import MainWindow
 
 
 
-def main():
+def main(**kwargs):
     logger = get_logger()  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
@@ -22,12 +22,15 @@ def main():
     parser = ArgumentParser(description='Start the pyNTA software')
     parser.add_argument("-c", dest="config_file", required=False,
                         help="Path to the configuration file")
-    args = parser.parse_args()
+    cl_args = parser.parse_args()
 
-    if args.config_file is None:
-        config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
+    if cl_args.config_file is None:
+        if 'config_file' not in kwargs:
+            config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
+        else:
+            config_file = kwargs['config_file']
     else:
-        config_file = args.config_file
+        config_file = cl_args.config_file
     exp = NPTracking(config_file)
     exp.initialize_camera()
     app = QApplication([])
@@ -37,4 +40,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(config_file=r'E:\xionvert\config\xionvert.yml')
