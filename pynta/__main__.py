@@ -8,6 +8,7 @@ from pynta.util.log import get_logger
 from pynta.view.main import MainWindow
 
 
+logging.basicConfig(level=logging.INFO)
 
 def main(**kwargs):
     logger = get_logger()  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'

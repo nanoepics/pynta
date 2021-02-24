@@ -166,8 +166,6 @@ class GEVSCMOS:
 
     def InitFunctions(self):
         # Buffer
-        print('dll >>>>>>>>>>>>>', self.dll)
-        print('type >>>>>>>>>>>', type(self.dll))
         self.dll.PSL_VHR_get_image_pointer.restype = C.POINTER(C.c_char)  # ushort
         self.dll.PSL_VHR_demangle_rgb24_into_16bit_image.restype = C.POINTER(C.c_char)  # ushort
         self.dll.PSL_VHR_remap_image.restype = C.POINTER(C.c_char)  # ushort
@@ -851,7 +849,7 @@ if __name__ == '__main__':
         return numpy.frombuffer(data, NUMPY_MODES[mode]).reshape((h, w))
 
 
-    cam = GEVSCMOS(".", "SCMOS")
+    cam = GEVSCMOS(r'E:\xionvert', "SCMOS")
 
     cam.Open()
 

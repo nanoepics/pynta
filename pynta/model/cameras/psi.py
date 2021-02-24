@@ -13,6 +13,7 @@
 import numpy as np
 
 from pynta.controller.devices.photonicscience.scmoscam import GEVSCMOS
+from pynta import Q_
 from .base_camera import BaseCamera
 
 NUMPY_MODES = {"L": np.uint8, "I;16": np.uint16}
@@ -59,9 +60,9 @@ class Camera(BaseCamera):
 
         .. todo:: Include units for ensuring the proper exposure time is being set.
         """
-        exposure = exposure * 1000  # in order to always use microseconds
+        # exposure = exposure * 1000  # in order to always use microseconds
         # while self.camera.GetStatus(): # Wait until exposure is finished.
-        self.camera.SetExposure(np.int(exposure), 'Microsec')
+        self.camera.SetExposure(np.int(exposure.m_as('us')), 'Microsec')
 
     def read_camera(self):
         """Reads the camera
@@ -73,7 +74,7 @@ class Camera(BaseCamera):
         mode = self.camera.GetMode()
         img = np.frombuffer(data, NUMPY_MODES[mode]).reshape((h, w))
         img = np.array(img)
-        return np.transpose(img)
+        return [np.transpose(img)]
 
     def set_ROI(self, X, Y):
         """Sets up the ROI.

@@ -47,7 +47,7 @@ class CameraViewerWidget(QWidget):
 
     def setup_roi_lines(self, max_size):
         """Sets up the ROI lines surrounding the image.
-        
+
         :param list max_size: List containing the maximum size of the image to avoid ROIs bigger than the CCD."""
 
         self.hline1 = pg.InfiniteLine(angle=0, movable=True, hoverPen={'color': "FF0", 'width': 4})

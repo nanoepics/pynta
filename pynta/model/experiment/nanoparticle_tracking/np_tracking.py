@@ -205,7 +205,7 @@ class NPTracking(BaseExperiment):
         self.camera.trigger_camera()  # Triggers the camera only once
         while not self._stop_free_run.is_set():
             data = self.camera.read_camera()
-            if not data:
+            if not type(data) is np.ndarray:
                 continue
             self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
@@ -236,7 +236,7 @@ class NPTracking(BaseExperiment):
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
         """
-        if self.temp_image:
+        if self.temp_image is not None:
             self.logger.info('Saving last acquired image')
             # Data will be appended to existing file
             file_name = self.config['saving']['filename_photo'] + '.hdf5'
