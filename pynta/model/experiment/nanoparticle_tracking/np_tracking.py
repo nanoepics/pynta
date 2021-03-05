@@ -205,20 +205,22 @@ class NPTracking(BaseExperiment):
         self.camera.trigger_camera()  # Triggers the camera only once
         while not self._stop_free_run.is_set():
             data = self.camera.read_camera()
-            if not type(data) is np.ndarray:
+            if not data:
                 continue
             self.logger.debug('Got {} new frames'.format(len(data)))
             for img in data:
-                i += 1
-                self.logger.debug('Number of frames: {}'.format(i))
-                if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
-                    img -= self.background
+                self.logger.debug('Got {} new frames'.format(len(data)))
+                for img in data:
+                    i += 1
+                    self.logger.debug('Number of frames: {}'.format(i))
+                    if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
+                        img -= self.background
 
-                # This will broadcast the data just acquired with the current timestamp
-                # The timestamp is very unreliable, especially if the camera has a frame grabber.
-                self.publisher.publish('free_run', [time.time(), img])
-            self.fps = round(i / (time.time() - t0))
-            self.temp_image = img
+                    # This will broadcast the data just acquired with the current timestamp
+                    # The timestamp is very unreliable, especially if the camera has a frame grabber.
+                    self.publisher.publish('free_run', [time.time(), img])
+                self.fps = round(i / (time.time() - t0))
+                self.temp_image = img
         self.free_run_running = False
         self.camera.stopAcq()
 

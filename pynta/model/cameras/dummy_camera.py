@@ -22,7 +22,7 @@ import numpy as np
 from pynta.model.cameras.simulate_brownian import SimBrownian
 from pynta.util.log import get_logger
 from pynta import Q_
-from .base_camera import BaseCamera
+from pynta.model.cameras.base_camera import BaseCamera
 
 
 class Camera(BaseCamera):
