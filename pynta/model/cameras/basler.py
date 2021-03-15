@@ -47,8 +47,13 @@ class Camera(BaseCamera):
         logger.debug('Initializing Basler Camera')
         tl_factory = pylon.TlFactory.GetInstance()
         devices = tl_factory.EnumerateDevices()
+        # self.logger.info(devices)
+        print(len(devices), [dev.GetFriendlyName() for dev in devices])
         if len(devices) == 0:
             raise CameraNotFound('No camera found')
+
+        if type(self.cam_num) is int:
+            self.cam_num = devices[self.cam_num].GetFriendlyName()
 
         for device in devices:
             if self.cam_num in device.GetFriendlyName():

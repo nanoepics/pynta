@@ -232,6 +232,9 @@ class NPTracking(BaseExperiment):
         """
         self.logger.info('Setting the stop_event')
         self._stop_free_run.set()
+        while self.free_run_running:
+            time.sleep(0.1)
+        self.camera.stop_camera()
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
