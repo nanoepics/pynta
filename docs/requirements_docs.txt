@@ -44,7 +44,7 @@ PySocks==1.7.0
 python-dateutil==2.8.0
 pytz==2019.1
 PyVISA==1.9.1
-PyYAML==5.1.1
+PyYAML==5.4
 pyzmq==18.0.0
 requests==2.22.0
 scipy==1.2.1
