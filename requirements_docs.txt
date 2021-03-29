@@ -21,7 +21,7 @@ packaging==19.0
 pandas==0.24.2
 Pint==0.9
 pycparser==2.19
-Pygments==2.4.2
+Pygments==2.7.4
 pyOpenSSL==19.0.0
 pyqt5==5.13.0
 pyqt5-sip==4.19.18

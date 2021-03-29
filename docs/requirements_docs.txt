@@ -31,7 +31,7 @@ pimpmyclass==0.4.3
 Pint==0.9
 pycparser==2.19
 PyDAQmx==1.4.2
-Pygments==2.4.2
+Pygments==2.7.4
 pyOpenSSL==19.0.0
 pyparsing==2.4.1
 pypylon==1.4.0
