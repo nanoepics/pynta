@@ -24,6 +24,7 @@
 from multiprocessing import Process, Event
 
 import yaml
+import importlib
 
 from pynta.util import get_logger
 from pynta.model.experiment.publisher import Publisher
@@ -45,6 +46,51 @@ class BaseExperiment:
         self.subscriber_events = []
         if filename:
             self.load_configuration(filename)
+        self.initialize_camera()
+    
+    """which folder view to use for the GUI. Let's differen experiments use different files.
+    """
+    def gui_file(self):
+        return None
+    
+    def initialize_camera(self):
+        print("init cam!!!")
+        """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the
+        configuration file and loaded with :meth:`~self.load_configuration`. It will load the camera assuming
+        it is located in nanoparticle_tracking/model/cameras/[model].
+
+        .. TODO:: Define how to load models from outside of PyNTA. E.g. from a user-specified folder.
+        """
+        try:
+            self.logger.info('Importing camera model {}'.format(self.config['camera']['model']))
+            self.logger.debug('pynta.model.cameras.' + self.config['camera']['model'])
+
+            camera_model_to_import = 'pynta.model.cameras.' + self.config['camera']['model']
+            cam_module = importlib.import_module(camera_model_to_import)
+        except ModuleNotFoundError:
+            self.logger.error('The model {} for the camera was not found'.format(self.config['camera']['model']))
+            raise
+        except:
+            self.logger.exception('Unhandled exception')
+            raise
+
+        cam_init_arguments = self.config['camera']['init']
+
+        if 'extra_args' in self.config['camera']:
+            self.logger.info('Initializing camera with extra arguments')
+            self.logger.debug('cam_module.camera({}, {})'.format(cam_init_arguments, self.config['camera']['extra_args']))
+            self.camera = cam_module.Camera(cam_init_arguments, *self.config['Camera']['extra_args'])
+        else:
+            self.logger.info('Initializing camera without extra arguments')
+            self.logger.debug('cam_module.camera({})'.format(cam_init_arguments))
+            self.camera = cam_module.Camera(cam_init_arguments)
+
+        self.camera.initialize()
+        self.current_width, self.current_height = self.camera.get_size()
+        self.logger.info('Camera sensor ROI: {}px X {}px'.format(self.current_width, self.current_height))
+        self.max_width = self.camera.GetCCDWidth()
+        self.max_height = self.camera.GetCCDHeight()
+        self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
     def stop_publisher(self):
         """ Puts the proper data to the queue in order to stop the running publisher process
@@ -99,7 +145,7 @@ class BaseExperiment:
         self.logger.info('Loading configuration file {}'.format(filename))
         try:
             with open(filename, 'r') as f:
-                self.config = yaml.load(f, Loader=yaml.FullLoader)
+                self.config = yaml.safe_load(f)
                 self.logger.debug('Config loaded')
                 self.logger.debug(self.config)
         except FileNotFoundError:

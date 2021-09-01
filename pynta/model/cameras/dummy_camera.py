@@ -19,7 +19,7 @@
 """
 import time
 import numpy as np
-from pynta.model.cameras.simulate_brownian import SimBrownian
+from pynta.model.cameras.simulate_nanospring import SimBrownian
 from pynta.util.log import get_logger
 from pynta import Q_
 from .base_camera import BaseCamera
@@ -31,18 +31,17 @@ class Camera(BaseCamera):
 
     def __init__(self, camera):
         super().__init__(camera)
-
-        self.running = False
-        self.xsize = 1080
-        self.ysize = 720
-        self.sb = SimBrownian((self.xsize, self.ysize))
-        self.maxX = 1800
+        self.data_type = np.uint16
+        self.xsize = 255
+        self.ysize = 200
+        self.maxX = 800
         self.maxY = 720
         self.exposure = Q_('10ms')
         self.X = [0, self.maxX-1]
         self.Y = [0, self.maxY-1]
         self.logger = get_logger(name=__name__)
-
+        self.last_frame_t = 0
+        self.min_frame_time = 10e-3
     def initialize(self):
         """Initializes the camera.
         """
@@ -87,16 +86,29 @@ class Camera(BaseCamera):
         return self.exposure
 
     def read_camera(self):
+        
+        sample = self.sb.gen_image().astype(self.data_type)
+        #sample[10:20, 40:50] = int(127+127*np.sin(moment))  # added this line for intensity tracking testing
         moment = time.time()
-        sample = self.sb.gen_image()
-        sample = sample.astype('uint8')
-        elapsed = time.time() - moment
-        if elapsed > self.exposure.m_as('s'):
-            self.logger.warning('Generating a frame takes longer than exposure time')
+        # if self.last_frame_t is not None:
+        # print(moment-self.last_frame_t)
+        #print("generated a frame at {}".format(moment))
+        if moment-self.last_frame_t >= self.min_frame_time:
+            self.last_frame_t = moment
+            return [sample]
         else:
-            self.logger.debug('Sleeping for {}'.format(self.exposure.m_as('s') - elapsed))
-            time.sleep(self.exposure.m_as('s') - elapsed)  # to simulate exposure time corrected for data generation delay
-        return [sample]
+            sleep_for = self.min_frame_time + self.last_frame_t - moment
+            self.last_frame_t = moment
+            #print("sleeping for {}".format(sleep_for))
+            time.sleep(sleep_for)            
+            return [sample]
+        # elapsed = time.time() - moment
+        # if elapsed > self.exposure.m_as('s'):
+            # self.logger.warning('Generating a frame takes longer than exposure time')
+        # else:
+        # self.logger.debug('Sleeping for {}'.format(self.exposure.m_as('s') - elapsed))
+        #time.sleep(self.exposure.m_as('s') - elapsed)  # to simulate exposure time corrected for data generation delay
+        
 
     def set_ROI(self, X, Y):
         """
@@ -116,6 +128,7 @@ class Camera(BaseCamera):
         self.Y = Y
         self.X[1] -= 1
         self.Y[1] -= 1
+        self.sb = SimBrownian((self.xsize, self.ysize))
         return self.get_size()
 
     def get_size(self):

@@ -9,11 +9,9 @@ from pynta.view.subscriber_thread import SubscriberThread
 class MainWindow(MainWindowGUI):
     def __init__(self, experiment):
         """
-
         :param nanoparticle_tracking.model.experiment.win_nanocet.NPTracking experiment: Experiment class
         """
         super().__init__(experiment.config['GUI']['refresh_time'])
-
         self.experiment = experiment
         self.camera_viewer_widget.setup_roi_lines([self.experiment.max_width, self.experiment.max_height])
         self.config_tracking_widget.update_config(self.experiment.config['tracking'])
@@ -23,6 +21,21 @@ class MainWindow(MainWindowGUI):
         self.update_histogram_worker = SubscriberThread(self.experiment.publisher.port, 'histogram')
         self.update_histogram_worker.data_received.connect(self.update_histogram)
         self.update_histogram_worker.start()
+
+        self.camera_viewer_widget.setup_mouse_click()
+
+    def add_monitor_point(self):
+        self.logger.info('Click to add point.')
+        self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
+
+    def add_monitor_point_callback(self, coord):
+        print("Adding coordinate", coord)
+        self.experiment.add_monitor_coordinate(coord)
+        self.camera_viewer_widget.connect_mouse_clicked(None)
+        print(self.experiment.config['monitor_coordinates'])
+
+    def clear_monitor_points(self):
+        self.experiment.clear_monitor_coordinates()
 
     def initialize_camera(self):
         self.experiment.initialize_camera()
@@ -36,9 +49,13 @@ class MainWindow(MainWindowGUI):
             if self.experiment.tracking:
                 locations = self.experiment.temp_locations
                 self.camera_viewer_widget.draw_target_pointer(locations)
+            if hasattr(self.experiment, "monitoring_pixels"):
+                if self.experiment.monitoring_pixels:
+                    monitor_values = self.experiment.temp_monitor_values
+                    self.analysis_dock_widget.intensities_widget.update_graph(monitor_values)
 
     def start_movie(self):
-        if self.experiment.free_run_running:
+        if self.experiment.camera.running:
             self.stop_movie()
             return
         self.experiment.start_free_run()
@@ -108,11 +125,11 @@ class MainWindow(MainWindowGUI):
         if len(values) > 0:
             vals = np.array(values)[:, 0]
             vals = vals[~np.isnan(vals)]
-            self.histogram_tracks_widget.histogram_widget.update_distribution(vals)
+            self.analysis_dock_widget.histogram_widget.update_distribution(vals)
 
     def update_tracks(self):
         locations = self.experiment.location.relevant_tracks()
-        self.histogram_tracks_widget.tracks_widget.plot_trajectories(locations)
+        self.analysis_dock_widget.tracks_widget.plot_trajectories(locations)
 
     def update_tracking_config(self, config):
         config = dict(

@@ -211,9 +211,10 @@ class NPTracking(BaseExperiment):
             for img in data:
                 i += 1
                 self.logger.debug('Number of frames: {}'.format(i))
+                #write img here
+                #todo: save image here
                 if self.do_background_correction and self.background_method == self.BACKGROUND_SINGLE_SNAP:
                     img -= self.background
-
                 # This will broadcast the data just acquired with the current timestamp
                 # The timestamp is very unreliable, especially if the camera has a frame grabber.
                 self.publisher.publish('free_run', [time.time(), img])

@@ -47,7 +47,7 @@ class CameraViewerWidget(QWidget):
 
     def setup_roi_lines(self, max_size):
         """Sets up the ROI lines surrounding the image.
-        
+
         :param list max_size: List containing the maximum size of the image to avoid ROIs bigger than the CCD."""
 
         self.hline1 = pg.InfiniteLine(angle=0, movable=True, hoverPen={'color': "FF0", 'width': 4})
@@ -104,6 +104,21 @@ class CameraViewerWidget(QWidget):
         self.imv.setMouseTracking(True)
         self.imv.getImageItem().scene().sigMouseMoved.connect(self.mouseMoved)
         self.imv.getImageItem().scene().contextMenu = None
+
+    def setup_mouse_click(self):
+        self.img.scene().sigMouseClicked.connect(self.mouseClicked)
+        self.connect_mouse_clicked(None)
+
+    def connect_mouse_clicked(self, callback=None):
+        """Link the mouse click to a function. Use None (default) to reset."""
+        if callback is None:
+            self.click_callback = lambda *args, **kwargs: None
+        else:
+            self.click_callback = callback
+
+    def mouseClicked(self, arg):
+        coord = self.img.mapFromScene(arg.pos())
+        self.click_callback([coord.x(), coord.y()])
 
     def keyPressEvent(self,key):
         """Triggered when there is a key press with some modifier.
@@ -187,6 +202,11 @@ if __name__ == "__main__":
     win = CameraViewerWidget()
     data = np.random.randint(0, 125, (40, 100))
     win.update_image(data)
+
+    # To test the click callback
+    win.setup_mouse_click()
+    win.connect_mouse_clicked(print)
+
     win.show()
     location = DataFrame([[20, 50], [30, 60]], columns=['x', 'y'])
     win.draw_target_pointer(location)

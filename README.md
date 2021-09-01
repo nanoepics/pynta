@@ -6,17 +6,27 @@
 PyNTA aims at bridging the gap between data acquisition and analysis in nanoparticle tracking experiments. You can read more about the project at [https://python-nta.readthedocs.io](https://python-nta.readthedocs.io).
 
 ## Installation
-Create a virtual environment in your own computer and run the following command to get the latest PyNTA version:
 
-    pip install pynta
+### for developers
+First create a virtual environment using 
 
-And if you want the development branch, you can run:
+    python3 -m venv env
 
-    pip install git+https://github.com/nanoepics/pynta@develop
+and activate it with 
+
+    source env/bin/activate
+
+on Linux, or 
+
+    .\env\Scripts\activate
+
+on Windows.
+
+Then install the required packages using 
+
+    pip install -e .
     
-Note that the development branch is for testing purposes only. Forward 
-compatibility is not ensured and unexpected bugs may be encountered. 
-
+the `-e` flag will install the program in edit mode. Now you can run pynta from the command line by typing `pynta` and any changes made in this repo will automatically be used.
 ## Starting PyNTA
 In order to start the program, you need to run the following command: 
 

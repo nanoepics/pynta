@@ -4,12 +4,14 @@
 # All parameters can be changed to accommodate user needs.
 # All parameters can be changed at runtime with the appropriate config window
 user:
+  #TODO: who is this, not who is Aquiles but what does 'user.name' do?
   name: Aquiles
 
 saving:
   auto_save: False
   auto_save_waterfall: True
-  directory: C:\Users\carat002\Data
+  #todo: use OS specific tmp dir
+  directory: C:\dev\pynta\data
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_tracks: Tracks
@@ -23,18 +25,19 @@ GUI:
   refresh_time: 50 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: dummy_camera # Should be a python file in model/cameras
+  model: dcam # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
+  #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this? 
   model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
-  exposure_time: 30ms # Initial exposure time (in ms)
-  fps: 30  # Frames per second, should either be defined by the camera or within the model based on timing
+  exposure_time: 4ms # Initial exposure time (in ms)
+  fps: 250  # Frames per second, should either be defined by the camera or within the model based on timing
   binning_x: 1 # Binning
   binning_y: 1
   roi_x1: 0
-  roi_x2: 599
+  roi_x2: 2048
   roi_y1: 0
-  roi_y2: 399
+  roi_y2: 2048
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
 
@@ -69,7 +72,7 @@ tracking:
   param_2: 0
 
 debug:
-  logging_level: Nothing # One of Nothing, Debug, Info, Warning, Error
+  logging_level: Debug # One of Nothing, Debug, Info, Warning, Error
   queue_memory: False
   to_screen: True
 

@@ -8,4 +8,4 @@ include pynta/view/GUI/Icons/*
 include pynta/view/GUI/designer/*
 include doc/
 include pynta/util/example_config.yml
-exlude pynta/view/old/
+exclude pynta/view/old/

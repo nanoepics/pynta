@@ -24,6 +24,7 @@ import numpy as np
 
 from pynta.controller.devices.hamamatsu.hamamatsu_camera import HamamatsuCamera
 from .base_camera import BaseCamera
+import logging
 
 
 class Camera(BaseCamera):
@@ -32,10 +33,12 @@ class Camera(BaseCamera):
     MODE_EXTERNAL = 2
 
     def __init__(self, camera):
+        super().__init__(camera)
         self.cam_id = camera # Monitor ID
         self.camera = HamamatsuCamera(camera)
         self.running = False
         self.mode = self.MODE_SINGLE_SHOT
+        self.logger = logging.getLogger(__name__)
 
     def initialize(self):
         """ Initializes the camera.
@@ -97,7 +100,8 @@ class Camera(BaseCamera):
         """
         Sets the exposure of the camera.
         """
-        self.camera.setPropertyValue("exposure_time",exposure/1000)
+        # self.camera.setPropertyValue("exposure_time", exposure/1000)
+        self.camera.setPropertyValue("exposure_time", exposure.m_as('s'))
         return self.get_exposure()
 
     def get_exposure(self):
@@ -135,8 +139,8 @@ class Camera(BaseCamera):
         self.camera.setPropertyValue("subarray_hsize", self.camera.max_width)
         self.camera.setSubArrayMode()
 
-        X -= 1
-        Y -= 1
+        # X -= 1
+        # Y -= 1
 
         # Because of how Orca Flash 4 works, all the ROI parameters have to be multiple of 4.
         hsize = round(abs(X[0]-X[1])/4)*4

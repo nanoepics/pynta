@@ -7,12 +7,15 @@
     .. todo:: Remove the printing to screen of the parameters once the debugging is done.
 
     .. sectionauthor:: Aquiles Carattino <aquiles@uetke.com>
+    Last modified by Aron Opheij on 2021-04-26
 """
 import os
 
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QTextEdit, QMessageBox
+import yaml
 
 
 class ConfigWidget(QWidget):
@@ -38,12 +41,25 @@ class ConfigWidget(QWidget):
         self.apply_button.clicked.connect(self.get_config)
         self.cancel_button.clicked.connect(self.revert_changes)
 
+        self.config_tabs.currentChanged.connect(self.tab_changed)
+        self.font = QFont("Courier New", 10)
+
+        self._temp_conf = {}
+        self.txt.setLineWrapMode(QTextEdit.NoWrap)
+        self.txt.setFont(self.font)
+        self.txt.setText("no config loaded")
+        self.txt.textChanged.connect(self.txt_changed)
+
+    def tab_changed(self, tab_indx):
+        if self.config_tabs.tabText(tab_indx) == 'Advanced':
+            self._temp_conf.update(self.get_config(update=False))
+            self.txt.setText(yaml.dump(self._temp_conf))
+
     def update_config(self, config):
         """
         :param config: Dictionary with the new values
         :type config: dict
         """
-
         self.camera_model.setText(config['camera']['model'])
         self.camera_init.setText(str(config['camera']['init']))
         self.camera_camera_model.setText(config['camera']['model_camera'])
@@ -68,8 +84,9 @@ class ConfigWidget(QWidget):
 
         self.logging_level.setCurrentIndex(self.logging_levels[config['debug']['logging_level']])
         self._config = config
+        self._temp_conf = self._config.copy()
 
-    def get_config(self):
+    def get_config(self, update=True):
         config = dict(
             camera=dict(
                 model=self.camera_model.text(),
@@ -103,9 +120,42 @@ class ConfigWidget(QWidget):
             )
         )
 
-        self._config = config
-        self.apply_config.emit(config)
-        return self._config
+        if update:
+            if self.valid_yaml(quiet=False):
+                if self.config_tabs.tabText(self.config_tabs.currentIndex()) == 'Advanced':
+                    # When on the Advanced tab, the values there will overwrite those from the other tabs
+                    config.update(self._temp_conf)
+                else:
+                    # When on the other tabs, those values will overwrite those of the Advanced tab
+                    self._temp_conf.update(config)
+                    config = self._temp_conf
+
+            self._config = config
+            self.apply_config.emit(config)
+
+        return config
 
     def revert_changes(self):
         self.update_config(self._config)
+
+    def txt_changed(self):
+        self.apply_button.setEnabled(self.valid_yaml())
+
+    def valid_yaml(self, quiet=True):
+        """
+        Checks if text in input field can be interpreted as valid yaml.
+        Returns True for valid yaml, False otherwise
+        If optional keyword quiet is set to False it will also display a warning pop-up.
+
+        :param quiet: flag to suppress the warning pop-up (default: True)
+        :type quiet: bool
+        :return: yaml validity
+        :rtype: bool
+        """
+        try:
+            self._temp_conf = yaml.safe_load(self.txt.toPlainText())
+            return True
+        except yaml.YAMLError as exc:
+            if not quiet:
+                QMessageBox.warning(self, 'Invalid YAML', str(exc), QMessageBox.Ok)
+            return False

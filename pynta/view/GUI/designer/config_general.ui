@@ -376,6 +376,16 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="advanced_config">
+      <attribute name="title">
+       <string>Advanced</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QTextEdit" name="txt"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>

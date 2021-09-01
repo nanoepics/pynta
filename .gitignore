@@ -5,6 +5,7 @@
 .log
 __pycache__/
 myenv
+env/
 *.exe
 *.pyc
 .idea
@@ -15,3 +16,8 @@ venv/
 *.egg-info/
 _build/
 .ipynb_checkpoints/
+.qt_for_python
+rust_modules
+pyo3-test
+*.hdf5
+fpsdata.txt

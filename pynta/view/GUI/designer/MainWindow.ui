@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>1071</width>
-     <height>39</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -98,12 +98,20 @@
     <addaction name="actionShow_Cheatsheet"/>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuMonitor">
+    <property name="title">
+     <string>Monitor</string>
+    </property>
+    <addaction name="actionAdd_Monitor_Point"/>
+    <addaction name="actionClear_All"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSnap"/>
    <addaction name="menuMovie"/>
    <addaction name="menuConfigure"/>
    <addaction name="menuBackground"/>
    <addaction name="menuTracking"/>
+   <addaction name="menuMonitor"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -131,6 +139,9 @@
    <addaction name="actionSet_ROI"/>
    <addaction name="actionClear_ROI"/>
    <addaction name="actionToggle_bg_reduction"/>
+   <addaction name="separator"/>
+   <addaction name="actionAdd_Monitor_Point"/>
+   <addaction name="actionClear_All"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Config">
@@ -327,6 +338,24 @@
   <action name="actionTracking_Config">
    <property name="text">
     <string>Config</string>
+   </property>
+  </action>
+  <action name="actionAdd_Monitor_Point">
+   <property name="icon">
+    <iconset>
+     <normaloff>../Icons/monitor_graph.svg</normaloff>../Icons/monitor_graph.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Add point</string>
+   </property>
+  </action>
+  <action name="actionClear_All">
+   <property name="icon">
+    <iconset>
+     <normaloff>../Icons/empty_graph.svg</normaloff>../Icons/empty_graph.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Clear all</string>
    </property>
   </action>
  </widget>

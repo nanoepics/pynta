@@ -26,7 +26,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=['pyqt5', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
-                      'pyzmq', 'numba'],
+                      'pyzmq', 'numba', 'nidaqmx'],
     long_description=long_description,
     long_description_content_type="text/markdown",
     entry_points={

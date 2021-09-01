@@ -26,11 +26,12 @@
     :license: GPLv3, see LICENSE for more details
 """
 import numpy as np
+import time 
 
 from pynta.model.cameras.decorators import not_implemented
 from pynta.util.log import get_logger
 from pynta import Q_
-
+from threading import Event, Thread
 
 logger = get_logger(__name__)
 
@@ -46,11 +47,14 @@ class BaseCamera:
     def __init__(self, camera):
         self.camera = camera
         self.running = False
-        self.max_width = 0
-        self.max_height = 0
+        self._stop_free_run = Event()
+        self.thread = None
+
+        self.max_width = self.GetCCDWidth()
+        self.max_height = self.GetCCDHeight()
         self.exposure = 0
         self.config = {}
-        self.data_type = np.uint16 # The data type that the camera generates when acquiring images. It is very important to have it available in order to create the buffer and saving to disk.
+        self.data_type = np.uint16 # The data type that the camera generates when acquiring images. It is very important to have it available in order to create the buffer and saving to disk.    
 
         self.logger = get_logger(name=__name__)
 
@@ -153,6 +157,13 @@ class BaseCamera:
         Gets the exposure time of the camera.
         """
         return self.exposure
+    
+    @not_implemented
+    def get_ROI(self):
+        """
+        Gets the current ROI of the camera.
+        """
+        pass
 
     @not_implemented
     def read_camera(self):
@@ -233,6 +244,42 @@ class BaseCamera:
         """Stops the acquisition and closes the connection with the camera.
         """
         pass
+    
+    def start_free_run(self, processor):
+        """ Starts continuous acquisition from the camera, but it is not being saved. This method is the workhorse
+        of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other
+        methods. In this way it is possible to continuously save to hard drive, track particles, etc.
+        """
+        if self.running:
+            self.logger.error("Free run already running")
+            return
+        # print('Starting a free run acquisition')
+        self._stop_free_run.clear()
+        self.running = True
+        #start thread here
+        def cam_thread_fnc(fnc):
+            # print('First frame of a free_run')
+            self.set_acquisition_mode(self.MODE_CONTINUOUS)
+            self.start_acquisition()
+            # self.trigger_camera()  # Triggers the camera only once
+            while not self._stop_free_run.is_set():
+                data = self.read_camera()
+                if not data:
+                    time.sleep(1e-6)
+                # print('Got {} new frames'.format(len(data)))
+                fnc(data)
+            self.stop_acquisition()
+        self.thread = Thread(target=cam_thread_fnc, args=(processor,))
+        self.thread.start()
 
+    def stop_free_running(self):
+        # print("stopping free run")
+        if self.running:
+            self._stop_free_run.set()
+            self.thread.join()
+            self.running = False
+            # self.stop_acquisition()
+        # print("free run stopped!")
+    
     def __str__(self):
         return f"Base Camera {self.camera}"

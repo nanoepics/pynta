@@ -1,35 +1,61 @@
 import os
+
+from pyqtgraph.dockarea.DockArea import DockArea
+
+from pynta.model.daqs.signal_generator.dummy_signal_generator import DummySignalGenerator
+from pynta.model.daqs.signal_generator.ni import Ni6216Generator
+
+from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216
+
 from PyQt5 import uic
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QSplitter
-
-from pynta.view.GUI import resources # This is what allows the icons to show up even if not explicitly used in the code
+from pyqtgraph import PlotWidget, plot
+import pyqtgraph as pg
+import numpy as np
+# This is what allows the icons to show up even if not explicitly used in the code
+from pynta.view.GUI import resources
 from pynta.util.log import get_logger
 from pynta.view.GUI.camera_viewer_widget import CameraViewerWidget
 from pynta.view.GUI.config_tracking_widget import ConfigTrackingWidget
 from pynta.view.GUI.config_widget import ConfigWidget
-from pynta.view.GUI.histogram_tracks_widget import HistogramTracksWidget
+from pynta.view.GUI.analysis_dock_widget import AnalysisDockWidget
+# from pynta.view.GUI.signal_generator_widget import SignalGeneratorWidget
+# from pynta.view.GUI.adc_capture_widget import AdcCaptureWidget
+
+# from pynta.model.daqs.signal_generator.stm_signal_generator import StmSignalGenerator
 
 
 class MainWindowGUI(QMainWindow):
     def __init__(self, refresh_time=30):
         super().__init__()
-        uic.loadUi(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'designer', 'MainWindow.ui'), self)
+        uic.loadUi(os.path.join(os.path.dirname(os.path.abspath(
+            __file__)), 'designer', 'MainWindow.ui'), self)
         self.logger = get_logger(name=__name__)
 
         self.central_layout = QHBoxLayout(self.centralwidget)
         self.widget_splitter = QSplitter()
-
+        
         self.camera_viewer_widget = CameraViewerWidget()
-        self.histogram_tracks_widget = HistogramTracksWidget(self)
+        self.analysis_dock_widget = AnalysisDockWidget(self)
+        # self.daq_splitter = QSplitter(orientation = Qt.Vertical)
+        # controller = NiUsb6216()
+        # self.test_widget = SignalGeneratorWidget(Ni6216Generator(controller), self)
+
+        # self.plot_widget = AdcCaptureWidget(controller, self)
+        # self.daq_splitter.addWidget(self.test_widget)
+        # self.daq_splitter.addWidget(self.plot_widget)
+
         self.widget_splitter.addWidget(self.camera_viewer_widget)
-        self.widget_splitter.addWidget(self.histogram_tracks_widget)
-        self.widget_splitter.setSizes((750, 750))
+        self.widget_splitter.addWidget(self.analysis_dock_widget)
+        
+        # self.widget_splitter.addWidget(self.daq_splitter)
+        
+        self.widget_splitter.setSizes((750, 500))
         self.central_layout.addWidget(self.widget_splitter)
 
         self.config_widget = ConfigWidget()
         self.config_tracking_widget = ConfigTrackingWidget()
-
 
         self.refresh_timer = QTimer()
         self.refresh_timer.timeout.connect(self.update_gui)
@@ -45,12 +71,15 @@ class MainWindowGUI(QMainWindow):
         self.logger.error('Update gui not defined')
 
     def connect_signals(self):
-        self.config_tracking_widget.apply_config.connect(self.update_tracking_config)
+        self.config_tracking_widget.apply_config.connect(
+            self.update_tracking_config)
         self.config_widget.apply_config.connect(self.update_config)
 
     def connect_buttons(self):
-        self.histogram_tracks_widget.button_histogram.clicked.connect(self.calculate_histogram)
-        self.histogram_tracks_widget.button_tracks.clicked.connect(self.update_tracks)
+        self.analysis_dock_widget.button_histogram.clicked.connect(
+            self.calculate_histogram)
+        self.analysis_dock_widget.button_tracks.clicked.connect(
+            self.update_tracks)
 
     def connect_actions(self):
         self.actionClose.triggered.connect(self.safe_close)
@@ -60,12 +89,15 @@ class MainWindowGUI(QMainWindow):
         self.actionSnap_Photo.triggered.connect(self.snap)
         self.actionStart_Movie.triggered.connect(self.start_movie)
         self.actionStop_Movie.triggered.connect(self.stop_movie)
-        self.actionStart_Continuous_Saves.triggered.connect(self.start_continuous_saves)
-        self.actionStop_Continuous_Saves.triggered.connect(self.stop_continuous_saves)
+        self.actionStart_Continuous_Saves.triggered.connect(
+            self.start_continuous_saves)
+        self.actionStop_Continuous_Saves.triggered.connect(
+            self.stop_continuous_saves)
         self.actionSet_ROI.triggered.connect(self.set_roi)
         self.actionClear_ROI.triggered.connect(self.clear_roi)
         self.actionConfiguration.triggered.connect(self.configure)
-        self.actionToggle_bg_reduction.triggered.connect(self.background_reduction)
+        self.actionToggle_bg_reduction.triggered.connect(
+            self.background_reduction)
         self.actionStart_Tracking.triggered.connect(self.start_tracking)
         self.actionStop_Tracking.triggered.connect(self.stop_tracking)
         self.actionStart_Linking.triggered.connect(self.start_linking)
@@ -75,8 +107,17 @@ class MainWindowGUI(QMainWindow):
         self.actionAbout.triggered.connect(self.show_about)
         self.actionInitialize_Camera.triggered.connect(self.initialize_camera)
         self.actionUpdate_Histogram.triggered.connect(self.calculate_histogram)
-        self.actionTracking_Config.triggered.connect(self.config_tracking_widget.show)
+        self.actionTracking_Config.triggered.connect(
+            self.config_tracking_widget.show)
         self.actionConfiguration.triggered.connect(self.config_widget.show)
+        self.actionAdd_Monitor_Point.triggered.connect(self.add_monitor_point)
+        self.actionClear_All.triggered.connect(self.clear_monitor_points)
+
+    def add_monitor_point(self):
+        self.logger.debug('Add monitor point')
+
+    def clear_monitor_points(self):
+        self.logger.debug('Clear all monitor points')
 
     def initialize_camera(self):
         self.logger.debug('Initialize Camera')
@@ -172,7 +213,8 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
     ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 

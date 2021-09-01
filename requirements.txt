@@ -1,9 +1,6 @@
-pandas
-scipy
-trackpy
-h5py
-numpy
-sphinx-rtd-theme
-sphinx
-pyqt5
-pyqtgraph
+#https://stackoverflow.com/a/49684835
+# requirements.txt
+ #
+ # installs dependencies from ./setup.py, and the package itself,
+ # in editable mode
+ .
