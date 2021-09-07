@@ -122,7 +122,10 @@ impl Device {
     //NOTE: the documentation does not this function can return an error, but it can. 
     pub fn serial_number(&self) -> Result<SerialNumber, Errors> {
         let serial = SerialNumber(unsafe{MCL_GetSerialNumber(self.handle)});
-        error_or(serial.0, serial)
+        match serial.0 {
+            x if x < 0 => Err(x.into()),
+            _ => Ok(serial)
+        }
     }
 
     pub fn is_attached(&self, time_to_wait : std::time::Duration) -> Result<bool, Errors> {
