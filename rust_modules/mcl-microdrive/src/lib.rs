@@ -83,6 +83,17 @@ pub struct SerialNumber(c_int);
 #[derive(Debug,Copy,Clone)]
 pub struct ProductId(c_ushort);
 
+#[repr(u16)]
+pub enum Products{
+    MicroDrive6,
+    MicroDrive4,
+    MicroDrive3,
+    MicroDrive,
+    NanoCyteMicroDrive,
+    MicroDrive1,
+    Unknown(u16)
+}
+
 #[derive(Debug,Copy,Clone)]
 pub struct AxisInfo{
     bitmap : c_uchar,
@@ -203,8 +214,8 @@ impl Device {
         self.move_three_axis( (axis.0, axis.1, Axis::NoAxis), (velocity_in_mm_per_s.0, velocity_in_mm_per_s.1, 0.0), (distance_in_mm.0, distance_in_mm.1, 0.0))
     }
 
+    //TODO: might be more of a 'queue move'
     pub fn move_three_axis(&self, axis: (Axis, Axis, Axis), velocity_in_mm_per_s :  (f64,f64,f64), distance_in_mm : (f64,f64,f64)) -> Result<(),Errors>{
-        
         error_or(unsafe{MCL_MDMoveThreeAxes(
             axis.0 as c_int, velocity_in_mm_per_s.0, distance_in_mm.0,
             axis.1 as c_int, velocity_in_mm_per_s.1, distance_in_mm.1,
@@ -224,6 +235,11 @@ impl Device {
                 self.info.as_ref().unwrap()
             })
         }
+    }
+
+    pub fn stop(&self) -> Result<(), Errors> {
+        let mut _status = 0;
+        error_or(unsafe{ MCL_MDStop(&mut _status, self.handle) }, ())
     }
 
 }

@@ -10,3 +10,4 @@ mcl-microdrive-sys = {path="../mcl-microdrive-sys"}
 
 [dev-dependencies]
 clap = "2.33"
+hidapi = "1.2"
