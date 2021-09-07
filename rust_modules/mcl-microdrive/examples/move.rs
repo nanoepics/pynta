@@ -2,6 +2,7 @@ use clap::{Arg, App};
 
 fn main() {
     let matches = App::new("CLI interface for moving the first MCL microstage found")
+        .setting(clap::AppSettings::AllowLeadingHyphen)
         .version("0.1.0")
         .author("Hayley Deckers <h.deckers@students.uu.nl>")
         // .about("")
@@ -61,4 +62,8 @@ fn main() {
     let z_axis = if z_arg.is_some() { mcl_microdrive::Axis::M3 } else { mcl_microdrive::Axis::NoAxis };
 
     println!("isueing move of {:?} {:?}, {:?} {:?}, {:?} {:?})", x_axis, x_val, y_axis, y_val, z_axis, z_val);
+    dev.move_three_axis((x_axis,y_axis,z_axis), (x_val.1, y_val.1, z_val.1), (x_val.0, y_val.0, z_val.0)).unwrap();
+    if !matches.is_present("no_wait") {
+        dev.wait_for_move_to_finish().unwrap();
+    }
 }
