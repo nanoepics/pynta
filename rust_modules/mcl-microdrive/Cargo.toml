@@ -7,3 +7,6 @@ edition = "2018"
 
 [dependencies]
 mcl-microdrive-sys = {path="../mcl-microdrive-sys"}
+
+[dev-dependencies]
+clap = "2.33"

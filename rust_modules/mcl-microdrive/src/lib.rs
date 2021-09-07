@@ -1,6 +1,6 @@
 use mcl_microdrive_sys::*;
 use std::convert::{TryInto,From};
-use std::os::raw::{c_int,c_short,c_double, c_ushort, c_uchar};
+use std::os::raw::{c_int,c_short,c_uint, c_ushort, c_uchar, c_double};
 #[derive(Debug)]
 pub enum Errors{
     NoError,
@@ -44,9 +44,21 @@ impl From<Errors> for Result<(),Errors>{
 fn error_or<T, E : Into<Errors>>(error : E, value : T) -> Result<T, Errors>{
     Result::<(),Errors>::from(error.into()).map(|_| value)
 }
-#[derive(Debug, Default)]
+
+#[derive(Debug)]
+pub struct DeviceInfo{
+    encoder_resolution : c_double,
+    step_size : c_double,
+    max_velocity_one_axis : c_double,
+    max_velocity_two_axis : c_double,
+    max_velocity_three_axis : c_double,
+    min_velocity : c_double,
+}
+
+#[derive(Debug)]
 pub struct Device{
-    handle: c_int
+    handle: c_int,
+    info : Option<DeviceInfo>,
 }
 
 #[derive(Debug,Copy,Clone)]
@@ -110,9 +122,21 @@ impl AxisInfo{
     }
 }
 
+#[derive(Debug)]
+#[repr(u32)]
+pub enum Axis{
+    NoAxis = 0,
+    M1 = 1,
+    M2 = 2,
+    M3 = 3,
+    M4 = 4,
+    M5 = 5,
+    M6 = 6
+}
+
 impl Device {
     pub fn new_fake(handle : c_int) -> Self {
-        Self{handle}
+        Self{handle, info : None}
     }
     pub fn firmware_version(&self) -> Result<FirmwareVersion, Errors> {
         let mut firmware = FirmwareVersion{ version :0, profile : 0};
@@ -171,11 +195,48 @@ impl Device {
         error_or(unsafe{MCL_MicroDriveWait(self.handle)}, ())
     }
 
+    pub fn move_single_axis(&self, axis: Axis, velocity_in_mm_per_s :  f64, distance_in_mm : f64) -> Result<(),Errors>{
+        error_or(unsafe{MCL_MDMove(axis as c_uint, velocity_in_mm_per_s, distance_in_mm, self.handle)}, ())
+    }
+
+    pub fn move_two_axis(&self, axis: (Axis, Axis), velocity_in_mm_per_s :  (f64,f64), distance_in_mm : (f64,f64)) -> Result<(),Errors>{
+        self.move_three_axis( (axis.0, axis.1, Axis::NoAxis), (velocity_in_mm_per_s.0, velocity_in_mm_per_s.1, 0.0), (distance_in_mm.0, distance_in_mm.1, 0.0))
+    }
+
+    pub fn move_three_axis(&self, axis: (Axis, Axis, Axis), velocity_in_mm_per_s :  (f64,f64,f64), distance_in_mm : (f64,f64,f64)) -> Result<(),Errors>{
+        
+        error_or(unsafe{MCL_MDMoveThreeAxes(
+            axis.0 as c_int, velocity_in_mm_per_s.0, distance_in_mm.0,
+            axis.1 as c_int, velocity_in_mm_per_s.1, distance_in_mm.1,
+            axis.2 as c_int, velocity_in_mm_per_s.2, distance_in_mm.2,
+            self.handle
+        )}, ())
+    }
+
+    pub fn get_info(&mut self) -> Result<&DeviceInfo, Errors> {
+        if self.info.is_some() {
+            Ok(self.info.as_ref().unwrap())
+        } else {
+            let mut info = DeviceInfo{encoder_resolution : 0.0, step_size : 0.0, max_velocity_one_axis : 0.0, max_velocity_two_axis :0.0, max_velocity_three_axis : 0.0, min_velocity : 0.0};
+            let possible_error = unsafe{ MCL_MDInformation(&mut info.encoder_resolution, &mut info.step_size, &mut info.max_velocity_one_axis, &mut info.max_velocity_two_axis, &mut info.max_velocity_three_axis, &mut info.min_velocity, self.handle)};
+            Result::<(),Errors>::from(Errors::from(possible_error)).map(move |_| {
+                self.info = Some(info);
+                self.info.as_ref().unwrap()
+            })
+        }
+    }
+
 }
 
 impl std::ops::Drop for Device {
     fn drop(&mut self){
-        unsafe{MCL_ReleaseHandle(self.handle)}
+        unsafe{
+            let mut _status = 0;
+            //attempt to issue a stop command to the device before releasing the handle, as a safeguard to stop the stage from moving if the program crashes (assuming it still manages to drop the Device)
+            //this can fail, in which case an error handling mechanism like https://github.com/diesel-rs/diesel/blob/036985ed2c2d2ac1b927f810b89af54d5852826d/diesel/src/sqlite/connection/stmt.rs#L156-L170 would be nice
+            MCL_MDStop(&mut _status, self.handle);
+            MCL_ReleaseHandle(self.handle);
+        }
     }
 }
 
@@ -183,7 +244,7 @@ pub fn get_all_devices() -> Vec<Device>{
     let n_devices = unsafe{MCL_GrabAllHandles()};
     let mut devices = vec![0;n_devices.try_into().unwrap()];
     assert_eq!(n_devices, unsafe{MCL_GetAllHandles(devices.as_mut_ptr(), devices.len() as c_int)});
-    devices.into_iter().map(|handle| Device {handle}).collect()
+    devices.into_iter().map(|handle| Device {handle, info : None}).collect()
 }
 
 #[derive(Debug, Copy, Clone)]
