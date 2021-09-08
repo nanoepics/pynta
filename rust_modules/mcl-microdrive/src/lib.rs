@@ -55,6 +55,27 @@ pub struct DeviceInfo{
     min_velocity : c_double,
 }
 
+impl DeviceInfo{
+pub fn encoder_resolution(&self) -> f64 {
+    self.encoder_resolution as f64
+}
+pub fn step_size(&self) -> f64 {
+    self.step_size as f64
+}
+pub fn max_velocity_one_axis(&self) -> f64 {
+    self.max_velocity_one_axis as f64
+}
+pub fn max_velocity_two_axis(&self) -> f64 {
+    self.max_velocity_two_axis as f64
+}
+pub fn max_velocity_three_axis(&self) -> f64 {
+    self.max_velocity_three_axis as f64
+}
+pub fn min_velocity(&self) -> f64 {
+    self.min_velocity as f64
+}
+}
+
 #[derive(Debug)]
 pub struct Device{
     handle: c_int,
