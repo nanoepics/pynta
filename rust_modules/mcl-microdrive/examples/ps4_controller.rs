@@ -74,7 +74,7 @@ fn main() {
         let x = ((inpt.right_stick_x as f64) - 128.0)/255.0;
         let y = ((inpt.right_stick_x as f64) - 128.0)/255.0;
         mcl.stop().unwrap();
-        mcl.move_two_axis((mcl_microdrive::Axis::M1,mcl_microdrive::Axis::M2), (x.abs(), y.abs()), ((1.0f64).copysign(x), (1.0f64).copysign(y))).unwrap();
+        mcl.move_two_axis((mcl_microdrive::Axis::M1,mcl_microdrive::Axis::M2), (x.abs(), y.abs()), ((10.0f64).copysign(x), (10.0f64).copysign(y))).unwrap();
         //thread::sleep(Duration::from_secs(1));
     }
 }
