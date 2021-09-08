@@ -1,0 +1,25 @@
+[package]
+name = "pynta_drivers"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "pynta_drivers"
+# "cdylib" is necessary to produce a shared library for Python to import from.
+#
+# Downstream Rust code (including code in `bin/`, `examples/`, and `tests/`) will not be able
+# to `use string_sum;` unless the "rlib" or "lib" crate type is also included, e.g.:
+# crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
+
+
+
+[dependencies]
+# pyo3-asyncio = { version = "0.14", features = ["attributes", "tokio-runtime"] }
+# camera_model = {path="../camera_model", features=["dev-dummy"]}
+pyo3 = {version = "0.14", features = ["extension-module"]}
+# numpy = {version = "0.14"}
+# ndarray = {version =  "0.15"}
+# tokio = {version="1", features=["time", "rt-multi-thread", "macros"]}
+mcl-microdrive = {path = "../mcl-microdrive"}
