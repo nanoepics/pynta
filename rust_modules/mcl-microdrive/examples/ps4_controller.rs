@@ -61,20 +61,34 @@ fn main() {
     let product = device.get_product_string().unwrap();
     println!("Product {:?} Device {:?}", manufacturer, product);
     let mcl = &mcl_microdrive::get_all_devices()[0];
+    let mut last_x = 0;
+    let mut last_y = 0;
     loop {
-        println!("Reading...");
+        //println!("Reading...");
         // Read data from device
         let mut buf = [0u8; std::mem::size_of::<PS4Input>()];
         let res = device.read_timeout(&mut buf[..], 1000).unwrap();
         let inpt = PS4Input::new(buf);
-        println!("Read: {:?}",inpt);
+        // println!("Read: {:?}",inpt);
         if inpt.buttons != PS4ButtonFlags::DPadNone {
             return;
         }
-        let x = ((inpt.right_stick_x as f64) - 128.0)/255.0;
-        let y = ((inpt.right_stick_x as f64) - 128.0)/255.0;
-        mcl.stop().unwrap();
-        mcl.move_two_axis((mcl_microdrive::Axis::M1,mcl_microdrive::Axis::M2), (x.abs(), y.abs()), ((10.0f64).copysign(x), (10.0f64).copysign(y))).unwrap();
-        //thread::sleep(Duration::from_secs(1));
+        if ((inpt.right_stick_x as i32 -last_x).abs() > 3) || ((inpt.right_stick_y as i32 -last_y).abs() > 3) {
+            let x = ((inpt.right_stick_x as f64) - 128.0)/180.0;
+            let y = ((inpt.right_stick_y as f64) - 128.0)/180.0;
+            let velocities = (if x.abs() > 0.04 { x.abs() } else {0.00}, if y.abs() > 0.04 { y.abs() } else {0.00});
+            let distances =  (if x.abs() > 0.04 { (10.0f64).copysign(x) } else {0.0},  if y.abs() > 0.04 { (10.0f64).copysign(y)} else {0.0});
+            
+            mcl.stop().unwrap();
+            if x.hypot(y) > 0.1{
+                println!("velocities: {:?}, distances {:?}", velocities, distances);
+                mcl.move_two_axis((mcl_microdrive::Axis::M1,mcl_microdrive::Axis::M2), velocities, distances).unwrap();
+            } else {
+                println!("deadzone");
+            }
+            last_x = inpt.right_stick_x as i32;
+            last_y = inpt.right_stick_y as i32;
+        }
+        // std::thread::sleep(std::time::Duration::from_millis(20));
     }
 }
