@@ -411,8 +411,8 @@ class Experiment(BaseExperiment):
         aqcuisition = self.hdf5.start_new_aquisition()
         def null(x):
             pass
-        # self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
-        self.daq_controller.set_processing_function(null)
+        self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
+        #self.daq_controller.set_processing_function(null)
         print("setting up for snap!")
         self.camera.set_acquisition_mode(self.camera.MODE_SINGLE_SHOT)
         self.camera.start_acquisition()
@@ -432,7 +432,7 @@ class Experiment(BaseExperiment):
             self.temp_locations = df
         print("created pipeline")
         # pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 10),ContinousTracker(self.config['tracking']['locate']['diameter']), SaveTracksToHDF5(aqcuisition), update_tmp])
-        pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 100)])
+        pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 4)])
         def fnc(data):
             # print("proccesing data!")
             if len(data) > 0:
