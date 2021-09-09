@@ -1,5 +1,5 @@
 use std::convert::From;
-use std::os::raw::c_int;
+use std::os::raw::{c_int, c_short, c_ushort};
 
 #[cfg(feature = "microdrive")]
 use mcl_microdrive_sys::*;
@@ -50,4 +50,26 @@ impl From<Errors> for Result<(),Errors>{
 
 pub(crate) fn error_or<T, E : Into<Errors>>(error : E, value : T) -> Result<T, Errors>{
     Result::<(),Errors>::from(error.into()).map(|_| value)
+}
+
+#[derive(Debug,Copy,Clone)]
+pub struct SerialNumber(pub(crate) c_int);
+
+#[derive(Debug,Copy,Clone)]
+pub struct ProductId(pub(crate) c_ushort);
+
+#[derive(Debug,Copy,Clone)]
+pub struct FirmwareVersion{
+    pub(crate) version : c_short,
+    pub(crate) profile : c_short
+}
+
+impl FirmwareVersion{
+    pub fn version(&self) -> i32{
+        self.version as i32
+    }
+
+    pub fn profile(&self) -> i32{
+        self.profile as i32
+    }
 }

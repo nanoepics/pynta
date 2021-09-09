@@ -43,25 +43,6 @@ pub struct Device{
 }
 
 #[derive(Debug,Copy,Clone)]
-pub struct FirmwareVersion{
-    version : c_short,
-    profile : c_short
-}
-
-impl FirmwareVersion{
-    pub fn version(&self) -> i32{
-        self.version as i32
-    }
-
-    pub fn profile(&self) -> i32{
-        self.profile as i32
-    }
-}
-
-#[derive(Debug,Copy,Clone)]
-pub struct SerialNumber(c_int);
-
-#[derive(Debug,Copy,Clone)]
 pub struct ProductId(c_ushort);
 
 #[repr(u16)]
