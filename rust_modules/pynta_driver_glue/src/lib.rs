@@ -1,9 +1,9 @@
 use pyo3::prelude::*;
 use pyo3::exceptions;
-
+use mcl_stagedrive::microdrive;
 #[pyclass(name="Stage")]
 struct PyStage {
-    dev : mcl_microdrive::Device
+    dev : microdrive::Device
 }
 
 struct Wrapper<T>(T);
@@ -23,17 +23,17 @@ impl PyStage {
     #[new]
     pub fn new() -> PyResult<Self> {
         Ok(PyStage{
-            dev : mcl_microdrive::get_all_devices().pop().ok_or(exceptions::PyValueError::new_err("No free madcitylabs microdrive found. Is another program holding the handle?"))?
+            dev : microdrive::get_all_devices().pop().ok_or(exceptions::PyValueError::new_err("No free madcitylabs microdrive found. Is another program holding the handle?"))?
         })
     }
     pub fn move_xy(&self, distance : [f64;2], velocity : [f64;2]) ->   PyResult<()> {
-        to_py_err(self.dev.move_two_axis((mcl_microdrive::Axis::M2,mcl_microdrive::Axis::M1), (velocity[0], velocity[1]), (distance[0], distance[1])))
+        to_py_err(self.dev.move_two_axis((microdrive::Axis::M2,microdrive::Axis::M1), (velocity[0], velocity[1]), (distance[0], distance[1])))
     }
     pub fn move_x(&self, distance : f64, velocity : f64) ->   PyResult<()> {
-        to_py_err(self.dev.move_single_axis(mcl_microdrive::Axis::M2, velocity, distance))
+        to_py_err(self.dev.move_single_axis(microdrive::Axis::M2, velocity, distance))
     }
     pub fn move_y(&self, distance : f64, velocity : f64) ->   PyResult<()> {
-        to_py_err(self.dev.move_single_axis(mcl_microdrive::Axis::M1, velocity, distance))
+        to_py_err(self.dev.move_single_axis(microdrive::Axis::M1, velocity, distance))
     }
     pub fn supported_velocity_range(&mut self) -> PyResult<[f64;2]> {
         let info = to_py_err(self.dev.get_info())?;

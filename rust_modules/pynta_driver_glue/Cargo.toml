@@ -22,4 +22,4 @@ pyo3 = {version = "0.14", features = ["extension-module"]}
 # numpy = {version = "0.14"}
 # ndarray = {version =  "0.15"}
 # tokio = {version="1", features=["time", "rt-multi-thread", "macros"]}
-mcl-microdrive = {path = "../mcl-microdrive"}
+mcl-stagedrive = {path = "../mcl-stagedrive"}
