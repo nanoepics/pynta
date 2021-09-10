@@ -253,7 +253,14 @@ pub mod dcam{
 pub struct Camera{
     handle : dcam4_sys::HDCAM,
     // mode : CameraModel::CaptureMode,
-    image_buffer: Box<Image>
+    image_buffer: Box<[u16]>
+}
+
+impl std::ops::Drop for Camera{
+	fn drop(&mut self) {
+		println!("closing device...");
+		println!("{:?}", unsafe{dcam::Error::try_from(dcam4_sys::dcamdev_close(self.handle))});
+	}
 }
 
 pub struct Image{
@@ -261,7 +268,7 @@ pub struct Image{
     data : [u8]
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Debug)]
 struct Api{
 	api: dcam4_sys::DCAMAPI_INIT,
 }
@@ -286,6 +293,16 @@ impl Api {
 		}
 	}
 }
+
+//Drop does not get called for statics. if we want to do this it's either explicit or via counting devices and the Camera drop whenever we drop the last active device.
+// impl std::ops::Drop for Api{
+// 	fn drop(&mut self) {
+// 		println!("dropping API...");
+// 		println!("{:?}", unsafe{dcam4_sys::dcamapi_uninit()});
+// 	}
+// }
+
+
 //TODO(hayley): verify
 unsafe impl Sync for Api{}
 unsafe impl Send for Api{}
@@ -350,28 +367,29 @@ impl Camera{
 			Ok(dcam::Error::Success) => (),
 			_ => unreachable!()
 		}
-		match dcam::Error::try_from(dcam4_sys::dcambuf_alloc(dev_open.hdcam, 1)) {
-			Ok(dcam::Error::Success) => (),
-			_ => unreachable!()
-		};
+		// match dcam::Error::try_from(dcam4_sys::dcambuf_alloc(dev_open.hdcam, 1)) {
+		// 	Ok(dcam::Error::Success) => (),
+		// 	_ => unreachable!()
+		// };
 		dev_open
 		};
         let mut ret = Self{
             handle : dev_open.hdcam,
             // mode : CameraModel::CaptureMode::SingleShot,
-            image_buffer : {
-                let values = Box::<[u8]>::new_zeroed_slice(2048*2048*2+std::mem::size_of::<dcam4_sys::DCAMBUF_FRAME>());
-                unsafe {
-                    let values = values.assume_init();
-                    Box::from_raw(std::mem::transmute::<&mut [u8], &mut Image>(Box::leak(values)))
-                }
-            }
+            image_buffer :  unsafe{Box::<[u16]>::new_zeroed_slice(2048*2048).assume_init()}
+			// unsafe{
+            //     let values = Box::<[u8]>::new_zeroed_slice(2048*2048*2+std::mem::size_of::<dcam4_sys::DCAMBUF_FRAME>());
+            //     unsafe {
+            //         let values = values.assume_init();
+            //         Box::from_raw(std::mem::transmute::<&mut [u8], &mut Image>(Box::leak(values)))
+            //     }
+            // }
         };
 		unsafe{
 		let attach = dcam4_sys::DCAMBUF_ATTACH{
 			size : std::mem::size_of::<dcam4_sys::DCAMBUF_ATTACH>() as i32,
 			iKind : DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME,
-			buffer : &mut (std::mem::transmute::<&mut Image, &mut [u8]>(&mut ret.image_buffer).as_mut_ptr_range().start as *mut _),
+			buffer : &mut (std::mem::transmute::<&mut [u16], &mut [u8]>(&mut ret.image_buffer).as_mut_ptr_range().start as *mut _),
 			buffercount : 1
 		};
 		dcam_check(dcambuf_attach(ret.handle, &attach)).unwrap();
@@ -394,7 +412,7 @@ impl Camera{
     // fn get_capture_mode(&self) -> CameraModel::CaptureMode {
     //     self.mode
     // }
-    pub fn snap(&mut self) -> Pixels{
+    pub fn snap(&mut self) -> &[u16]{
 		unsafe{ 
 		dcam_check(dcam4_sys::dcamcap_start(self.handle, dcam4_sys::DCAMCAP_START_DCAMCAP_START_SNAP)).unwrap();
 		let mut wait_open = dcam4_sys::DCAMWAIT_OPEN{
@@ -415,6 +433,12 @@ impl Camera{
 		//DCAMWAIT_CAPEVENT.FRAMEREADY, timeout_millisec
 		//dcamwait_start
 		//dcambuf_copyframe(...)
-        self.image_buffer.as_ref().pixels()
+        // std::mem::transmute<&Image, &self.image_buffer.as_ref().pixels()
+		self.image_buffer.as_ref()
+		// unsafe{
+		// 	std::slice::from_raw_parts(
+		// 		std::mem::transmute::<*const u8, *const u16>(self.image_buffer.data.as_ptr()),
+		// 		self.image_buffer.data.len()/2
+		// 	)}
     }
 }
