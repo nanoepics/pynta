@@ -73,3 +73,17 @@ impl FirmwareVersion{
         self.profile as i32
     }
 }
+#[derive(Debug, Copy, Clone)]
+pub struct DllVersion{
+    pub(crate) version : c_short,
+    pub(crate) revision: c_short
+}
+
+impl DllVersion{
+    pub fn version(&self) -> i32 {
+        self.version as i32
+    }
+    pub fn revision(&self) -> i32 {
+        self.revision as i32
+    }
+}

@@ -4,11 +4,6 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Tell cargo to look in this folder for the lib files
-    println!("cargo:rustc-link-search=C:\\dev\\pynta\\rust_modules\\mcl-microdrive-sys\\sdk");
-    // and lick against the dcamapi
-    println!("cargo:rustc-link-lib=dylib=MicroDrive");
-
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=./sdk/");
 
@@ -19,6 +14,8 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("./sdk/MicroDrive.H")
+        .dynamic_library_name("MicroDrive")
+        .dynamic_link_require_all(true)
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))

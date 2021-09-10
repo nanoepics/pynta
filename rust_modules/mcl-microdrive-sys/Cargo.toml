@@ -6,6 +6,8 @@ edition = "2018"
 links = "MicroDrive"
 
 [dependencies]
+libloading = "0.7"
+lazy_static = "1.4"
 
 [build-dependencies]
 bindgen = "0.59"

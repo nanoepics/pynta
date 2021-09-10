@@ -4,10 +4,6 @@ use std::env;
 use std::path::PathBuf;
 
 fn main() {
-    // Tell cargo to look in this folder for the lib files
-    println!("cargo:rustc-link-search=C:\\dev\\pynta\\rust_modules\\mcl-madlib-sys\\sdk");
-    // and lick against the dcamapi
-    println!("cargo:rustc-link-lib=dylib=Madlib");
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=./sdk/");
@@ -21,6 +17,8 @@ fn main() {
         .header("./sdk/Madlib.H")
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
+        .dynamic_library_name("Madlib")
+        .dynamic_link_require_all(true)
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         // Finish the builder and generate the bindings.
         .generate()

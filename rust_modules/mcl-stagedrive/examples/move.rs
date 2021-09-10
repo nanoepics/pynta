@@ -35,7 +35,18 @@ fn main() {
         eprintln!("Specify at least one axis to move on!");
         std::process::exit(-1);
     }
-    let dev = &mcl_microdrive::get_all_devices()[0];
+    let dll_version = mcl_stagedrive::microdrive::get_dll_version();
+    println!("microdrive {:?} -> version {}, revsion {}", dll_version, dll_version.version(), dll_version.revision());
+    println!("corrrect driver version: {}", mcl_stagedrive::microdrive::correct_driver_version());
+    // let mut devices = mcl_stagedrive::microdrive::get_all_devices();
+    // println!("found {} micro devices", devices.len());
+
+    // let mut devices = mcl_stagedrive::microdrive::get_all_devices();
+    // println!("{:?}", devices[0].get_info());
+    let dev = mcl_stagedrive::microdrive::get_all_devices().pop().unwrap();
+    // let mut dev = mcl_stagedrive::microdrive::get_all_devices()
+    println!("using device {:?}", dev);
+    
     let axis_info = dev.axis_info().unwrap();
     if x_arg.is_some() && !axis_info.axis_M1_is_available() {
         eprintln!("This device does not support moving on the x-axis");
@@ -57,9 +68,9 @@ fn main() {
     let x_val = x_arg.map(|s| str_to_tuple(s)).unwrap_or((0.0,0.0));
     let y_val = y_arg.map(|s| str_to_tuple(s)).unwrap_or((0.0,0.0));
     let z_val = z_arg.map(|s| str_to_tuple(s)).unwrap_or((0.0,0.0));
-    let x_axis = if x_arg.is_some() { mcl_microdrive::Axis::M1 } else { mcl_microdrive::Axis::NoAxis };
-    let y_axis = if y_arg.is_some() { mcl_microdrive::Axis::M2 } else { mcl_microdrive::Axis::NoAxis };
-    let z_axis = if z_arg.is_some() { mcl_microdrive::Axis::M3 } else { mcl_microdrive::Axis::NoAxis };
+    let x_axis = if x_arg.is_some() { mcl_stagedrive::microdrive::Axis::M1 } else { mcl_stagedrive::microdrive::Axis::NoAxis };
+    let y_axis = if y_arg.is_some() { mcl_stagedrive::microdrive::Axis::M2 } else { mcl_stagedrive::microdrive::Axis::NoAxis };
+    let z_axis = if z_arg.is_some() { mcl_stagedrive::microdrive::Axis::M3 } else { mcl_stagedrive::microdrive::Axis::NoAxis };
 
     println!("isueing move of {:?} {:?}, {:?} {:?}, {:?} {:?})", x_axis, x_val, y_axis, y_val, z_axis, z_val);
     dev.move_three_axis((x_axis,y_axis,z_axis), (x_val.1, y_val.1, z_val.1), (x_val.0, y_val.0, z_val.0)).unwrap();

@@ -113,12 +113,12 @@ impl Device {
     }
     pub fn firmware_version(&self) -> Result<FirmwareVersion, Errors> {
         let mut firmware = FirmwareVersion{ version :0, profile : 0};
-        error_or(unsafe{MCL_GetFirmwareVersion(&mut firmware.version, &mut firmware.profile, self.handle)}, firmware)
+        error_or(unsafe{DLL.MCL_GetFirmwareVersion(&mut firmware.version, &mut firmware.profile, self.handle)}, firmware)
     }
 
     //NOTE: the documentation does not this function can return an error, but it can. 
     pub fn serial_number(&self) -> Result<SerialNumber, Errors> {
-        let serial = SerialNumber(unsafe{MCL_GetSerialNumber(self.handle)});
+        let serial = SerialNumber(unsafe{DLL.MCL_GetSerialNumber(self.handle)});
         match serial.0 {
             x if x < 0 => Err(x.into()),
             _ => Ok(serial)
@@ -132,13 +132,13 @@ impl Device {
         } else {
             let time_to_wait_milis = time_to_wait_milis as c_int;
             //NOTE: time is listed as unsigned int in the docs but int in the header files
-            Ok(unsafe{MCL_DeviceAttached(time_to_wait_milis, self.handle)})
+            Ok(unsafe{DLL.MCL_DeviceAttached(time_to_wait_milis, self.handle)})
         }
     }
 
     // pub async fn wait_attached(self) -> Self{
     //     loop{
-    //         if unsafe{MCL_DeviceAttached(0, self.handle)} {
+    //         if unsafe{DLL.MCL_DeviceAttached(0, self.handle)} {
     //             return self
     //         }
     //     }
@@ -146,30 +146,30 @@ impl Device {
 
     pub fn product_id(&self) -> Result<ProductId,Errors> {
         let mut ret = ProductId(0);
-        error_or(unsafe{MCL_GetProductID(&mut ret.0, self.handle)}, ret)
+        error_or(unsafe{DLL.MCL_GetProductID(&mut ret.0, self.handle)}, ret)
     }
 
     pub fn axis_info(&self) -> Result<AxisInfo, Errors> {
         let mut ret = AxisInfo{bitmap : 0};
-        error_or(unsafe{MCL_GetAxisInfo(&mut ret.bitmap, self.handle)}, ret)
+        error_or(unsafe{DLL.MCL_GetAxisInfo(&mut ret.bitmap, self.handle)}, ret)
     }
     //units?
     pub fn full_step_size(&self) -> Result<f64, Errors> {
         let mut ret = 0.0;
-        error_or(unsafe{MCL_GetFullStepSize(&mut ret, self.handle)}, ret)
+        error_or(unsafe{DLL.MCL_GetFullStepSize(&mut ret, self.handle)}, ret)
     }
     
     pub fn tirf_module_callibration_in_mm(&self) -> Result<f64, Errors> {
         let mut ret = 0.0;
-        error_or(unsafe{MCL_GetTirfModuleCalibration(&mut ret, self.handle)}, ret)
+        error_or(unsafe{DLL.MCL_GetTirfModuleCalibration(&mut ret, self.handle)}, ret)
     }
 
     pub fn wait_for_move_to_finish(&self) -> Result<(), Errors> {
-        error_or(unsafe{MCL_MicroDriveWait(self.handle)}, ())
+        error_or(unsafe{DLL.MCL_MicroDriveWait(self.handle)}, ())
     }
 
     pub fn move_single_axis(&self, axis: Axis, velocity_in_mm_per_s :  f64, distance_in_mm : f64) -> Result<(),Errors>{
-        error_or(unsafe{MCL_MDMove(axis as c_uint, velocity_in_mm_per_s, distance_in_mm, self.handle)}, ())
+        error_or(unsafe{DLL.MCL_MDMove(axis as c_uint, velocity_in_mm_per_s, distance_in_mm, self.handle)}, ())
     }
 
     pub fn move_two_axis(&self, axis: (Axis, Axis), velocity_in_mm_per_s :  (f64,f64), distance_in_mm : (f64,f64)) -> Result<(),Errors>{
@@ -178,7 +178,7 @@ impl Device {
 
     //TODO: might be more of a 'queue move'
     pub fn move_three_axis(&self, axis: (Axis, Axis, Axis), velocity_in_mm_per_s :  (f64,f64,f64), distance_in_mm : (f64,f64,f64)) -> Result<(),Errors>{
-        error_or(unsafe{MCL_MDMoveThreeAxes(
+        error_or(unsafe{DLL.MCL_MDMoveThreeAxes(
             axis.0 as c_int, velocity_in_mm_per_s.0, distance_in_mm.0,
             axis.1 as c_int, velocity_in_mm_per_s.1, distance_in_mm.1,
             axis.2 as c_int, velocity_in_mm_per_s.2, distance_in_mm.2,
@@ -191,7 +191,7 @@ impl Device {
             Ok(self.info.as_ref().unwrap())
         } else {
             let mut info = DeviceInfo{encoder_resolution : 0.0, step_size : 0.0, max_velocity_one_axis : 0.0, max_velocity_two_axis :0.0, max_velocity_three_axis : 0.0, min_velocity : 0.0};
-            let possible_error = unsafe{ MCL_MDInformation(&mut info.encoder_resolution, &mut info.step_size, &mut info.max_velocity_one_axis, &mut info.max_velocity_two_axis, &mut info.max_velocity_three_axis, &mut info.min_velocity, self.handle)};
+            let possible_error = unsafe{ DLL.MCL_MDInformation(&mut info.encoder_resolution, &mut info.step_size, &mut info.max_velocity_one_axis, &mut info.max_velocity_two_axis, &mut info.max_velocity_three_axis, &mut info.min_velocity, self.handle)};
             Result::<(),Errors>::from(Errors::from(possible_error)).map(move |_| {
                 self.info = Some(info);
                 self.info.as_ref().unwrap()
@@ -201,7 +201,7 @@ impl Device {
 
     pub fn stop(&self) -> Result<(), Errors> {
         let mut _status = 0;
-        error_or(unsafe{ MCL_MDStop(&mut _status, self.handle) }, ())
+        error_or(unsafe{ DLL.MCL_MDStop(&mut _status, self.handle) }, ())
     }
 
 }
@@ -212,42 +212,29 @@ impl std::ops::Drop for Device {
             let mut _status = 0;
             //attempt to issue a stop command to the device before releasing the handle, as a safeguard to stop the stage from moving if the program crashes (assuming it still manages to drop the Device)
             //this can fail, in which case an error handling mechanism like https://github.com/diesel-rs/diesel/blob/036985ed2c2d2ac1b927f810b89af54d5852826d/diesel/src/sqlite/connection/stmt.rs#L156-L170 would be nice
-            MCL_MDStop(&mut _status, self.handle);
-            MCL_ReleaseHandle(self.handle);
+            DLL.MCL_MDStop(&mut _status, self.handle);
+            DLL.MCL_ReleaseHandle(self.handle);
         }
     }
 }
 
 pub fn get_all_devices() -> Vec<Device>{
-    let n_devices = unsafe{MCL_GrabAllHandles()};
+    let n_devices = unsafe{DLL.MCL_GrabAllHandles()};
     let mut devices = vec![0;n_devices.try_into().unwrap()];
-    assert_eq!(n_devices, unsafe{MCL_GetAllHandles(devices.as_mut_ptr(), devices.len() as c_int)});
+    assert_eq!(n_devices, unsafe{DLL.MCL_GetAllHandles(devices.as_mut_ptr(), devices.len() as c_int)});
     devices.into_iter().map(|handle| Device {handle, info : None}).collect()
 }
 
-#[derive(Debug, Copy, Clone)]
-pub struct DllVersion{
-    version : c_short,
-    revision: c_short
-}
 
-impl DllVersion{
-    pub fn version(&self) -> i32 {
-        self.version as i32
-    }
-    pub fn revision(&self) -> i32 {
-        self.revision as i32
-    }
-}
 
 pub fn get_dll_version() -> DllVersion {
     let mut ret = DllVersion{version: 0, revision:0};
-    unsafe{MCL_DLLVersion(&mut ret.version, &mut ret.revision);}
+    unsafe{DLL.MCL_DLLVersion(&mut ret.version, &mut ret.revision);}
     ret
 }
 
 pub fn correct_driver_version() -> bool{
-    unsafe{MCL_CorrectDriverVersion()}
+    unsafe{DLL.MCL_CorrectDriverVersion()}
 }
 
 pub fn check_dll() -> Result<DllVersion, DllVersion> {

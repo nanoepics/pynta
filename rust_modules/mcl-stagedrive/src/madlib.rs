@@ -82,7 +82,7 @@ impl Device {
     }
     pub fn firmware_version(&self) -> Result<FirmwareVersion, Errors> {
         let mut firmware = FirmwareVersion{ version :0, profile : 0};
-        error_or(unsafe{MCL_GetFirmwareVersion(&mut firmware.version, &mut firmware.profile, self.handle)}, firmware)
+        error_or(unsafe{DLL.MCL_GetFirmwareVersion(&mut firmware.version, &mut firmware.profile, self.handle)}, firmware)
     }
 
     pub fn product_id(&self) -> Result<ProductId,Errors> {
@@ -104,7 +104,7 @@ impl Device {
 
     //NOTE: the documentation does not this function can return an error, but it can. 
     pub fn serial_number(&self) -> Result<SerialNumber, Errors> {
-        let serial = SerialNumber(unsafe{MCL_GetSerialNumber(self.handle)});
+        let serial = SerialNumber(unsafe{DLL.MCL_GetSerialNumber(self.handle)});
         match serial.0 {
             x if x < 0 => Err(x.into()),
             _ => Ok(serial)
@@ -118,13 +118,13 @@ impl Device {
         } else {
             let time_to_wait_milis = time_to_wait_milis as c_int;
             //NOTE: time is listed as unsigned int in the docs but int in the header files
-            Ok(unsafe{MCL_DeviceAttached(time_to_wait_milis, self.handle)})
+            Ok(unsafe{DLL.MCL_DeviceAttached(time_to_wait_milis, self.handle)})
         }
     }
 
     pub fn get_info(&self) -> Result<DeviceInfo,Errors> {
         let mut info = DeviceInfo{c_inner : ProductInformation{axis_bitmap : 0, ADC_resolution :0, DAC_resolution : 0, Product_id : 0, FirmwareVersion: 0, FirmwareProfile : 0}};
-        error_or(unsafe{MCL_GetProductInfo(&mut info.c_inner, self.handle)}, info)
+        error_or(unsafe{DLL.MCL_GetProductInfo(&mut info.c_inner, self.handle)}, info)
     }
 }
 
@@ -132,14 +132,24 @@ impl std::ops::Drop for Device {
     fn drop(&mut self){
         unsafe{
             let mut _status = 0;
-            MCL_ReleaseHandle(self.handle);
+            DLL.MCL_ReleaseHandle(self.handle);
         }
     }
 }
 
 pub fn get_all_devices() -> Vec<Device>{
-    let n_devices = unsafe{MCL_GrabAllHandles()};
+    let n_devices = unsafe{DLL.MCL_GrabAllHandles()};
     let mut devices = vec![0;n_devices.try_into().unwrap()];
-    assert_eq!(n_devices, unsafe{MCL_GetAllHandles(devices.as_mut_ptr(), devices.len() as c_int)});
+    assert_eq!(n_devices, unsafe{DLL.MCL_GetAllHandles(devices.as_mut_ptr(), devices.len() as c_int)});
     devices.into_iter().map(|handle| Device {handle}).collect()
+}
+
+pub fn get_dll_version() -> DllVersion {
+    let mut ret = DllVersion{version: 0, revision:0};
+    unsafe{DLL.MCL_DLLVersion(&mut ret.version, &mut ret.revision);}
+    ret
+}
+
+pub fn correct_driver_version() -> bool{
+    unsafe{DLL.MCL_CorrectDriverVersion()}
 }
