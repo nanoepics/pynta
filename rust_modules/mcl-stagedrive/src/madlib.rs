@@ -126,6 +126,19 @@ impl Device {
         let mut info = DeviceInfo{c_inner : ProductInformation{axis_bitmap : 0, ADC_resolution :0, DAC_resolution : 0, Product_id : 0, FirmwareVersion: 0, FirmwareProfile : 0}};
         error_or(unsafe{DLL.MCL_GetProductInfo(&mut info.c_inner, self.handle)}, info)
     }
+
+    pub fn move_to_z(&self, position_in_microns : f64) -> Result<(),Errors> {
+        error_or(unsafe{DLL.MCL_SingleWriteZ(position_in_microns, self.handle)}, ())
+    }
+    pub fn read_position_z(&self) -> Result<f64, Errors> {
+        let ret : f64 = unsafe{DLL.MCL_SingleReadZ(self.handle)};
+        if ret < 0.0 {
+            //what in tarnation...  
+            Err(Errors::from(ret as c_int))
+        } else {
+            Ok(ret)
+        }
+    }
 }
 
 impl std::ops::Drop for Device {
