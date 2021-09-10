@@ -1,0 +1,12 @@
+[package]
+name = "dcam4-sys"
+version = "0.1.0"
+edition = "2018"
+
+
+links = "dcamapi"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.59"
