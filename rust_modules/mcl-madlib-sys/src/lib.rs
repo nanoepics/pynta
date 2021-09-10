@@ -4,5 +4,5 @@
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 lazy_static::lazy_static!{
-    pub static ref DLL: Madlib = unsafe{Madlib::new(libloading::library_filename("Madlib")).unwrap()};
+    pub static ref DLL: Madlib = unsafe{Madlib::new(libloading::library_filename("Madlib")).expect("Couldn't load the Madlib shared library!")};
 }

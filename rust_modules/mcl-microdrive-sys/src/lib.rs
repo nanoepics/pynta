@@ -4,5 +4,5 @@
 
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 lazy_static::lazy_static!{
-    pub static ref DLL: MicroDrive = unsafe{MicroDrive::new(libloading::library_filename("MicroDrive")).unwrap()};
+    pub static ref DLL: MicroDrive = unsafe{MicroDrive::new(libloading::library_filename("MicroDrive")).expect("Couldn't load the MicroDrive shared library!")};
 }
