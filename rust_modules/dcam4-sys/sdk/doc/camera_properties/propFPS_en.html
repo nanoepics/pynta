@@ -1,0 +1,672 @@
+﻿<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Property for Flat Panel Sensor</title>
+    <style type="text/css">
+            body {
+                font-family: sans-serif;
+            }
+            .arg-name {
+              font-style: italic;
+            }
+            .arg-decl {
+              text-indent: 5ex;
+            }
+            .arg-help {
+              text-indent: 2ex;
+            }
+            .fileinformation {
+                text-align: right;
+                color: #808080;
+            }
+            .chapter {
+                font-size: 200%;
+                line-height: 2em;
+                text-align: center;
+                border:	1px solid gray;
+                background-color: #C0FFC0;
+            }
+            .section {
+                font-size: 175%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .title {
+                font-size: 125%;
+                color: #008080;
+            }
+            .fname {
+                font-family: serif;
+                font-style: italic;
+                font-size: 200%;
+                font-weight: bold;
+            }
+            .formula {
+                font-size: 150%;
+                line-height: 2em;
+                text-align: center;
+                font-family: serif;
+                font-style: italic;
+            }
+            .proplist {
+                font-family: sans-serif;
+            }
+            .prop_groupname {
+                font-size: 150%;
+                line-height: 2em;
+            }
+            .prop_id {
+                background-color: #FFFFC0;
+            }
+            .prop_indent {
+                background-color: #C0C0C0;
+            }
+            .pname
+            {
+                font-family: serif;
+                font-style: italic;
+                font-size: 150%;
+                font-weight: bold;
+            }
+            .psection
+            {
+                font-size: 130%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .chaptercontent
+            {
+                font-size: 125%;
+            }
+            table {
+              text-indent: 0;
+            }
+            a.go-top   { text-decoration:none;}
+            a.go-top:link { color: #000080; }
+            a.go-top:hover { color: #808080; }
+            a.go-top:visited { color: #000080; }
+			txtind1 {
+         	 text-indent: 1em;
+          	}
+          	txtindhalf {
+          	text-indent: 50%;
+          	}
+        </style>
+  </head>
+  <body>
+    <div>
+      <div class="fileinformation">
+		<div>v21.6.6291</div>
+	</div>
+    </div>
+    <div><a class="go-top" href="#Chapter_appendix_detail"></a></div>
+    <hr>
+    <div id="Chapter_readfirst_detail">
+      <div class="chapter">Read before using</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					This document and the software sample codes are internal documents of Hamamatsu Photonics K.K.(it is described as the following HPK) and are disclosed upon request in order to enable the user to create a host software using DCAM-API.
+				</div>
+				<div>
+					This document and the software sample codes are disclosed only for the purpose described above, and do not constitute a license, transfer, or any other entitlement for the owner.
+				</div>
+				<div>
+					All of risk and result of using software depending on this document remains with the user.
+				</div>
+				<div>
+					This document may include technical inaccuracies or typographical errors.					HPK does not guarantee any damage arising from such errors or this document.
+				</div>
+				<div>
+					HPK makes no commitment to update or keep current the information contained in this document.
+				</div>
+				<div>
+					All brand and product names are trademarks or registered trademarks of their respective owners.					HPK has copyright of this document with all rights reserved.
+				</div>
+				<div>
+					No part of this documentation may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form, or by any means, in any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of HPK.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_readfirst_detail">Go to top of this chapter</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_overview_detail">
+      <div class="chapter">Overview</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					This document explains support parameter at Flat Panel Sensor and how to control them by DCAM Properties. 					This document requires knowledge of basic concept of DCAM-API and SDK. 					If you need description about them, please reffer other documents.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_overview_detail">Go to top of this chapter</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_properties_detail">
+      <div class="chapter">Scan Mode</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <div class="proplist">
+              <table width="100%" border="1">
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Fine Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_SENSORMODE__AREA					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_BINNING</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_BINNING__1					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+			
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Fast Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_SENSORMODE__AREA					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_BINNING</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_BINNING__2					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+			
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Panoramic Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_SENSORMODE__PANORAMIC					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_BINNING</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_BINNING__1					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE_PANORAMICSTARTV</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">LONG</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>n</td>
+                  <td colspan="2">Value range is described by the Capter of Camera Info.</td>
+                </tr>
+			
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Rectangular binning Panoramic Mode (Rtbin Panoramic mode)</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_SENSORMODE__PANORAMIC					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_BINNING</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_BINNING__1_2					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE_PANORAMICSTARTV</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">LONG</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>n</td>
+                  <td colspan="2">Value range is described by the Capter of Camera Info.</td>
+                </tr>
+			
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Partial Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_SENSORMODE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_SENSORMODE__PARTIALAREA					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_BINNING</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_BINNING__2					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+			
+		</table>
+            </div>
+            <p><a class="go-top" href="#Chapter_properties_detail">Go to top of this chapter</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_properties_detail">
+      <div class="chapter">Trigger Mode</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <div class="proplist">
+              <table width="100%" border="1">
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">Internal Trigger Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_TRIGGERSOURCE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_TRIGGERSOURCE__INTERNAL					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_EXPOSURETIME</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">REAL</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>Exposuretime(sec)</td>
+                  <td colspan="2">Value range is described by each datesheet.</td>
+                </tr>
+			
+			
+				<tr>
+                  <td colspan="4">
+                    <div class="prop_groupname">External Trigger Mode</div>
+                  </td>
+                </tr>
+				<tr>
+                  <td colspan="2">
+                    <div class="prop_id">DCAM_IDPROP_TRIGGERSOURCE</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">R/W</div>
+                  </td>
+                  <td>
+                    <div class="prop_id">MODE</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="5%" class="prop_indent"></td>
+                  <td>DCAMPROP_TRIGGERSOURCE__EXTERNAL					</td>
+                  <td colspan="2">
+                  </td>
+                </tr>
+			
+		</table>
+            </div>
+            <p><a class="go-top" href="#Chapter_properties_detail">Go to top of this chapter</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_fpscamerainfo_detail">
+      <div class="chapter">Camera Info</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<table width="100%" border="1" align="center">
+					<tr>
+						<td rowspan="2">Product</td>
+						<td colspan="5">Scan mode( A:available NA:not available )</td>
+						<td rowspan="2">PANORAMICSTARTV value range</td>
+						<td rowspan="2">notes</td>
+					</tr>
+					<tr>
+						<td>Fine</td>
+						<td>Fast</td>
+						<td>Panoramic</td>
+						<td>Rtbin Panoramic</td>
+						<td>Partial</td>
+					</tr>
+					<tr>
+						<td>C9728DK-10</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C9730DK-10</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C9732DK/-11</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C10500D-42/43</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C10500D-70</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C10502D-42/43</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C10502D-70</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C10900D-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>A</td>
+						<td>0 to 1160</td>
+					</tr>
+					<tr>
+						<td>C10901D-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>NA</td>
+					</tr>
+					<tr>
+						<td>C11700DK-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>NA</td>
+						<td>0 to 1224</td>
+					</tr>
+					<tr>
+						<td>C11701DK-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>A</td>
+						<td>0 to 1716</td>
+					</tr>
+					<tr>
+						<td>C12902DK-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>0 to 938</td>
+					</tr>
+					<tr>
+						<td>C12903DK-40</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>A</td>
+						<td>NA</td>
+						<td>0 to 1152</td>
+					</tr>
+				</table>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_fpscamerainfo_detail">Go to top of this chapter</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
