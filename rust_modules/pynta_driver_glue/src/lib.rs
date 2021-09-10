@@ -1,10 +1,9 @@
 use pyo3::prelude::*;
 use pyo3::exceptions;
 use mcl_stagedrive::microdrive;
-#[pyclass(name="Stage")]
-struct PyStage {
-    dev : microdrive::Device
-}
+use dcam4;
+use numpy::{ToPyArray, PyArray2};
+use ndarray::{ArrayD, ArrayViewD, ArrayViewMutD};
 
 struct Wrapper<T>(T);
 
@@ -17,6 +16,41 @@ impl<T : std::fmt::Debug> std::convert::From<Wrapper<T>> for PyErr{
 fn to_py_err<T,  E : std::fmt::Debug>(original : Result<T,E>) -> PyResult<T> {
     original.map_err(|e| PyErr::from(Wrapper(e)))
 }
+
+#[pyclass(name="Stage")]
+struct PyStage {
+    dev : microdrive::Device
+}
+
+#[pyclass(name="Camera")]
+struct PyCamera {
+    dev : dcam4::Camera
+}
+
+#[pymethods]
+impl PyCamera{
+    #[new]
+    pub fn new() -> PyResult<Self> {
+        Ok(Self{
+            dev: dcam4::Camera::new()
+        })
+    }
+    pub fn snap_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
+        to_py_err(self.dev.snap_into(unsafe{arr.as_slice_mut()}?))
+    }
+    pub fn stream_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
+        to_py_err(self.dev.stream_into(unsafe{arr.as_slice_mut()}?))
+    }
+
+    pub fn stop_stream(&mut self) -> PyResult<()> {
+        to_py_err(self.dev.stop_stream())
+    }
+}
+
+
+
+
+
 
 #[pymethods]
 impl PyStage {
@@ -47,5 +81,6 @@ impl PyStage {
 fn _pynta_drivers(py: Python, m: &PyModule) -> PyResult<()> {
     // m.add_function(wrap_pyfunction!(double, m)?)?;
     m.add_class::<PyStage>()?;
+    m.add_class::<PyCamera>()?;
     Ok(())
 }
