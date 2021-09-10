@@ -60,7 +60,7 @@ fn main() {
     let manufacturer = device.get_manufacturer_string().unwrap();
     let product = device.get_product_string().unwrap();
     println!("Product {:?} Device {:?}", manufacturer, product);
-    let mcl = &mcl_microdrive::get_all_devices()[0];
+    let mcl = &mcl_stagedrive::microdrive::get_all_devices()[0];
     let mut last_x = 0;
     let mut last_y = 0;
     loop {
@@ -82,7 +82,7 @@ fn main() {
             mcl.stop().unwrap();
             if x.hypot(y) > 0.1{
                 println!("velocities: {:?}, distances {:?}", velocities, distances);
-                mcl.move_two_axis((mcl_microdrive::Axis::M1,mcl_microdrive::Axis::M2), velocities, distances).unwrap();
+                mcl.move_two_axis((mcl_stagedrive::microdrive::Axis::M1,mcl_stagedrive::microdrive::Axis::M2), velocities, distances).unwrap();
             } else {
                 println!("deadzone");
             }
