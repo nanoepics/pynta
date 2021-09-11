@@ -25,7 +25,7 @@ GUI:
   refresh_time: 50 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: dcam # Should be a python file in model/cameras
+  model: dummy # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this? 

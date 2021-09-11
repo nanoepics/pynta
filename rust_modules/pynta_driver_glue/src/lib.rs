@@ -73,7 +73,10 @@ trait PyCamera{
     // fn new() -> PyResult<Self>;
     fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()>;
     fn stream_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()>;
+    fn is_streaming(&self) -> PyResult<bool>;
     fn stop_stream(&mut self) -> PyResult<()>;
+    fn get_size(&self) -> PyResult<[usize;2]>;
+    fn get_max_size(&self) -> PyResult<[usize;2]>;
 }
 
 impl PyCamera for DcamCamera{
@@ -87,6 +90,17 @@ impl PyCamera for DcamCamera{
 
     fn stop_stream(&mut self) -> PyResult<()> {
         to_py_err(self.dev.stop_stream())
+    }
+    fn get_size(&self) -> PyResult<[usize;2]> {
+        Ok([2048, 2048])
+    }
+    fn get_max_size(&self) -> PyResult<[usize;2]> {
+        Ok([2048, 2048])
+    }
+
+    fn is_streaming(&self) -> PyResult<bool> {
+        //check that status is busy
+        unimplemented!()
     }
 }
 
@@ -114,7 +128,7 @@ impl PyCamera for DummyCamera{
                     }
                 }
                 last_frame += 1;
-                println!("finished frame {}", last_frame);
+                // println!("finished frame {}", last_frame);
                 std::thread::sleep(std::time::Duration::from_millis(20));
             }
         }));
@@ -125,9 +139,18 @@ impl PyCamera for DummyCamera{
             self.stop_signal.take()
                 .expect("Trying to stop a stream as the joinhandle exists but the stop sigal doesn't exist?")
                 .send(()).unwrap();
-            self.join_handle.take().unwrap().join().unwrap()
+            self.join_handle.take().unwrap().join().unwrap();
         }
         Ok(())
+    }
+    fn get_size(&self) -> PyResult<[usize;2]> {
+        Ok([2048, 2048])
+    }
+    fn get_max_size(&self) -> PyResult<[usize;2]> {
+        Ok([2048, 2048])
+    }
+    fn is_streaming(&self) -> PyResult<bool> {
+        Ok(self.join_handle.is_some())
     }
 }
 
@@ -143,12 +166,12 @@ impl Camera{
         match device.to_lowercase().as_str() {
             "dcam" | "hamamatsu" => {
                 Ok(Self{
-                    device : Box::new(DcamCamera::new()?) as Box::<dyn PyCamera + Send>
+                    device : Box::new(DcamCamera::new()?) as Box::<dyn PyCamera + Send>,
                 })
             },
             "dummy" | "test" => {
                 Ok(Self{
-                    device : Box::new(DummyCamera::new()?) as Box::<dyn PyCamera + Send>
+                    device : Box::new(DummyCamera::new()?) as Box::<dyn PyCamera + Send>,
                 })
             },
             e => {
@@ -167,6 +190,15 @@ impl Camera{
     }
     fn stop_stream(&mut self) -> PyResult<()> {
         self.device.stop_stream()
+    }
+    fn get_size(&self) -> PyResult<[usize;2]> {
+        self.device.get_size()
+    }
+    fn get_max_size(&self) -> PyResult<[usize;2]> {
+        self.device.get_max_size()
+    }
+    fn is_streaming(&self) -> PyResult<bool> {
+        self.device.is_streaming()
     }
 }
 
