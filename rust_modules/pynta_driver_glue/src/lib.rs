@@ -41,6 +41,7 @@ use std::thread;
 #[pyclass(name="DummyCamera")]
 struct DummyCamera {
     last_frame : usize,
+    roi: ([usize;2],[usize;2]),
     join_handle : Option<thread::JoinHandle<()>>,
     stop_signal : Option<mpsc::SyncSender<()>>
 }
@@ -49,20 +50,22 @@ impl DummyCamera {
     fn new() -> PyResult<Self> {
         Ok(Self {
             last_frame : 0,
+            roi: ([0,2048],[0, 2048]),
             join_handle : None,
             stop_signal: None
         })
     }
 
     fn fill_buffer(&mut self, buffer : &mut [u16]) {
-        assert_eq!(buffer.len(), 2048*2048);
+        let buffer_size = self.get_size().unwrap();
+        assert_eq!(buffer.len(), buffer_size[0]*buffer_size[1]);
         let phase_offset = (self.last_frame % 128) as f64 / 127.0;
-        for x in 0..2048{
-            let xf = (x as f64)/2047.0;
-            for y in 0..2048{
-                let yf = (y as f64)/2047.0;
+        for x in 0..buffer_size[0]{
+            let xf = (x as f64)/((buffer_size[0]-1) as f64);
+            for y in 0..buffer_size[1]{
+                let yf = (y as f64)/((buffer_size[1]-1) as f64);
                 let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-                buffer[x*2048+y] = val.max(0.0) as u16;
+                buffer[x*buffer_size[1]+y] = val.max(0.0) as u16;
             }
         }
         self.last_frame += 1;
@@ -75,8 +78,15 @@ trait PyCamera{
     fn stream_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()>;
     fn is_streaming(&self) -> PyResult<bool>;
     fn stop_stream(&mut self) -> PyResult<()>;
-    fn get_size(&self) -> PyResult<[usize;2]>;
+    fn get_size(&self) -> PyResult<[usize;2]>{
+        let roi = self.get_roi()?;
+        Ok([roi.0[1]-roi.0[0], roi.1[1]-roi.1[0]])
+    }
     fn get_max_size(&self) -> PyResult<[usize;2]>;
+    fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>;
+    fn get_roi(&self) -> PyResult<([usize;2], [usize;2])>;
+    // fn set_exposure()
+    // fn get_exposure()
 }
 
 impl PyCamera for DcamCamera{
@@ -91,8 +101,12 @@ impl PyCamera for DcamCamera{
     fn stop_stream(&mut self) -> PyResult<()> {
         to_py_err(self.dev.stop_stream())
     }
-    fn get_size(&self) -> PyResult<[usize;2]> {
-        Ok([2048, 2048])
+    fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>{
+        self.get_roi()
+    }    
+
+    fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
+        Ok(([0,2048],[0,2048]))
     }
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         Ok([2048, 2048])
@@ -112,19 +126,20 @@ impl PyCamera for DummyCamera{
         self.stop_stream()?;
         let (tx, rx) = mpsc::sync_channel::<()>(1);
         self.stop_signal = Some(tx);
-        //very bad
+        let buffer_size = self.get_size()?;
+        //very bad, wors as quick hack but this way the buffer can outlive us.
         let slice : &'static mut [u16] = unsafe{std::mem::transmute(arr.as_slice_mut()?)};
         self.join_handle = Some(std::thread::spawn(move || {
             let mut last_frame = 0;
             while rx.try_recv().is_err() {
-                assert_eq!(slice.len(), 2048*2048);
+                assert_eq!(slice.len(), buffer_size[0]*buffer_size[1]);
                 let phase_offset = (last_frame % 128) as f64 / 127.0;
-                for x in 0..2048{
-                    let xf = (x as f64)/2047.0;
-                    for y in 0..2048{
-                        let yf = (y as f64)/2047.0;
+                for x in 0..buffer_size[0]{
+                    let xf = (x as f64)/((buffer_size[0]-1) as f64);
+                    for y in 0..buffer_size[1]{
+                        let yf = (y as f64)/((buffer_size[1]-1) as f64);
                         let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-                        slice[x*2048+y] = val.max(0.0) as u16;
+                        slice[x*buffer_size[1]+y] = val.max(0.0) as u16;
                     }
                 }
                 last_frame += 1;
@@ -143,8 +158,13 @@ impl PyCamera for DummyCamera{
         }
         Ok(())
     }
-    fn get_size(&self) -> PyResult<[usize;2]> {
-        Ok([2048, 2048])
+    fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
+        Ok(self.roi)
+    }
+    fn set_roi(&mut self, x: [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])> {
+        let max = self.get_max_size()?;
+        self.roi = ([(x[0].min(x[1])), (x[0].max(x[1])).min(max[0])], [(y[0].min(y[1])), (y[0].max(y[1])).min(max[1])]);
+        self.get_roi()
     }
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         Ok([2048, 2048])
@@ -192,10 +212,18 @@ impl Camera{
         self.device.stop_stream()
     }
     fn get_size(&self) -> PyResult<[usize;2]> {
-        self.device.get_size()
+        let size = self.device.get_size()?;
+        println!("size is {:?}", size);
+        Ok(size)
     }
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         self.device.get_max_size()
+    }
+    fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2],[usize;2])> {
+        self.device.set_roi(x,y)
+    }
+    fn get_roi(&self) -> PyResult<([usize;2],[usize;2])>{
+        self.device.get_roi()
     }
     fn is_streaming(&self) -> PyResult<bool> {
         self.device.is_streaming()

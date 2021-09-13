@@ -64,7 +64,8 @@ class Experiment(BaseExperiment):
         """
 
         # self.logger.debug('Setting new camera ROI to x={},y={}'.format(X, Y))
-        self.current_width, self.current_height = self.camera.set_ROI(X, Y)
+        self.camera.set_roi(X, Y)
+        self.current_width, self.current_height = self.camera.get_size()
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
         self.temp_image = np.zeros((self.current_width, self.current_height), dtype=np.uint16)
 
@@ -72,9 +73,9 @@ class Experiment(BaseExperiment):
         """ Clears the region of interest and returns to the full frame of the camera.
         """
         self.logger.info('Clearing ROI settings')
-        X = [0, self.max_width-1]
-        Y = [0, self.max_height-1]
-        self.camera.set_ROI(X, Y)
+        X = [0, self.max_width]
+        Y = [0, self.max_height]
+        self.set_roi(X, Y)
 
     # @make_async_thread
     def snap(self):
