@@ -25,4 +25,11 @@ pyo3 = {version = "0.14", features = ["extension-module"]}
 mcl-stagedrive = {path = "../mcl-stagedrive"}
 dcam4 = {path = "../dcam4"}
 numpy = "0.14"
-ndarray = "0.15"
+
+
+[profile.release]
+codegen-units = 16
+debug = false
+incremental = true
+lto = true
+opt-level = 3

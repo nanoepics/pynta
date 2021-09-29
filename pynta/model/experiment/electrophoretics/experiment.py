@@ -236,7 +236,7 @@ class Experiment(BaseExperiment):
         
         self.background = np.array(())
         self.temp_image = None  # Temporary image, used to quickly have access to 'some' data and display it to the user
-        self.temp_locations = None
+        self.tracked_locations = None
         self.movie_buffer = None  # Holds few frames of the movie in order to be able to do some analysis, save later, etc.
         self.last_index = 0  # Last index used for storing to the movie buffer
         self.stream_saving_running = False
@@ -421,13 +421,14 @@ class Experiment(BaseExperiment):
         image = self.camera.read_camera()[-1]
         self.camera.stop_acquisition()
         print("got first frame, locating now!")
-        # locations = tp.locate(image, self.config['tracking']['locate']['diameter'])
-        # self.clear_monitor_coordinates()
+        locations = tp.locate(image, self.config['tracking']['locate']['diameter'])
+        self.clear_monitor_coordinates()
         # for _idx, row in locations.iterrows():
-        #     self.add_monitor_coordinate((row['x'], row['y']))
+        x,y = self.camera.get_size()
+        self.add_monitor_coordinate((x/2, y/2))
         # self.temp_locations = locations
         # self.tracking = True
-        self.tracking = False
+        self.tracking = True
         def update_tmp(df):
             self.temp_locations = df
         print("created pipeline")

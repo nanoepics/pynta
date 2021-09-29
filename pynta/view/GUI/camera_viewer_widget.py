@@ -171,12 +171,12 @@ class CameraViewerWidget(QWidget):
         if locations is None:
             return
 
-        locations = locations[['y', 'x']].values
+        # locations = locations[['y', 'x']].values
         brush = pg.mkBrush(color=(255, 0, 0))
-        self.marker.setData(locations[:, 0], locations[:, 1], symbol='x', symbolBrush=brush)
+        self.marker.setData(locations[0], locations[1], symbol='x', symbolBrush=brush)
 
     def update_image(self, image):
-        self.img.setImage(image.astype(int), autoLevels=False, autoRange=False, autoHistogramRange=False)
+        self.img.setImage(image, autoLevels=False, autoRange=False, autoHistogramRange=False, axisOrder="row-major")
         if self.first_image:
             self.do_auto_scale()
             self.first_image = False

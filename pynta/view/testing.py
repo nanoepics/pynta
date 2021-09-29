@@ -22,19 +22,19 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.setup_roi_lines([self.experiment.max_width, self.experiment.max_height])
         self.config_tracking_widget.update_config(self.experiment.config['tracking'])
         self.config_widget.update_config(self.experiment.config)
-        self.tracking = False
+        # self.tracking = False
 
         self.camera_viewer_widget.setup_mouse_click()
 
     def add_monitor_point(self):
         self.logger.info('Click to add point.')
-        # self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
+        self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
 
     def add_monitor_point_callback(self, coord):
         print("Adding coordinate", coord)
-        # self.experiment.add_monitor_coordinate(coord)
-        # self.camera_viewer_widget.connect_mouse_clicked(None)
-        print(self.experiment.config['monitor_coordinates'])
+        self.experiment.add_monitor_coordinate(coord)
+        self.camera_viewer_widget.connect_mouse_clicked(None)
+        # print(self.experiment.config['monitor_coordinates'])
 
     def clear_monitor_points(self):
         self.experiment.clear_monitor_coordinates()
@@ -49,9 +49,10 @@ class MainWindow(MainWindowGUI):
     def update_gui(self):
         if self.experiment.temp_image is not None:
             self.camera_viewer_widget.update_image(self.experiment.temp_image)
-            # if self.experiment.tracking:
-            #     locations = self.experiment.temp_locations
-            #     self.camera_viewer_widget.draw_target_pointer(locations)
+            self.experiment.temp_image = None
+        # if self.experiment.tracked_locations[0]:
+                # locations = self.experiment.temp_locations
+        self.camera_viewer_widget.draw_target_pointer(self.experiment.tracked_locations)
             # if hasattr(self.experiment, "monitoring_pixels"):
                 # if self.experiment.monitoring_pixels:
                     # monitor_values = self.experiment.temp_monitor_values
@@ -72,7 +73,7 @@ class MainWindow(MainWindowGUI):
         self.refresh_timer.stop()
         X, Y = self.camera_viewer_widget.get_roi_values()
         self.experiment.set_roi(X, Y)
-        X, Y = self.experiment.camera.get_ROI()
+        X, Y = self.experiment.camera.get_roi()
         self.camera_viewer_widget.set_roi_lines((X[0],X[1]+1), (Y[0], Y[1]+1))
         self.refresh_timer.start()
 
@@ -99,7 +100,7 @@ class MainWindow(MainWindowGUI):
 
     def start_tracking(self):
         self.experiment.start_tracking()
-        self.tracking = True
+        # self.tracking = True
 
     def start_saving_tracks(self):
         self.experiment.start_saving_location()

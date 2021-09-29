@@ -10,9 +10,9 @@ import os
 import time
 # from threading import Event
 
-# from datetime import datetime
+from datetime import datetime
 
-# import h5py as h5py
+import h5py as h5py
 import numpy as np
 # from multiprocessing import Queue, Process
 
@@ -31,8 +31,186 @@ from pynta.util import get_logger
 # from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
 
 # import trackpy as tp
-
+from scipy import ndimage
 from pynta_drivers import Camera as NativeCamera;
+
+
+class DataPipeline:
+    def __init__(self, callables_list = []) -> None:
+        self.callables_list = callables_list
+    
+    def append_node(self, callable):
+        self.callables_list.append(callable)
+    
+    def apply(self, data):
+        for c in self.callables_list:
+            # print("applying {} to {}".format(c, data))
+            data = c(data)
+            if data is None:
+                return None
+        return data
+    
+    def __call__(self, data):
+        self.apply(data)
+
+class ImageBuffer:
+    def __init__(self, buffer = None) -> None:
+        self.buffer = buffer
+    def __call__(self, image):
+        if self.buffer is None:
+            # print("setting buffer as it was empty")
+            self.buffer = np.copy(image)
+        else:
+            np.copyto(self.buffer, image, casting='no')
+        return image
+
+class Track:
+    def __init__(self, diameter = 11) -> None:
+        self.diameter = diameter
+    def __call__(self, image):
+        return tp.locate(image, self.diameter)
+
+class ContinousTracker:
+    def __init__(self, to_track) -> None:
+        self.to_track = to_track
+    def __call__(self, img):
+        for i in range(0, len(self.to_track[0])):
+            x = self.to_track[0][i]
+            y = self.to_track[1][i]
+            rad = 30
+            xmin = int(max(0, x - rad))
+            xmax = int(min(x + rad, img.shape[1]))
+            ymin = int(max(0, y - rad))
+            ymax = int(min(y + rad, img.shape[0]))
+            # print("{}, {} in image of size {}".format(x,y,img.shape))
+            local = img[ymin:ymax, xmin:xmax]
+            # print(local)
+            amax = np.argmax(local, axis=None)
+            # print(amax)
+            y_, x_ = np.unravel_index(amax, local.shape)
+            # print("offsets are {}, {}, position {}, {}, intenity {}".format(x_,y_, x, y, np.max(local)))
+            # Update the coordinate to the (new) location of the maximum
+            #if local[(x_,y_)] > 1:
+            self.to_track[1][i] = ymin + y_ 
+            self.to_track[0][i] = xmin + x_ 
+        return self.to_track
+
+class ContinousTracker2:
+    def __init__(self, to_track) -> None:
+        self.to_track = to_track
+    def __call__(self, img):
+        for i in range(0, len(self.to_track[0])):
+            x = self.to_track[0][i]
+            y = self.to_track[1][i]
+            rad = 16
+            xmin = int(max(0, x - rad))
+            xmax = int(min(x + rad, img.shape[1]))
+            ymin = int(max(0, y - rad))
+            ymax = int(min(y + rad, img.shape[0]))
+            # print("{}, {} in image of size {}".format(x,y,img.shape))
+            local = img[ymin:ymax, xmin:xmax]
+            if local.sum() > 0:
+                (y,x) = ndimage.measurements.center_of_mass(local)
+                print("offsets are {}, {}, intenity {}".format(rad-x-0.5,rad-y-0.5,np.max(local)))
+                self.to_track[1][i] -= rad-y-0.5
+                self.to_track[0][i] -= rad-x-0.5
+        return self.to_track
+
+class SaveTracksToHDF5:
+    def __init__(self, aqcuisition_grp):
+        self.batching = 1024
+        self.write_index = 0
+        self.frame = 0
+
+        self.grp = aqcuisition_grp.create_group("Tracks")
+        #self.grp.attrs["diameter"] = self.diameter
+        self.grp.attrs["creation"]  = str(datetime.utcnow())
+
+        #self.locations_dataset = aqcuisition_grp.create_dataset("locations", shape=(8,self.batching), dtype=np.float32, maxshape=(8,None), chunks=(8, self.batching), compression='gzip')
+        self.x_dataset = self.grp.create_dataset("x", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
+        self.y_dataset = self.grp.create_dataset("y", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
+        self.frame_dataset = self.grp.create_dataset("frames", shape=(self.batching,), dtype=np.uint64, maxshape=(None,), chunks=(self.batching,), compression='gzip')
+        
+    def __call__(self, locations):
+        row_count = len(locations[0])
+        if row_count:
+            #print("found {} particles on frame {}".format(row_count, self.frame))
+            #todo: handle row_count > 
+            old_size = self.x_dataset.shape[0]
+            #print("old size is {}".format(old_size))
+            while row_count + self.write_index > old_size:
+                self.x_dataset.resize((old_size+self.batching,))
+                self.y_dataset.resize((old_size+self.batching,))
+                self.frame_dataset.resize((old_size+self.batching,))
+                old_size += self.batching
+            #print("trying to write x={}".format(locations["x"]))
+            #print(locations["x"].shape)
+            self.x_dataset[self.write_index:self.write_index+row_count] = locations[0]
+            self.y_dataset[self.write_index:self.write_index+row_count] = locations[1]
+            self.frame_dataset[self.write_index:self.write_index+row_count] = np.ones(row_count ,dtype= np.uint64)*self.frame
+            self.write_index += row_count
+        self.frame += 1
+        return locations
+
+class SaveImageToHDF5:
+    def __init__(self, aqcuisition_grp, device, stride = 1):
+        #self.dataset_writer = dataset_writer
+        self.stride = stride-1
+        self.counter = 0
+        size = tuple(device.get_size())
+        self.dataset_writer = aqcuisition_grp.create_dataset("Image", shape=(0,)+size, dtype=np.uint16, maxshape=(None,)+size, chunks=(1,)+size, compression='gzip')
+        self.dataset_writer.attrs["stride"] = stride
+        self.dataset_writer.attrs["creation"]  = str(datetime.utcnow())
+    def __call__(self, image):
+        if self.counter == 0:
+            # print("writting image to file..")
+            #self.dataset_writer.send(image)
+            dsize = self.dataset_writer.shape
+            self.dataset_writer.resize((dsize[0]+1,) + image.shape)
+            self.dataset_writer[-1,:] = image
+        # else:
+        #     print("Skipping image writting..")
+        self.counter = self.counter + 1 if self.counter < self.stride else 0
+        return image
+
+class Batch:
+    def __init__(self, number) -> None:
+        self.number = number
+        self.buffer = None
+        self.index = 0
+    def __call__(self, data):
+        if self.buffer is None:
+            self.buffer = np.zeros((self.number,)+data.shape, data.dtype)
+        self.buffer[self.index,:] = data
+        self.index += 1
+
+class SaveDaqToHDF5:
+    def __init__(self, aqcuisition_grp, device):
+        #self.dataset_writer = dataset_writer
+        self.counter = 0
+        self.dataset_writer = aqcuisition_grp.create_dataset("DAQ-input", shape=(0,)+device.get_size(), dtype=device.data_type, maxshape=(None,)+device.get_size(), chunks=(1,)+device.get_size(), compression='gzip')
+        # write out the signal generator settings.
+        #self.dataset_writer.attrs["stride"] = stride
+        self.dataset_writer.attrs["creation"]  = str(datetime.utcnow())
+    def __call__(self, data):
+        dsize = self.dataset_writer.shape
+        self.dataset_writer.resize((dsize[0]+1,) + dsize[1:])
+        self.dataset_writer[-1,:] = data
+        return data
+
+class FileWrangler:
+    def __init__(self, filename) -> None:
+        self.file = h5py.File(filename if filename.endswith('.hdf5') else filename + '.hdf5','w',  libver='latest')         
+        self.file.attrs["creation"] = str(datetime.utcnow())
+    
+    def start_new_aquisition(self):
+        #print("starting aq of {}".format(device))
+        device_grp = self.file.require_group('data')
+        aquisition_nr = len(device_grp.keys())
+        grp = device_grp.create_group("Acquisition_{}".format(aquisition_nr))
+        return grp
+
+
 
 class Experiment(BaseExperiment):
     BACKGROUND_NO_CORRECTION = 0  # No background correction
@@ -48,7 +226,9 @@ class Experiment(BaseExperiment):
         # self.max_width = None
         # self.max_height = None
         super().__init__(filename)
-        self.temp_image = np.zeros(self.camera.get_size(), dtype=np.uint16)
+        self.temp_image = None
+        self.tracked_locations = ([],[])
+        self.hdf5 = FileWrangler("output")
 
     def gui_file(self):
         return "testing"
@@ -81,7 +261,9 @@ class Experiment(BaseExperiment):
     def snap(self):
         """ Snap a single frame.
         """
-        self.camera.snap_into(self.temp_image)
+        img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
+        self.camera.snap_into(img)
+        self.temp_image = img
 
     #@make_async_thread
     # @check_not_acquiring
@@ -94,7 +276,22 @@ class Experiment(BaseExperiment):
         return self.start_capture()
 
     def start_capture(self):
-      self.camera.stream_into(self.temp_image)
+    #   self.camera.stream_into(self.temp_image)
+        aqcuisition = self.hdf5.start_new_aquisition()
+        def update_img(img):
+            # print("updating temp image to ", img)
+            self.temp_image = img
+            return img
+        # self.tracking = True
+        # self.tracking = False
+        # def update_trck(df):
+        #     self.tracked_locations = df
+        #     return df
+        pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 10),update_img, ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)])
+        x, y = self.camera.get_size()
+        bytes_per_frame = x*y*2
+        bytes_to_buffer = 1024*1024*128
+        self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), pipeline)
 
     # @property
     # def temp_locations(self):
@@ -105,6 +302,7 @@ class Experiment(BaseExperiment):
         having users dealing with somewhat lower level threading options.
         """
         self.camera.stop_stream()
+        print("stream stopped in python!")
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
@@ -127,6 +325,12 @@ class Experiment(BaseExperiment):
         #     self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
         # else:
         #     self.logger.warning('Tried to save an image, but no image was acquired yet.')
+
+    def add_monitor_coordinate(self, coord):
+        self.tracked_locations[0].append(coord[0])
+        self.tracked_locations[1].append(coord[1])
+    def clear_monitor_coordinates(self):
+        self.tracked_locations = ([],[])
 
     def save_stream(self):
         """ Saves the queue to a file continuously. This is an async function, that can be triggered before starting

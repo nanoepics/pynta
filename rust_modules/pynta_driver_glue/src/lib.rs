@@ -1,10 +1,27 @@
+#![feature(asm)]
 use pyo3::prelude::*;
 use pyo3::exceptions;
 use mcl_stagedrive::microdrive;
 use dcam4;
 use numpy::{PyArray2};
 
-struct Wrapper<T>(T);
+pub mod dummy_camera;
+pub use dummy_camera::DummyCamera;
+
+// use tokio::runtime;
+// use lazy_static::lazy_static;
+// lazy_static! {
+//     static ref REACTOR : runtime::Runtime = {
+//         runtime::Builder::new_multi_thread()
+//             .thread_name("rust-side-reactor")
+//             .worker_threads(32)
+//             .enable_all()
+//             .build()
+//             .unwrap()
+//     };
+// }
+
+pub(crate) struct Wrapper<T>(T);
 
 impl<T : std::fmt::Debug> std::convert::From<Wrapper<T>> for PyErr{
     fn from(e: Wrapper<T>) -> PyErr {
@@ -12,7 +29,7 @@ impl<T : std::fmt::Debug> std::convert::From<Wrapper<T>> for PyErr{
     }
 }
 
-fn to_py_err<T,  E : std::fmt::Debug>(original : Result<T,E>) -> PyResult<T> {
+pub(crate) fn to_py_err<T,  E : std::fmt::Debug>(original : Result<T,E>) -> PyResult<T> {
     original.map_err(|e| PyErr::from(Wrapper(e)))
 }
 
@@ -34,49 +51,13 @@ impl DcamCamera{
     }
 }
 
-
-use std::sync::mpsc;
-use std::thread;
-
-#[pyclass(name="DummyCamera")]
-struct DummyCamera {
-    last_frame : usize,
-    roi: ([usize;2],[usize;2]),
-    join_handle : Option<thread::JoinHandle<()>>,
-    stop_signal : Option<mpsc::SyncSender<()>>
-}
-
-impl DummyCamera {
-    fn new() -> PyResult<Self> {
-        Ok(Self {
-            last_frame : 0,
-            roi: ([0,2048],[0, 2048]),
-            join_handle : None,
-            stop_signal: None
-        })
-    }
-
-    fn fill_buffer(&mut self, buffer : &mut [u16]) {
-        let buffer_size = self.get_size().unwrap();
-        assert_eq!(buffer.len(), buffer_size[0]*buffer_size[1]);
-        let phase_offset = (self.last_frame % 128) as f64 / 127.0;
-        for x in 0..buffer_size[0]{
-            let xf = (x as f64)/((buffer_size[0]-1) as f64);
-            for y in 0..buffer_size[1]{
-                let yf = (y as f64)/((buffer_size[1]-1) as f64);
-                let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-                buffer[x*buffer_size[1]+y] = val.max(0.0) as u16;
-            }
-        }
-        self.last_frame += 1;
-    }
-}
-
 trait PyCamera{
     // fn new() -> PyResult<Self>;
     fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()>;
-    fn stream_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()>;
+    // fn stream_into(&mut self, arr: &mut [u16]) -> PyResult<()>;
+    // fn snap(&mut self) -> PyResult<Py<PyArray2<u16>>
     fn is_streaming(&self) -> PyResult<bool>;
+    fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()>;
     fn stop_stream(&mut self) -> PyResult<()>;
     fn get_size(&self) -> PyResult<[usize;2]>{
         let roi = self.get_roi()?;
@@ -93,9 +74,12 @@ impl PyCamera for DcamCamera{
     fn snap_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
         to_py_err(self.dev.snap_into(unsafe{arr.as_slice_mut()?}))
     }
-    fn stream_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
-        //does this buffer live long enough? should we store a copy of it somewhere in our memory to prevent python from GCing it till we're done with it too?
-        to_py_err(self.dev.stream_into(unsafe{arr.as_slice_mut()?}))
+    // fn stream_into(&mut self, arr : &mut [u16]) -> PyResult<()> {
+    //     //does this buffer live long enough? should we store a copy of it somewhere in our memory to prevent python from GCing it till we're done with it too?
+    //     to_py_err(self.dev.stream_into(arr))
+    // }
+    fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()> {
+        unimplemented!()
     }
 
     fn stop_stream(&mut self) -> PyResult<()> {
@@ -122,61 +106,43 @@ impl PyCamera for DummyCamera{
     fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
         Ok(self.fill_buffer(unsafe{arr.as_slice_mut()?}))
     }
-    fn stream_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
-        self.stop_stream()?;
-        let (tx, rx) = mpsc::sync_channel::<()>(1);
-        self.stop_signal = Some(tx);
-        let buffer_size = self.get_size()?;
-        //very bad, wors as quick hack but this way the buffer can outlive us.
-        let slice : &'static mut [u16] = unsafe{std::mem::transmute(arr.as_slice_mut()?)};
-        self.join_handle = Some(std::thread::spawn(move || {
-            let mut last_frame = 0;
-            while rx.try_recv().is_err() {
-                assert_eq!(slice.len(), buffer_size[0]*buffer_size[1]);
-                let phase_offset = (last_frame % 128) as f64 / 127.0;
-                for x in 0..buffer_size[0]{
-                    let xf = (x as f64)/((buffer_size[0]-1) as f64);
-                    for y in 0..buffer_size[1]{
-                        let yf = (y as f64)/((buffer_size[1]-1) as f64);
-                        let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-                        slice[x*buffer_size[1]+y] = val.max(0.0) as u16;
-                    }
-                }
-                last_frame += 1;
-                // println!("finished frame {}", last_frame);
-                std::thread::sleep(std::time::Duration::from_millis(20));
-            }
-        }));
-        Ok(())
+    // fn stream_into(&mut self, arr: &mut [u16]) -> PyResult<()> {
+    // }
+    fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()>{
+        // let stream_generator = dummy_camera::CameraStreamer::new(callable, n_buffers, self.get_size())?;
+        // self.streamer = Some(stream_generator.start());
+        // Ok(())
+        self.start_stream(n_buffers, callable)
     }
+
     fn stop_stream(&mut self) -> PyResult<()> {
-        if self.join_handle.is_some() {
-            self.stop_signal.take()
-                .expect("Trying to stop a stream as the joinhandle exists but the stop sigal doesn't exist?")
-                .send(()).unwrap();
-            self.join_handle.take().unwrap().join().unwrap();
+        if self.streamer.is_some(){
+            // println!("iissueing a stop on reactor");
+            self.streamer.take().unwrap().stop();
+            println!("stopped");
         }
         Ok(())
     }
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
-        Ok(self.roi)
+        Ok(self.get_roi())
     }
     fn set_roi(&mut self, x: [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])> {
         let max = self.get_max_size()?;
         self.roi = ([(x[0].min(x[1])), (x[0].max(x[1])).min(max[0])], [(y[0].min(y[1])), (y[0].max(y[1])).min(max[1])]);
-        self.get_roi()
+        <Self as PyCamera>::get_roi(&self)
     }
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         Ok([2048, 2048])
     }
     fn is_streaming(&self) -> PyResult<bool> {
-        Ok(self.join_handle.is_some())
+        Ok(self.streamer.is_some())
     }
 }
 
 #[pyclass]
 pub struct Camera{
-    device : Box::<dyn PyCamera + Send>
+    device : Box::<dyn PyCamera + Send>,
+    // buffers : Option<Py<PyArray3<u16>>>
 }
 
 #[pymethods]
@@ -187,11 +153,13 @@ impl Camera{
             "dcam" | "hamamatsu" => {
                 Ok(Self{
                     device : Box::new(DcamCamera::new()?) as Box::<dyn PyCamera + Send>,
+                    // buffers : None,
                 })
             },
             "dummy" | "test" => {
                 Ok(Self{
                     device : Box::new(DummyCamera::new()?) as Box::<dyn PyCamera + Send>,
+                    // buffers: None,
                 })
             },
             e => {
@@ -205,28 +173,36 @@ impl Camera{
     fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
         self.device.snap_into(arr)
     }
-    fn stream_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
-        self.device.stream_into(arr)
+    // fn stream_into(&mut self, arr: &PyArray3<u16>) -> PyResult<()> {
+    //     self.buffers = Some(arr.to_owned());
+    //     self.device.stream_into(arr.as_slice_mut())
+    // }
+    fn start_stream(&mut self, n_buffers: usize, callable : PyObject, py: Python) -> PyResult<()> {
+        py.allow_threads(||{self.device.start_stream(n_buffers, callable)})
     }
-    fn stop_stream(&mut self) -> PyResult<()> {
-        self.device.stop_stream()
+    
+    fn stop_stream(&mut self, py: Python) -> PyResult<()> {
+        println!("trying to stop stream");
+        py.allow_threads(||{self.device.stop_stream()})
     }
-    fn get_size(&self) -> PyResult<[usize;2]> {
-        let size = self.device.get_size()?;
-        println!("size is {:?}", size);
-        Ok(size)
+    fn get_size(&mut self, py: Python) -> PyResult<[usize;2]> {
+        py.allow_threads(||{
+            let size = {&mut self.device}.get_size()?;
+            println!("size is {:?}", size);
+            Ok([size[1], size[0]])
+        })
     }
-    fn get_max_size(&self) -> PyResult<[usize;2]> {
+    fn get_max_size(&self, py: Python) -> PyResult<[usize;2]> {
         self.device.get_max_size()
     }
-    fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2],[usize;2])> {
-        self.device.set_roi(x,y)
+    fn set_roi(&mut self, x : [usize;2], y : [usize;2], py: Python) -> PyResult<([usize;2],[usize;2])> {
+        py.allow_threads(||{self.device.set_roi(x,y)})
     }
-    fn get_roi(&self) -> PyResult<([usize;2],[usize;2])>{
-        self.device.get_roi()
+    fn get_roi(&mut self, py: Python) -> PyResult<([usize;2],[usize;2])>{
+        py.allow_threads(||{(&mut self.device).get_roi()})
     }
-    fn is_streaming(&self) -> PyResult<bool> {
-        self.device.is_streaming()
+    fn is_streaming(&mut self, py: Python) -> PyResult<bool> {
+        py.allow_threads(||{&mut self.device}.is_streaming())
     }
 }
 
@@ -257,7 +233,7 @@ impl PyStage {
 }
 
 #[pymodule]
-fn _pynta_drivers(py: Python, m: &PyModule) -> PyResult<()> {
+fn _pynta_drivers(_py: Python, m: &PyModule) -> PyResult<()> {
     // m.add_function(wrap_pyfunction!(double, m)?)?;
     m.add_class::<PyStage>()?;
     m.add_class::<Camera>()?;
