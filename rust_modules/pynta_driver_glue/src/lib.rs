@@ -8,19 +8,6 @@ use numpy::{PyArray2};
 pub mod dummy_camera;
 pub use dummy_camera::DummyCamera;
 
-// use tokio::runtime;
-// use lazy_static::lazy_static;
-// lazy_static! {
-//     static ref REACTOR : runtime::Runtime = {
-//         runtime::Builder::new_multi_thread()
-//             .thread_name("rust-side-reactor")
-//             .worker_threads(32)
-//             .enable_all()
-//             .build()
-//             .unwrap()
-//     };
-// }
-
 pub(crate) struct Wrapper<T>(T);
 
 impl<T : std::fmt::Debug> std::convert::From<Wrapper<T>> for PyErr{
@@ -74,10 +61,6 @@ impl PyCamera for DcamCamera{
     fn snap_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
         to_py_err(self.dev.snap_into(unsafe{arr.as_slice_mut()?}))
     }
-    // fn stream_into(&mut self, arr : &mut [u16]) -> PyResult<()> {
-    //     //does this buffer live long enough? should we store a copy of it somewhere in our memory to prevent python from GCing it till we're done with it too?
-    //     to_py_err(self.dev.stream_into(arr))
-    // }
     fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()> {
         unimplemented!()
     }
@@ -173,10 +156,6 @@ impl Camera{
     fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
         self.device.snap_into(arr)
     }
-    // fn stream_into(&mut self, arr: &PyArray3<u16>) -> PyResult<()> {
-    //     self.buffers = Some(arr.to_owned());
-    //     self.device.stream_into(arr.as_slice_mut())
-    // }
     fn start_stream(&mut self, n_buffers: usize, callable : PyObject, py: Python) -> PyResult<()> {
         py.allow_threads(||{self.device.start_stream(n_buffers, callable)})
     }

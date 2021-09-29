@@ -2,39 +2,17 @@
 use pyo3::prelude::*;
 use pyo3::exceptions;
 use numpy::{PyArray2};
-use std::sync::mpsc;
-use std::thread;
-
-// pub(crate) struct CameraStreamer<T: Copy>{
-//     pub(crate) buffers : Vec<Py<PyArray2<T>>>,
-//     // last_frame = 
-//     pub(crate) frame_processor : PyObject, //must be callable
-//     pub(crate) last_frame_id : usize,//std::sync::atomic::AtomicUsize,
-//     pub(crate) buffer_size : [usize;3],
-// }
-
-// pub(crate) struct StreamHandle{
-//     pub(crate) join_handle : thread::JoinHandle<()>,
-//     pub(crate) stop_signal : mpsc::SyncSender<()>
-// }
-
-
-
-// impl StreamHandle {
-//     pub fn stop(self) -> () {
-//         println!("sending stop signal!");
-//         self.stop_signal.send(()).unwrap();
-//         println!("waiting on join...!");
-//         let ret = self.join_handle.join().unwrap();
-//         println!("stream stopped.");
-//         ret
-//     }
-// }
-
-use std::sync::atomic::{AtomicBool,AtomicUsize};
-use std::sync::atomic::Ordering;
-use std::sync::Arc;
+use std::sync::{
+    atomic::{
+        AtomicBool,
+        AtomicUsize,
+        Ordering
+    },
+    Arc
+};
 use std::time::Duration;
+use std::thread::JoinHandle;
+
 pub(crate) struct BufferFiller{
     //the buffers & their size
     buffers: Vec<Py<PyArray2<u16>>>,
@@ -93,31 +71,6 @@ impl BufferFiller {
             last_fill = std::time::Instant::now();            
         }
     }
-    //    loop { tokio::select!{
-    //        _ = self.stop_signal.changed() => {println!("Filler stopping!"); return},
-    //        _instant = self.interval.tick() => {
-    //         //    let now = std::time::Instant::now();
-    //             // println!("ticked at {:?}, now {:?}", instant, now);
-    //             let image_index = self.last_frame_id % n_buffers;
-    //             // let mut slice = self.buffers.index_axis_mut(Axis(0), image_index);//[n_pixels*image_index..n_pixels*(image_index+1)];
-    //             let phase_offset = (self.last_frame_id % 128) as f64 / 127.0;
-    //             for y in 0..self.image_size[1]{ 
-    //                 let yf = (y as f64)/((self.image_size[0]-1) as f64);
-    //                 for x in 0..self.image_size[0]{
-    //                     let xf = (x as f64)/((self.image_size[0]-1) as f64);
-    //                     let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-    //                     images[image_index][y*self.image_size[0]+x] = val.max(0.0) as u16;
-    //                 }
-    //             }
-    //             match self.last_frame_notification.send(self.last_frame_id) {
-    //                 Ok(_) => {
-    //                     // tokio::task::yield_now().await;
-    //                 }
-    //                 Err(_) => {return;}
-    //             }
-    //             self.last_frame_id += 1;
-    //        }
-    //    }};
 }
 
 
@@ -187,43 +140,9 @@ impl FrameProcessor {
             std::thread::yield_now();
            }
        }
-       //todo this can error out differently? 
-    //    loop { tokio::select!{
-    //        _new_frame = self.last_frame_notification.changed() => {
-    //            let new_frame_id : usize= *self.last_frame_notification.borrow();
-    //         //    println!("saw frame_id {}", new_frame_id);
-    //            let n_frames = new_frame_id + 1 - self.next_frame_to_process;
-    //            if n_frames > n_buffers {
-    //                eprintln!("Buffer overflow detetcted! saw {} new frames but the buffer size is {}", n_frames, n_buffers);
-    //            } else {
-    //              let start_index = self.next_frame_to_process % n_buffers;
-    //              let end_index = new_frame_id % n_buffers;
-    //              println!("saw {} new frames!", n_frames);
-    //              pyo3::Python::with_gil(|py| {
-    //                 if end_index < start_index {
-    //                     for idx in start_index..n_buffers {
-    //                         self.callable.call1(py, (&self.buffers[idx],));
-    //                     }
-    //                     for idx in 0..end_index {
-    //                         self.callable.call1(py, (&self.buffers[idx],));
-    //                     }
-    //                 } else {
-    //                     for idx in 0..end_index {
-    //                         self.callable.call1(py, (&self.buffers[idx],));
-    //                     }
-    //                 }
-    //              });
-    //            }
-    //            self.next_frame_to_process = new_frame_id+1;
-    //        },
-    //        _ = self.stop_signal.changed() => {  println!("processor stopping!"); return }
-    //    }};
-
-    // }
     }
 }
 
-use std::thread::JoinHandle;
 
 pub(crate) struct Terminator {
     stop_signal : Arc<AtomicBool>,
@@ -241,75 +160,6 @@ impl Terminator {
         println!("everything joined!");
     }
 }
-
-// impl CameraStreamer<u16> {
-//     pub fn new(callable : PyObject, n_buffers : usize, image_size : [usize;2]) -> PyResult<Self> {
-//         if !Python::with_gil(|py| {callable.as_ref(py).is_callable()}){
-//             Err(exceptions::PyValueError::new_err(
-//                 format!("Object {:?} is not callable!",callable)
-//             ))
-//         } else {
-//             Ok(Self{
-//                 buffers : Python::with_gil(|py| vec![PyArray2::zeros(py, [image_size[1], image_size[0]], false).to_owned(); n_buffers]),
-//                 frame_processor : callable,
-//                 last_frame_id : 0,
-//                 buffer_size : [n_buffers, image_size[1], image_size[0]]
-//             })
-//         }
-//     }
-
-//     pub fn start(mut self) -> StreamHandle {
-//         let (tx, rx) = mpsc::sync_channel::<()>(1);
-//         StreamHandle{
-//             stop_signal : tx,
-//             join_handle : std::thread::spawn(move || {
-//                 //grab all the pointers to the numpy arrays data, and convert them to static references.
-//                 //this is highly unsafe (in the rust sense) but it is safe here as we keep the buffers alive (and pinned) for as long as they are 
-//                 //used here. They will mutate "magically" in the background but that is the nature of DMA buffers. 
-//                 let mut images :   Vec<&'static mut [u16]>  = pyo3::Python::with_gil(|py| {
-//                      self.buffers.iter().map(|arr| unsafe {
-//                          std::mem::transmute(arr.as_ref(py).as_slice_mut().unwrap())
-//                      }).collect()
-//                 });
-//                 let image_size = [self.buffer_size[2],self.buffer_size[1]];
-//                 // let n_pixels = image_size[0]*image_size[1];
-//                 let n_buffers = self.buffer_size[0];
-//                 //todo this can error out differently? 
-//                 while rx.try_recv().is_err() {
-//                     let now = std::time::Instant::now();
-//                     // println!("{:?}", now);
-//                     let image_index = self.last_frame_id % n_buffers;
-//                     // let mut slice = self.buffers.index_axis_mut(Axis(0), image_index);//[n_pixels*image_index..n_pixels*(image_index+1)];
-//                     let phase_offset = (self.last_frame_id % 128) as f64 / 127.0;
-//                     for y in 0..image_size[1]{ 
-//                         let yf = (y as f64)/((image_size[0]-1) as f64);
-//                         for x in 0..image_size[0]{
-//                             let xf = (x as f64)/((image_size[0]-1) as f64);
-//                             let val = 350.0*(0.5+0.5*((xf+yf+phase_offset)*6.28).sin());
-//                             images[image_index][y*image_size[0]+x] = val.max(0.0) as u16;
-//                         }
-//                     }
-//                     pyo3::Python::with_gil(|py| {
-//                         self.frame_processor.call1(py, (&self.buffers[image_index],))
-//                     }).unwrap();
-//                     let time_taken = std::time::Instant::now()-now;
-//                     if time_taken < std::time::Duration::from_millis(25) {
-//                         std::thread::sleep(std::time::Duration::from_millis(30) - time_taken);
-//                     } else {
-//                         eprintln!("Took too long making frame {}: took {} ms", self.last_frame_id, time_taken.as_millis());
-//                     }
-//                     self.last_frame_id += 1; 
-//                 }
-//                 println!("thread saw stop, stopping!");
-//              })
-//         }
-//     }
-
-    // pub fn get_last_frame(&self) -> Py<PyArray2<u16>> {
-    //     let indx = self.last_frame_index();
-
-    // }
-// }
 
 #[pyclass(name="DummyCamera")]
 pub struct DummyCamera {
