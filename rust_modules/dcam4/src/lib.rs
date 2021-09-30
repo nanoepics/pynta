@@ -397,14 +397,21 @@ impl Camera{
 		ret
     }
 
-    pub fn set_exposure(&mut self, exposure : std::time::Duration) { 
+    pub fn set_exposure(&mut self, exposure : std::time::Duration) -> Result<std::time::Duration, dcam::Error> { 
+		//0.003020752 to 10.0
+		Ok(std::time::Duration::from_secs_f64(self.set_get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME, exposure.as_secs_f64())?))
     }
-    pub fn get_exposure(&self) -> std::time::Duration { 
-        std::time::Duration::from_millis(500)
+    pub fn get_exposure(&self) -> Result<std::time::Duration, dcam::Error> { 
+        Ok(std::time::Duration::from_secs_f64(self.get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME)?))
     }
 	pub fn set_property(&self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
 		println!("setting property {} to {}", property_id, val);
 		unsafe{dcam_check(dcam4_sys::dcamprop_setvalue(self.handle, property_id, val))}
+	}
+	pub fn set_get_property(&self, property_id : i32, mut val : f64) -> Result<f64, dcam::Error>{
+		println!("setting property {} to {}", property_id, val);
+		unsafe{dcam_check(dcam4_sys::dcamprop_setgetvalue(self.handle, property_id, &mut val, 0))?;}
+		Ok(val)
 	}
 	pub fn get_property(&self, property_id : i32) -> Result<f64, dcam::Error>{
 		let mut val = 0.0;

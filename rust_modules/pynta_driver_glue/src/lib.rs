@@ -44,8 +44,8 @@ trait PyCamera{
     fn get_max_size(&self) -> PyResult<[usize;2]>;
     fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>;
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])>;
-    // fn set_exposure()
-    // fn get_exposure()
+    fn set_exposure(&mut self, exposure_in_seconds: f64) -> PyResult<f64>;
+    fn get_exposure(&self) -> PyResult<f64>;
 }
 
 impl PyCamera for DummyCamera{
@@ -82,6 +82,12 @@ impl PyCamera for DummyCamera{
     }
     fn is_streaming(&self) -> PyResult<bool> {
         Ok(self.streamer.is_some())
+    }
+    fn set_exposure(&mut self, exposure_in_seconds: f64) -> PyResult<f64> {
+        self.get_exposure()
+    }
+    fn get_exposure(&self) -> PyResult<f64> {
+        Ok(0.0)
     }
 }
 
@@ -142,6 +148,12 @@ impl Camera{
     }
     fn get_roi(&mut self, py: Python) -> PyResult<([usize;2],[usize;2])>{
         py.allow_threads(||{(&mut self.device).get_roi()})
+    }
+    fn set_exposure(&mut self, exposure_in_seconds: f64, py: Python) -> PyResult<f64> {
+        py.allow_threads(||{(&mut self.device).set_exposure(exposure_in_seconds)})
+    }
+    fn get_exposure(&mut self, py: Python) -> PyResult<f64> {
+        py.allow_threads(||(&mut self.device).get_exposure())
     }
     fn is_streaming(&mut self, py: Python) -> PyResult<bool> {
         py.allow_threads(||{&mut self.device}.is_streaming())

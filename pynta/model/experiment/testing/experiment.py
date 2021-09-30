@@ -26,7 +26,7 @@ from pynta.model.experiment.base_experiment import BaseExperiment
 # from pynta.model.experiment.nanospring_tracking.saver import worker_listener
 # from pynta.model.experiment.nanospring_tracking.exceptions import StreamSavingRunning
 from pynta.util import get_logger
-
+from pynta import Q_
 
 # from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
 
@@ -221,6 +221,8 @@ class Experiment(BaseExperiment):
         self.logger = get_logger(name=__name__)
         self.load_configuration(filename)        
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
+        self.camera.set_roi([int(self.config["camera"]["roi_x1"]), int(self.config["camera"]["roi_x2"])], [int(self.config["camera"]["roi_y1"]), int(self.config["camera"]["roi_y2"])])
+        self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
         # self.current_height = None
         # self.current_width = None
         # self.max_width = None

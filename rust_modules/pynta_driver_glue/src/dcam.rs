@@ -168,6 +168,18 @@ impl PyCamera for DcamCamera{
         let (x,y) =  to_py_err(self.dev.get_region_of_interest())?;
         Ok(([x.0, x.1], [y.0, y.1]))
     }
+
+    fn set_exposure(&mut self, exposure_in_seconds: f64) -> PyResult<f64> {
+        to_py_err(
+            self.get_mut_handle()?
+            .set_exposure(std::time::Duration::from_secs_f64(exposure_in_seconds))
+            .map(|duration|{duration.as_secs_f64()})
+        )  
+    }
+    fn get_exposure(&self) -> PyResult<f64> {
+        to_py_err(self.dev.get_exposure().map(|duration|{duration.as_secs_f64()}))
+    }
+
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         Ok([2048, 2048])
     }
