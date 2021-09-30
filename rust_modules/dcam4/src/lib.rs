@@ -417,11 +417,11 @@ impl Camera{
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, 0.0)?;
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, 0.0)?;
 		//TODO(hayley): handle x1 > x0
-		let hsize = ((x.1-x.0)/4)*4;
-        let hpos = (x.0/4)*4;
-        let vsize = ((y.1-y.0)/4)*4;
-        let vpos = (y.0/4)*4;
-		println!("setting h and v size");
+		let vsize = ((x.1-x.0)/4)*4;
+        let vpos = (x.0/4)*4;
+        let hsize = ((y.1-y.0)/4)*4;
+        let hpos = (y.0/4)*4;
+		println!("setting v and h size");
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE, hsize as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE, vsize as f64)?;
 		println!("setting h and v pos");
@@ -436,7 +436,7 @@ impl Camera{
 		println!("getting position");
 		let hpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS)? as usize;
 		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
-        Ok(((hpos, hpos+hsize), (vpos, vpos+vsize)))
+        Ok(((vpos, vpos+vsize), (hpos, hpos+hsize)))
     }
     // fn set_capture_mode(&mut self, mode: CameraModel::CaptureMode) {
     //     self.mode = mode;
