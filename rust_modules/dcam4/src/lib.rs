@@ -438,6 +438,10 @@ impl Camera{
 		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
         Ok(((vpos, vpos+vsize), (hpos, hpos+hsize)))
     }
+
+	fn get_bytes_per_frame(&self) -> Result<usize, dcam::Error> {
+		Ok(self.get_property(_DCAMIDPROP_DCAM_IDPROP_BUFFER_FRAMEBYTES)? as usize)
+	}
     // fn set_capture_mode(&mut self, mode: CameraModel::CaptureMode) {
     //     self.mode = mode;
     // }
@@ -476,6 +480,7 @@ impl Camera{
 	
 
 	pub fn snap_into(&mut self, data : &mut [u16]) -> Result<(), dcam::Error>{
+		println!("\t buffer is {} bytes!, bytes per frame is {}!", data.len()*2, self.get_bytes_per_frame()?);
 		unsafe{
 			dcam_check(dcam4_sys::dcambuf_release(self.handle, dcam4_sys::DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME))?;
 			let attach = dcam4_sys::DCAMBUF_ATTACH{
