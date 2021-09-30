@@ -48,19 +48,18 @@ impl FrameProcessor{
         let mut frames_processed = 0;
         while !self.stop_signal.load(Ordering::Acquire) {
             //first check that a frame has been filled
-            if self.frames_processed < (handle.frames_produced().unwrap() as usize) {
+            if frames_processed < (handle.frames_produced().unwrap() as usize) {
              //then grab the GIL so we can call python
              pyo3::Python::with_gil(|py| {
                  //as this might take some time, regrab the filled frame count
                  let mut n_filled = handle.frames_produced().unwrap() as usize;
                  //and do this in a loop as to prioritize frame processing and keep GIL switching to a minimum.
                  while frames_processed < n_filled {
-                     let n_frames_in_loop = n_filled-self.frames_processed;
-                     // println!("{} frames filled, processed {}, so now {} in loop", n_filled, n_frames_in_loop, self.frames_processed);
+                     let n_frames_in_loop = n_filled-frames_processed;
                      if n_frames_in_loop >= n_buffers {
                          eprintln!("Buffer overflow detetcted! saw {} new frames but the buffer size is {}", n_frames_in_loop, n_buffers);
                      } else {
-                         let start_index = self.frames_processed % n_buffers;
+                         let start_index = frames_processed % n_buffers;
                          let end_index = n_filled % n_buffers;
                          // println!("indices are {} and {}", start_index, end_index);
                          if end_index < start_index {
@@ -77,9 +76,8 @@ impl FrameProcessor{
                          }
                      } 
                      //update the frames filled and processed count before retrying the loop
-                     // self.frames_processed = n_filled;
                      let new_filled = (handle.frames_produced().unwrap() as usize);
-                     if new_filled + 1 - self.frames_processed >= n_buffers {
+                     if new_filled + 1 - frames_processed >= n_buffers {
                          eprintln!("possible overflow! filler caught up to processor while processing!")
                      }
                      frames_processed = n_filled;
@@ -105,6 +103,7 @@ impl DcamCamera{
 
     pub fn get_mut_handle(&mut self) -> PyResult<&mut dcam4::Camera> {
         Arc::get_mut(&mut self.dev).ok_or(exceptions::PyException::new_err("dcam camera can't be modified as it is already borrowed. (is a capture running?)"))
+
     }
 }
 
@@ -146,9 +145,11 @@ impl PyCamera for DcamCamera{
 
     fn stop_stream(&mut self) -> PyResult<()> {
         if self.is_streaming()? {
-            to_py_err(self.get_mut_handle()?.stop_stream())?;
-            self.stop_signal.store(true, Ordering::Release);
-            to_py_err(self.processor_handle.take().unwrap().join())
+            {
+                self.stop_signal.store(true, Ordering::Release);
+                to_py_err(self.processor_handle.take().unwrap().join())?;
+            }
+            to_py_err(self.get_mut_handle()?.stop_stream())
         } else {
             Ok(())
         }
