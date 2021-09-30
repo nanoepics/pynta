@@ -137,8 +137,8 @@ impl FrameProcessor {
                 }
             });
             // println!("releasing GIL");
-            std::thread::yield_now();
            }
+           std::thread::yield_now();
        }
     }
 }

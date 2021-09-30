@@ -2,11 +2,14 @@
 use pyo3::prelude::*;
 use pyo3::exceptions;
 use mcl_stagedrive::microdrive;
-use dcam4;
+
 use numpy::{PyArray2};
 
 pub mod dummy_camera;
 pub use dummy_camera::DummyCamera;
+
+pub mod dcam;
+pub use dcam::DcamCamera;
 
 pub(crate) struct Wrapper<T>(T);
 
@@ -25,18 +28,6 @@ struct PyStage {
     dev : microdrive::Device
 }
 
-#[pyclass(name="DcamCamera")]
-struct DcamCamera {
-    dev : dcam4::Camera
-}
-
-impl DcamCamera{
-    fn new() -> PyResult<Self> {
-        Ok(Self{
-            dev: dcam4::Camera::new()
-        })
-    }
-}
 
 trait PyCamera{
     // fn new() -> PyResult<Self>;
@@ -55,34 +46,6 @@ trait PyCamera{
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])>;
     // fn set_exposure()
     // fn get_exposure()
-}
-
-impl PyCamera for DcamCamera{
-    fn snap_into(&mut self, arr : &PyArray2<u16>) -> PyResult<()> {
-        to_py_err(self.dev.snap_into(unsafe{arr.as_slice_mut()?}))
-    }
-    fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()> {
-        unimplemented!()
-    }
-
-    fn stop_stream(&mut self) -> PyResult<()> {
-        to_py_err(self.dev.stop_stream())
-    }
-    fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>{
-        self.get_roi()
-    }    
-
-    fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
-        Ok(([0,2048],[0,2048]))
-    }
-    fn get_max_size(&self) -> PyResult<[usize;2]> {
-        Ok([2048, 2048])
-    }
-
-    fn is_streaming(&self) -> PyResult<bool> {
-        //check that status is busy
-        unimplemented!()
-    }
 }
 
 impl PyCamera for DummyCamera{
