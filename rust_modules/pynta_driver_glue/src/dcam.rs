@@ -142,7 +142,7 @@ impl PyCamera for DcamCamera{
                 // a signal to notify it needs to stop
                 stop_signal : self.stop_signal.clone()
             };
-            self.processor_handle = Some(std::thread::Builder::new().name("DumnmyCamera-frame-filler".to_string()).spawn(move || processor.run()).unwrap());
+            self.processor_handle = Some(std::thread::Builder::new().name("Dcam-frame-processor".to_string()).spawn(move || processor.run()).unwrap());
             Ok(())
         }
     }
