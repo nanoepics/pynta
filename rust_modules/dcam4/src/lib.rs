@@ -405,22 +405,19 @@ impl Camera{
         Ok(std::time::Duration::from_secs_f64(self.get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME)?))
     }
 	pub fn set_property(&self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
-		println!("setting property {} to {}", property_id, val);
 		unsafe{dcam_check(dcam4_sys::dcamprop_setvalue(self.handle, property_id, val))}
 	}
 	pub fn set_get_property(&self, property_id : i32, mut val : f64) -> Result<f64, dcam::Error>{
-		println!("setting property {} to {}", property_id, val);
 		unsafe{dcam_check(dcam4_sys::dcamprop_setgetvalue(self.handle, property_id, &mut val, 0))?;}
 		Ok(val)
 	}
 	pub fn get_property(&self, property_id : i32) -> Result<f64, dcam::Error>{
 		let mut val = 0.0;
-		println!("getting property {}", property_id);
 		unsafe{dcam_check(dcam4_sys::dcamprop_getvalue(self.handle, property_id, &mut val))?;}
 		Ok(val)
 	}
     pub fn set_region_of_interest(&mut self, x : (usize, usize), y: (usize, usize)) -> Result<(), dcam::Error>{
-		println!("reseting h and v pos");
+
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, 0.0)?;
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, 0.0)?;
 		//TODO(hayley): handle x1 > x0
@@ -428,20 +425,16 @@ impl Camera{
         let vpos = (x.0/4)*4;
         let hsize = ((y.1-y.0)/4)*4;
         let hpos = (y.0/4)*4;
-		println!("setting v and h size");
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE, hsize as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE, vsize as f64)?;
-		println!("setting h and v pos");
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, hpos as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, vpos as f64)?;
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYMODE, _DCAMPROPMODEVALUE_DCAMPROP_MODE__ON as f64)?;
 		Ok(())
     }
     pub fn get_region_of_interest(&self) -> Result<((usize, usize), (usize, usize)), dcam::Error> {
-		println!("getting sizes");
         let vsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE)? as usize;
 		let hsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE)? as usize;
-		println!("getting position");
 		let hpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS)? as usize;
 		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
         Ok(((hpos, hpos+hsize), (vpos, vpos+vsize)))
@@ -488,7 +481,6 @@ impl Camera{
 	
 
 	pub fn snap_into(&mut self, data : &mut [u16]) -> Result<(), dcam::Error>{
-		println!("\t buffer is {} bytes!, bytes per frame is {}!", data.len()*2, self.get_bytes_per_frame()?);
 		unsafe{
 			dcam_check(dcam4_sys::dcambuf_release(self.handle, dcam4_sys::DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME))?;
 			let attach = dcam4_sys::DCAMBUF_ATTACH{
