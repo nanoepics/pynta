@@ -106,6 +106,10 @@ impl DcamCamera{
     pub fn get_mut_handle(&mut self) -> PyResult<&mut dcam4::Camera> {
         Arc::get_mut(&mut self.dev).ok_or(exceptions::PyException::new_err("dcam camera can't be modified as it is already borrowed. (is a capture running?)"))
     }
+
+    // pub fn get_handle(&self) -> PyResult<&mut dcam4::Camera> {
+    //     Arc::get_mut(&mut self.dev).ok_or(exceptions::PyException::new_err("dcam camera can't be modified as it is already borrowed. (is a capture running?)"))
+    // }
 }
 
 impl PyCamera for DcamCamera{
@@ -155,11 +159,13 @@ impl PyCamera for DcamCamera{
         
     }
     fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>{
+        to_py_err(self.get_mut_handle()?.set_region_of_interest((x[0], x[1]), (y[0], y[1])))?;
         self.get_roi()
     }    
 
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
-        Ok(([0,2048],[0,2048]))
+        let (x,y) =  to_py_err(self.dev.get_region_of_interest())?;
+        Ok(([x.0, x.1], [y.0, y.1]))
     }
     fn get_max_size(&self) -> PyResult<[usize;2]> {
         Ok([2048, 2048])
