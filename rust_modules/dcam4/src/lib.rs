@@ -403,14 +403,17 @@ impl Camera{
         std::time::Duration::from_millis(500)
     }
 	pub fn set_property(&self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
+		println!("setting property {} to {}", property_id, val);
 		unsafe{dcam_check(dcam4_sys::dcamprop_setvalue(self.handle, property_id, val))}
 	}
 	pub fn get_property(&self, property_id : i32) -> Result<f64, dcam::Error>{
 		let mut val = 0.0;
+		println!("getting property {}", property_id);
 		unsafe{dcam_check(dcam4_sys::dcamprop_getvalue(self.handle, property_id, &mut val))?;}
 		Ok(val)
 	}
     pub fn set_region_of_interest(&mut self, x : (usize, usize), y: (usize, usize)) -> Result<(), dcam::Error>{
+		println!("reseting h and v pos");
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, 0.0)?;
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, 0.0)?;
 		//TODO(hayley): handle x1 > x0
@@ -418,15 +421,19 @@ impl Camera{
         let hpos = (x.0/4)*4;
         let vsize = ((y.1-y.0)/4)*4;
         let vpos = (y.0/4)*4;
+		println!("setting h and v size");
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE, hsize as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE, vsize as f64)?;
+		println!("setting h and v pos");
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, hpos as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, vpos as f64)?;
 		Ok(())
     }
     pub fn get_region_of_interest(&self) -> Result<((usize, usize), (usize, usize)), dcam::Error> {
+		println!("getting sizes");
         let vsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE)? as usize;
 		let hsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE)? as usize;
+		println!("getting position");
 		let hpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS)? as usize;
 		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
         Ok(((hpos, hpos+hsize), (vpos, vpos+vsize)))
