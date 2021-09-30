@@ -436,7 +436,7 @@ impl Camera{
 		println!("getting position");
 		let hpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS)? as usize;
 		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
-        Ok(((vpos, vpos+vsize), (hpos, hpos+hsize)))
+        Ok(((hpos, hpos+hsize), (vpos, vpos+vsize)))
     }
 
 	fn get_bytes_per_frame(&self) -> Result<usize, dcam::Error> {
