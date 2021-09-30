@@ -253,7 +253,7 @@ pub mod dcam{
 pub struct Camera{
     handle : dcam4_sys::HDCAM,
     // mode : CameraModel::CaptureMode,
-    image_buffer: Box<[u16]>
+    // image_buffer: Box<[u16]>
 }
 
 impl std::ops::Drop for Camera{
@@ -375,25 +375,25 @@ impl Camera{
 		};
         let mut ret = Self{
             handle : dev_open.hdcam,
-            // mode : CameraModel::CaptureMode::SingleShot,
-            image_buffer :  unsafe{Box::<[u16]>::new_zeroed_slice(2048*2048).assume_init()}
-			// unsafe{
-            //     let values = Box::<[u8]>::new_zeroed_slice(2048*2048*2+std::mem::size_of::<dcam4_sys::DCAMBUF_FRAME>());
-            //     unsafe {
-            //         let values = values.assume_init();
-            //         Box::from_raw(std::mem::transmute::<&mut [u8], &mut Image>(Box::leak(values)))
-            //     }
-            // }
+        //     // mode : CameraModel::CaptureMode::SingleShot,
+        //     // image_buffer :  unsafe{Box::<[u16]>::new_zeroed_slice(2048*2048).assume_init()}
+		// 	// unsafe{
+        //     //     let values = Box::<[u8]>::new_zeroed_slice(2048*2048*2+std::mem::size_of::<dcam4_sys::DCAMBUF_FRAME>());
+        //     //     unsafe {
+        //     //         let values = values.assume_init();
+        //     //         Box::from_raw(std::mem::transmute::<&mut [u8], &mut Image>(Box::leak(values)))
+        //     //     }
+        //     // }
         };
-		unsafe{
-		let attach = dcam4_sys::DCAMBUF_ATTACH{
-			size : std::mem::size_of::<dcam4_sys::DCAMBUF_ATTACH>() as i32,
-			iKind : DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME,
-			buffer : &mut (std::mem::transmute::<&mut [u16], &mut [u8]>(&mut ret.image_buffer).as_mut_ptr_range().start as *mut _),
-			buffercount : 1
-		};
-		dcam_check(dcambuf_attach(ret.handle, &attach)).unwrap();
-		}
+		// unsafe{
+		// let attach = dcam4_sys::DCAMBUF_ATTACH{
+		// 	size : std::mem::size_of::<dcam4_sys::DCAMBUF_ATTACH>() as i32,
+		// 	iKind : DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME,
+		// 	buffer : &mut (std::mem::transmute::<&mut [u16], &mut [u8]>(&mut ret.image_buffer).as_mut_ptr_range().start as *mut _),
+		// 	buffercount : 1
+		// };
+		// dcam_check(dcambuf_attach(ret.handle, &attach)).unwrap();
+		// }
 		ret
     }
 
@@ -444,35 +444,35 @@ impl Camera{
     // fn get_capture_mode(&self) -> CameraModel::CaptureMode {
     //     self.mode
     // }
-    pub fn snap(&self) -> &[u16]{
-		unsafe{ 
-		dcam_check(dcam4_sys::dcamcap_start(self.handle, dcam4_sys::DCAMCAP_START_DCAMCAP_START_SNAP)).unwrap();
-		let mut wait_open = dcam4_sys::DCAMWAIT_OPEN{
-			size : std::mem::size_of::<dcam4_sys::DCAMWAIT_OPEN>() as i32,
-			supportevent : 0,
-			hwait : std::ptr::null_mut(),
-			hdcam : self.handle
-		};
-		dcam_check(dcam4_sys::dcamwait_open(&mut wait_open)).unwrap();
-		let mut wait = dcam4_sys::DCAMWAIT_START{
-			size : std::mem::size_of::<dcam4_sys::DCAMWAIT_START>() as i32,
-			eventhappened : 0,
-			eventmask : dcam4_sys::DCAMWAIT_EVENT_DCAMWAIT_CAPEVENT_FRAMEREADY,
-			timeout : DCAMWAIT_TIMEOUT_DCAMWAIT_TIMEOUT_INFINITE
-		};
-		dcam_check(dcam4_sys::dcamwait_start(wait_open.hwait, &mut wait)).unwrap();
-		}
-		//DCAMWAIT_CAPEVENT.FRAMEREADY, timeout_millisec
-		//dcamwait_start
-		//dcambuf_copyframe(...)
-        // std::mem::transmute<&Image, &self.image_buffer.as_ref().pixels()
-		self.image_buffer.as_ref()
-		// unsafe{
-		// 	std::slice::from_raw_parts(
-		// 		std::mem::transmute::<*const u8, *const u16>(self.image_buffer.data.as_ptr()),
-		// 		self.image_buffer.data.len()/2
-		// 	)}
-    }
+    // pub fn snap(&self) -> &[u16]{
+		// unsafe{ 
+		// dcam_check(dcam4_sys::dcamcap_start(self.handle, dcam4_sys::DCAMCAP_START_DCAMCAP_START_SNAP)).unwrap();
+		// let mut wait_open = dcam4_sys::DCAMWAIT_OPEN{
+		// 	size : std::mem::size_of::<dcam4_sys::DCAMWAIT_OPEN>() as i32,
+		// 	supportevent : 0,
+		// 	hwait : std::ptr::null_mut(),
+		// 	hdcam : self.handle
+		// };
+		// dcam_check(dcam4_sys::dcamwait_open(&mut wait_open)).unwrap();
+		// let mut wait = dcam4_sys::DCAMWAIT_START{
+		// 	size : std::mem::size_of::<dcam4_sys::DCAMWAIT_START>() as i32,
+		// 	eventhappened : 0,
+		// 	eventmask : dcam4_sys::DCAMWAIT_EVENT_DCAMWAIT_CAPEVENT_FRAMEREADY,
+		// 	timeout : DCAMWAIT_TIMEOUT_DCAMWAIT_TIMEOUT_INFINITE
+		// };
+		// dcam_check(dcam4_sys::dcamwait_start(wait_open.hwait, &mut wait)).unwrap();
+		// }
+	// 	//DCAMWAIT_CAPEVENT.FRAMEREADY, timeout_millisec
+	// 	//dcamwait_start
+	// 	//dcambuf_copyframe(...)
+    //     // std::mem::transmute<&Image, &self.image_buffer.as_ref().pixels()
+	// 	self.image_buffer.as_ref()
+	// 	// unsafe{
+	// 	// 	std::slice::from_raw_parts(
+	// 	// 		std::mem::transmute::<*const u8, *const u16>(self.image_buffer.data.as_ptr()),
+	// 	// 		self.image_buffer.data.len()/2
+	// 	// 	)}
+    // }
 	
 
 	pub fn snap_into(&mut self, data : &mut [u16]) -> Result<(), dcam::Error>{
@@ -485,8 +485,24 @@ impl Camera{
 				buffercount : 1
 			};
 			dcam_check(dcambuf_attach(self.handle, &attach))?;
+			dcam_check(dcam4_sys::dcamcap_start(self.handle, dcam4_sys::DCAMCAP_START_DCAMCAP_START_SNAP)).unwrap();
+			let mut wait_open = dcam4_sys::DCAMWAIT_OPEN{
+				size : std::mem::size_of::<dcam4_sys::DCAMWAIT_OPEN>() as i32,
+				supportevent : 0,
+				hwait : std::ptr::null_mut(),
+				hdcam : self.handle
+			};
+			dcam_check(dcam4_sys::dcamwait_open(&mut wait_open)).unwrap();
+			let mut wait = dcam4_sys::DCAMWAIT_START{
+				size : std::mem::size_of::<dcam4_sys::DCAMWAIT_START>() as i32,
+				eventhappened : 0,
+				eventmask : dcam4_sys::DCAMWAIT_EVENT_DCAMWAIT_CAPEVENT_FRAMEREADY,
+				timeout : DCAMWAIT_TIMEOUT_DCAMWAIT_TIMEOUT_INFINITE
+			};
+			dcam_check(dcam4_sys::dcamwait_start(wait_open.hwait, &mut wait)).unwrap();
+			dcam_check(dcam4_sys::dcambuf_release(self.handle, dcam4_sys::DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME))?;
+			dcam_check(dcam4_sys::dcamwait_close(wait_open.hwait))?
 		}
-		self.snap();
 		Ok(())
 	}
 	pub fn start_streaming_into(&mut self, data: &mut[&mut [u16]]) -> Result<(), dcam::Error>{
@@ -531,7 +547,10 @@ impl Camera{
     }
 
 	pub fn stop_stream(&self) -> Result<(), dcam::Error> {
-		unsafe{dcam_check(dcam4_sys::dcamcap_stop( self.handle ))}
+		unsafe{
+			dcam_check(dcam4_sys::dcamcap_stop( self.handle ))?;
+			dcam_check(dcam4_sys::dcambuf_release(self.handle, dcam4_sys::DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME))
+		}
 	}
 
 	pub fn frames_produced(&self) -> Result<i32, dcam::Error> {
