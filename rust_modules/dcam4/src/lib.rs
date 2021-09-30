@@ -402,10 +402,34 @@ impl Camera{
     pub fn get_exposure(&self) -> std::time::Duration { 
         std::time::Duration::from_millis(500)
     }
-    pub fn set_region_of_interest(&mut self, x : (usize, usize), y: (usize, usize)) {
+	pub fn set_property(&self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
+		unsafe{dcam_check(dcam4_sys::dcamprop_setvalue(self.handle, property_id, val))}
+	}
+	pub fn get_property(&self, property_id : i32) -> Result<f64, dcam::Error>{
+		let mut val = 0.0;
+		unsafe{dcam_check(dcam4_sys::dcamprop_getvalue(self.handle, property_id, &mut val))?;}
+		Ok(val)
+	}
+    pub fn set_region_of_interest(&mut self, x : (usize, usize), y: (usize, usize)) -> Result<(), dcam::Error>{
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, 0.0)?;
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, 0.0)?;
+		//TODO(hayley): handle x1 > x0
+		let hsize = ((x.1-x.0)/4)*4;
+        let hpos = (x.0/4)*4;
+        let vsize = ((y.1-y.0)/4)*4;
+        let vpos = (y.0/4)*4;
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE, hsize as f64)?;
+        self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE, vsize as f64)?;
+        self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, hpos as f64)?;
+        self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, vpos as f64)?;
+		Ok(())
     }
-    pub fn get_region_of_interest(&self) -> ((usize, usize), (usize, usize)) {
-        ((0,512), (0,512))
+    pub fn get_region_of_interest(&self) -> Result<((usize, usize), (usize, usize)), dcam::Error> {
+        let vsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVSIZE)? as usize;
+		let hsize = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHSIZE)? as usize;
+		let hpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS)? as usize;
+		let vpos = self.get_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS)? as usize;
+        Ok(((hpos, hpos+hsize), (vpos, vpos+vsize)))
     }
     // fn set_capture_mode(&mut self, mode: CameraModel::CaptureMode) {
     //     self.mode = mode;
