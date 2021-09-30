@@ -373,7 +373,7 @@ impl Camera{
 		// };
 		dev_open
 		};
-        let mut ret = Self{
+        let ret = Self{
             handle : dev_open.hdcam,
         //     // mode : CameraModel::CaptureMode::SingleShot,
         //     // image_buffer :  unsafe{Box::<[u16]>::new_zeroed_slice(2048*2048).assume_init()}
@@ -427,6 +427,7 @@ impl Camera{
 		println!("setting h and v pos");
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYVPOS, hpos as f64)?;
         self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYHPOS, vpos as f64)?;
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_SUBARRAYMODE, _DCAMPROPMODEVALUE_DCAMPROP_MODE__ON as f64)?;
 		Ok(())
     }
     pub fn get_region_of_interest(&self) -> Result<((usize, usize), (usize, usize)), dcam::Error> {
