@@ -114,6 +114,7 @@ class ContinousTracker2:
                 print("offsets are {}, {}, intenity {}".format(rad-x-0.5,rad-y-0.5,np.max(local)))
                 self.to_track[1][i] -= rad-y-0.5
                 self.to_track[0][i] -= rad-x-0.5
+                self.to_track[2][i] = np.mean(local)
         return self.to_track
 
 class SaveTracksToHDF5:
@@ -129,6 +130,7 @@ class SaveTracksToHDF5:
         #self.locations_dataset = aqcuisition_grp.create_dataset("locations", shape=(8,self.batching), dtype=np.float32, maxshape=(8,None), chunks=(8, self.batching), compression='gzip')
         self.x_dataset = self.grp.create_dataset("x", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.y_dataset = self.grp.create_dataset("y", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
+        self.i_dataset = self.grp.create_dataset("intensities", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.frame_dataset = self.grp.create_dataset("frames", shape=(self.batching,), dtype=np.uint64, maxshape=(None,), chunks=(self.batching,), compression='gzip')
         
     def __call__(self, locations):
@@ -141,12 +143,14 @@ class SaveTracksToHDF5:
             while row_count + self.write_index > old_size:
                 self.x_dataset.resize((old_size+self.batching,))
                 self.y_dataset.resize((old_size+self.batching,))
+                self.i_dataset.resize((old_size+self.batching,))
                 self.frame_dataset.resize((old_size+self.batching,))
                 old_size += self.batching
             #print("trying to write x={}".format(locations["x"]))
             #print(locations["x"].shape)
             self.x_dataset[self.write_index:self.write_index+row_count] = locations[0]
             self.y_dataset[self.write_index:self.write_index+row_count] = locations[1]
+            self.i_dataset[self.write_index:self.write_index+row_count] = locations[2]
             self.frame_dataset[self.write_index:self.write_index+row_count] = np.ones(row_count ,dtype= np.uint64)*self.frame
             self.write_index += row_count
         self.frame += 1
@@ -230,7 +234,7 @@ class Experiment(BaseExperiment):
         # self.max_height = None
         super().__init__(filename)
         self.temp_image = None
-        self.tracked_locations = ([],[])
+        self.tracked_locations = ([],[],[])
         self.hdf5 = FileWrangler("output")
 
     def gui_file(self):
@@ -334,9 +338,11 @@ class Experiment(BaseExperiment):
     def add_monitor_coordinate(self, coord):
         self.tracked_locations[0].append(coord[0])
         self.tracked_locations[1].append(coord[1])
+        self.tracked_locations[2].append(0.0)
     def clear_monitor_coordinates(self):
         self.tracked_locations[0].clear()
         self.tracked_locations[1].clear()
+        self.tracked_locations[2].clear()
 
     def save_stream(self):
         """ Saves the queue to a file continuously. This is an async function, that can be triggered before starting
