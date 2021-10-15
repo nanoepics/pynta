@@ -7,7 +7,7 @@ from time import sleep
 import numpy as np
 
 from pynta.view.GUI.electrophoretics_main import MainWindowGUI
-# from pynta.model.daqs.signal_generator.ni import Ni6216Generator
+from pynta.model.daqs.signal_generator.ni import Ni6216Generator
 
 class MainWindow(MainWindowGUI):
     def __init__(self, experiment):
@@ -17,8 +17,9 @@ class MainWindow(MainWindowGUI):
         super().__init__(experiment.config['GUI']['refresh_time'])
 
         self.experiment = experiment
-        # self.plot_widget.set_model(experiment.daq_controller)
-        # self.signal_gen_widget.set_model(Ni6216Generator(experiment.daq_controller))
+        self.plot_widget.set_model(experiment.daq_controller)
+        self.plot_widget.flush_settings()
+        self.signal_gen_widget.set_model(Ni6216Generator(experiment.daq_controller))
         self.camera_viewer_widget.setup_roi_lines([self.experiment.max_width, self.experiment.max_height])
         self.config_tracking_widget.update_config(self.experiment.config['tracking'])
         self.config_widget.update_config(self.experiment.config)

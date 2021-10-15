@@ -28,7 +28,7 @@ from pynta.model.experiment.base_experiment import BaseExperiment
 from pynta.util import get_logger
 from pynta import Q_
 
-# from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
+from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
 
 # import trackpy as tp
 from scipy import ndimage
@@ -223,6 +223,7 @@ class Experiment(BaseExperiment):
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
         self.camera.set_roi([int(self.config["camera"]["roi_x1"]), int(self.config["camera"]["roi_x2"])], [int(self.config["camera"]["roi_y1"]), int(self.config["camera"]["roi_y2"])])
         self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
+        self.daq_controller = DaqController()
         # self.current_height = None
         # self.current_width = None
         # self.max_width = None
@@ -280,6 +281,7 @@ class Experiment(BaseExperiment):
     def start_capture(self):
     #   self.camera.stream_into(self.temp_image)
         aqcuisition = self.hdf5.start_new_aquisition()
+        self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
         def update_img(img):
             # print("updating temp image to ", img)
             self.temp_image = img
@@ -303,6 +305,7 @@ class Experiment(BaseExperiment):
         """ Stops the free run by setting the ``_stop_event``. It is basically a convenience method to avoid
         having users dealing with somewhat lower level threading options.
         """
+        self.daq_controller.set_processing_function(lambda x: None)
         self.camera.stop_stream()
         print("stream stopped in python!")
 
@@ -332,7 +335,8 @@ class Experiment(BaseExperiment):
         self.tracked_locations[0].append(coord[0])
         self.tracked_locations[1].append(coord[1])
     def clear_monitor_coordinates(self):
-        self.tracked_locations = ([],[])
+        self.tracked_locations[0].clear()
+        self.tracked_locations[1].clear()
 
     def save_stream(self):
         """ Saves the queue to a file continuously. This is an async function, that can be triggered before starting
