@@ -1,4 +1,3 @@
-#![feature(asm)]
 use pyo3::prelude::*;
 use pyo3::exceptions;
 use mcl_stagedrive::microdrive;
