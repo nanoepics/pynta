@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 fn main() {
     // Tell cargo to look in this folder for the lib files
-    println!("cargo:rustc-link-search=C:\\dev\\pynta\\rust_modules\\dcam4-sys\\sdk\\lib\\win64");
+    println!("cargo:rustc-link-search=./sdk/lib/win64");
     // and lick against the dcamapi
     println!("cargo:rustc-link-lib=dcamapi");
 
