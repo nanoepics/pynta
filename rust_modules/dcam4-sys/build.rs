@@ -2,10 +2,12 @@ extern crate bindgen;
 
 use std::env;
 use std::path::PathBuf;
+use std::fs;
 
 fn main() {
     // Tell cargo to look in this folder for the lib files
-    println!("cargo:rustc-link-search=./sdk/lib/win64");
+    let link_dir = PathBuf::from("./sdk/lib/win64");
+    println!("cargo:rustc-link-search={}", fs::canonicalize(&link_dir).unwrap().display().to_string());
     // and lick against the dcamapi
     println!("cargo:rustc-link-lib=dcamapi");
 
