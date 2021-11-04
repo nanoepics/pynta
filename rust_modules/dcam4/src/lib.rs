@@ -1,4 +1,3 @@
-#![feature(new_uninit)]
 use dcam4_sys::*;
 use std::convert::TryFrom;
 pub mod dcam{
