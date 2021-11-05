@@ -202,6 +202,49 @@ class SaveDaqToHDF5:
         self.dataset_writer[-1,:] = data
         return data
 
+class SaveTriggerToHDF5:
+    def __init__(self, aqcuisition_grp, device, edge=1):
+        #self.dataset_writer = dataset_writer
+        self.counter = 0
+        self.device_size = device.get_size()
+        self.dataset_writer_daq = aqcuisition_grp.create_dataset("DAQ-input", shape=(0,)+self.device_size, dtype=device.data_type, maxshape=(None,)+self.device_size, chunks=(1,)+self.device_size, compression='gzip')
+        # self.dataset_writer_trigger = aqcuisition_grp.create_dataset("trigger", shape=(0,)+device.get_size(), dtype=device.data_type, maxshape=(None,)+device.get_size(), chunks=(1,)+device.get_size(), compression='gzip')
+        self.dataset_writer_trigger = aqcuisition_grp.create_dataset("trigger", shape=(0,), dtype=np.int64, maxshape=(None,), compression='gzip')
+        # write out the signal generator settings.
+        #self.dataset_writer.attrs["stride"] = stride
+        t0 = str(datetime.utcnow())
+        self.dataset_writer_daq.attrs["creation"]  = t0
+        self.dataset_writer_trigger.attrs["creation"]  = t0
+        self.dataset_writer_daq.attrs["frequency"]  = device._sample_freq
+        self.dataset_writer_trigger.attrs["frequency"]  = device._sample_freq
+        self.edge = edge
+        self.daq_frame_count = 0
+    def add_finished_timestamp(self):
+        t_end = str(datetime.utcnow())
+        self.dataset_writer_daq.attrs["finished"]  = t_end
+        self.dataset_writer_trigger.attrs["finished"]  = t_end
+    def __call__(self, data):
+        dsize_daq = self.dataset_writer_daq.shape
+        dsize_trigger = self.dataset_writer_trigger.shape
+        self.dataset_writer_daq.resize((dsize_daq[0]+1,) + dsize_daq[1:])
+        self.dataset_writer_daq[-1,:] = data[0]
+        # trig = (np.array(data[1]) > 1.6).astype(int)
+        trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
+        
+        trig_indices = np.where(np.diff(trig) == self.edge)[0] + 1 + self.daq_frame_count * self.device_size[0]
+        self.daq_frame_count += 1
+        print('11111', len(trig_indices))
+        if len(trig_indices):
+            current_size = dsize_trigger[0]
+            self.dataset_writer_trigger.resize((current_size + len(trig_indices),))
+            print('2222222', current_size, (current_size + len(trig_indices),), trig_indices)
+            self.dataset_writer_trigger[current_size:] = trig_indices
+
+
+        # self.dataset_writer_trigger.resize((dsize_trigger[0]+1,) + dsize_trigger[1:])
+        # self.dataset_writer_trigger[-1,:] = data[1]
+        return data[0]
+
 class FileWrangler:
     def __init__(self, filename) -> None:
         self.file = h5py.File(filename if filename.endswith('.hdf5') else filename + '.hdf5','w',  libver='latest')         
@@ -285,7 +328,9 @@ class Experiment(BaseExperiment):
     def start_capture(self):
     #   self.camera.stream_into(self.temp_image)
         aqcuisition = self.hdf5.start_new_aquisition()
-        self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
+        # self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
+        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
+        self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
         def update_img(img):
             # print("updating temp image to ", img)
             self.temp_image = img
@@ -309,8 +354,10 @@ class Experiment(BaseExperiment):
         """ Stops the free run by setting the ``_stop_event``. It is basically a convenience method to avoid
         having users dealing with somewhat lower level threading options.
         """
-        self.daq_controller.set_processing_function(lambda x: None)
         self.camera.stop_stream()
+        self.daq_controller.set_trigger_processing_function(lambda x: None)
+        self.daq_controller.set_processing_function(lambda x: None)
+        self.save_trigger_object.add_finished_timestamp()
         print("stream stopped in python!")
 
     def save_image(self):
