@@ -219,6 +219,7 @@ class SaveTriggerToHDF5:
         self.dataset_writer_trigger.attrs["frequency"]  = device._sample_freq
         self.edge = edge
         self.daq_frame_count = 0
+        self.previous_level = None
     def add_finished_timestamp(self):
         t_end = str(datetime.utcnow())
         self.dataset_writer_daq.attrs["finished"]  = t_end
@@ -228,16 +229,21 @@ class SaveTriggerToHDF5:
         dsize_trigger = self.dataset_writer_trigger.shape
         self.dataset_writer_daq.resize((dsize_daq[0]+1,) + dsize_daq[1:])
         self.dataset_writer_daq[-1,:] = data[0]
-        # trig = (np.array(data[1]) > 1.6).astype(int)
-        trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
         
-        trig_indices = np.where(np.diff(trig) == self.edge)[0] + 1 + self.daq_frame_count * self.device_size[0]
+        if self.previous_level is None:
+            self.previous_level = data[1][0]  # If it is the first "window", make up "previous level" (the same as the first datapoint, so it won't register as a value change)
+        # Note, the last value of the previous window is prepended in order to catch state changes that might occur right at the edge of a window
+        trig = (np.array([self.previous_level] + data[1]) > 1.6).astype(int)
+        
+        # THIS LINE IS FOR TESTING WITHOUT ACTUAL TRIGGERS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
+
+        self.previous_level = data[1][-1]  # store the last value for the next iteration
+        trig_indices = np.where(np.diff(trig) == self.edge)[0] + self.daq_frame_count * self.device_size[0]  # The +1 is removed because one value is prepended to the array
         self.daq_frame_count += 1
-        print('11111', len(trig_indices))
         if len(trig_indices):
             current_size = dsize_trigger[0]
             self.dataset_writer_trigger.resize((current_size + len(trig_indices),))
-            print('2222222', current_size, (current_size + len(trig_indices),), trig_indices)
             self.dataset_writer_trigger[current_size:] = trig_indices
 
 
