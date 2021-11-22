@@ -12,6 +12,7 @@ use std::sync::{
 };
 use std::time::Duration;
 use std::thread::JoinHandle;
+use crate::{PyCamera, to_py_err};
 
 pub(crate) struct BufferFiller{
     //the buffers & their size
@@ -166,7 +167,6 @@ pub struct DummyCamera {
     // pub(crate) last_frame : usize,
     pub(crate) roi: ([usize;2],[usize;2]),
     pub(crate) streamer : Option<Terminator>,
-    
 }
 
 
@@ -246,5 +246,53 @@ impl DummyCamera {
             println!("done!");
             Ok(())
         }
+    }
+}
+
+
+impl PyCamera for DummyCamera{
+    fn snap_into(&mut self, arr: &PyArray2<u16>) -> PyResult<()> {
+        Ok(self.fill_buffer(unsafe{arr.as_slice_mut()?}))
+    }
+    // fn stream_into(&mut self, arr: &mut [u16]) -> PyResult<()> {
+    // }
+    fn start_stream(&mut self, n_buffers : usize, callable : PyObject) -> PyResult<()>{
+        // let stream_generator = dummy_camera::CameraStreamer::new(callable, n_buffers, self.get_size())?;
+        // self.streamer = Some(stream_generator.start());
+        // Ok(())
+        self.start_stream(n_buffers, callable)
+    }
+
+    fn stop_stream(&mut self) -> PyResult<()> {
+        if self.streamer.is_some(){
+            // println!("iissueing a stop on reactor");
+            self.streamer.take().unwrap().stop();
+            println!("stopped");
+        }
+        Ok(())
+    }
+    fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
+        Ok(self.get_roi())
+    }
+    fn set_roi(&mut self, x: [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])> {
+        let max = self.get_max_size()?;
+        self.roi = ([(x[0].min(x[1])), (x[0].max(x[1])).min(max[0])], [(y[0].min(y[1])), (y[0].max(y[1])).min(max[1])]);
+        <Self as PyCamera>::get_roi(&self)
+    }
+    fn get_max_size(&self) -> PyResult<[usize;2]> {
+        Ok([2048, 2048])
+    }
+    fn is_streaming(&self) -> PyResult<bool> {
+        Ok(self.streamer.is_some())
+    }
+    fn set_exposure(&mut self, exposure_in_seconds: f64) -> PyResult<f64> {
+        self.get_exposure()
+    }
+    fn get_exposure(&self) -> PyResult<f64> {
+        Ok(0.0)
+    }
+
+    fn set_vsync_out(&mut self) -> PyResult<()> {
+        Ok(())
     }
 }

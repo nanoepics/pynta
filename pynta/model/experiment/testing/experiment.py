@@ -38,10 +38,10 @@ from pynta_drivers import Camera as NativeCamera;
 class DataPipeline:
     def __init__(self, callables_list = []) -> None:
         self.callables_list = callables_list
-    
+
     def append_node(self, callable):
         self.callables_list.append(callable)
-    
+
     def apply(self, data):
         for c in self.callables_list:
             # print("applying {} to {}".format(c, data))
@@ -49,7 +49,7 @@ class DataPipeline:
             if data is None:
                 return None
         return data
-    
+
     def __call__(self, data):
         self.apply(data)
 
@@ -91,8 +91,8 @@ class ContinousTracker:
             # print("offsets are {}, {}, position {}, {}, intenity {}".format(x_,y_, x, y, np.max(local)))
             # Update the coordinate to the (new) location of the maximum
             #if local[(x_,y_)] > 1:
-            self.to_track[1][i] = ymin + y_ 
-            self.to_track[0][i] = xmin + x_ 
+            self.to_track[1][i] = ymin + y_
+            self.to_track[0][i] = xmin + x_
         return self.to_track
 
 class ContinousTracker2:
@@ -132,12 +132,12 @@ class SaveTracksToHDF5:
         self.y_dataset = self.grp.create_dataset("y", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.i_dataset = self.grp.create_dataset("intensities", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.frame_dataset = self.grp.create_dataset("frames", shape=(self.batching,), dtype=np.uint64, maxshape=(None,), chunks=(self.batching,), compression='gzip')
-        
+
     def __call__(self, locations):
         row_count = len(locations[0])
         if row_count:
             #print("found {} particles on frame {}".format(row_count, self.frame))
-            #todo: handle row_count > 
+            #todo: handle row_count >
             old_size = self.x_dataset.shape[0]
             #print("old size is {}".format(old_size))
             while row_count + self.write_index > old_size:
@@ -204,9 +204,9 @@ class SaveDaqToHDF5:
 
 class FileWrangler:
     def __init__(self, filename) -> None:
-        self.file = h5py.File(filename if filename.endswith('.hdf5') else filename + '.hdf5','w',  libver='latest')         
+        self.file = h5py.File(filename if filename.endswith('.hdf5') else filename + '.hdf5','w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
-    
+
     def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
         device_grp = self.file.require_group('data')
@@ -223,8 +223,12 @@ class Experiment(BaseExperiment):
     def __init__(self, filename=None):
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
-        self.load_configuration(filename)        
+        self.load_configuration(filename)
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
+        self.camera.set_vsync_out()
+        ham = self.camera.as_hamamatsu()
+        ham.set_prop(....);
+
         self.camera.set_roi([int(self.config["camera"]["roi_x1"]), int(self.config["camera"]["roi_x2"])], [int(self.config["camera"]["roi_y1"]), int(self.config["camera"]["roi_y2"])])
         self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
         self.daq_controller = DaqController()

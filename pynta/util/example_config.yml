@@ -25,10 +25,10 @@ GUI:
   refresh_time: 50 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: dcam # Should be a python file in model/cameras
+  model: dummy # dcam # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
-  #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this? 
+  #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this?
   model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
   exposure_time: 5ms # Initial exposure time (in ms)
   fps: 250  # Frames per second, should either be defined by the camera or within the model based on timing

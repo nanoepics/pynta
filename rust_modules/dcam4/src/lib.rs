@@ -1,4 +1,10 @@
 use dcam4_sys::*;
+
+//re-export all the variables from the sys crate, in our submodule sys
+pub mod sys{
+	pub use dcam4_sys::*;
+}
+
 use std::convert::TryFrom;
 pub mod dcam{
     #[derive(Copy,Clone,Debug)]
@@ -251,8 +257,6 @@ pub mod dcam{
 
 pub struct Camera{
     handle : dcam4_sys::HDCAM,
-    // mode : CameraModel::CaptureMode,
-    // image_buffer: Box<[u16]>
 }
 
 impl std::ops::Drop for Camera{
@@ -346,64 +350,47 @@ impl Image{
 				)}),
 			_ => unreachable!()
 		}
-		
+
 	}
 }
 
 impl Camera{
     pub fn new() -> Self{
 		let dev_open = unsafe{
-		if unsafe{API.read()}.expect("DCAM API lock got poisoned!").is_none() {
-			let mut p = unsafe{API.write()}.expect("DCAM API lock got poisoned!");
-			*p = Some(Api::init().expect("Failed to initialize DCAM api"));
-		}
-		let mut dev_open = dcam4_sys::DCAMDEV_OPEN {
-			size : std::mem::size_of::<dcam4_sys::DCAMDEV_OPEN>() as i32,
-			index : 0,
-			hdcam : std::ptr::null_mut()
-		};
-		match dcam::Error::try_from(dcam4_sys::dcamdev_open(&mut dev_open)) {
-			Ok(dcam::Error::Success) => (),
-			_ => unreachable!()
-		}
-		// match dcam::Error::try_from(dcam4_sys::dcambuf_alloc(dev_open.hdcam, 1)) {
-		// 	Ok(dcam::Error::Success) => (),
-		// 	_ => unreachable!()
-		// };
-		dev_open
+			if unsafe{API.read()}.expect("DCAM API lock got poisoned!").is_none() {
+				let mut p = unsafe{API.write()}.expect("DCAM API lock got poisoned!");
+				*p = Some(Api::init().expect("Failed to initialize DCAM api"));
+			}
+			let mut dev_open = dcam4_sys::DCAMDEV_OPEN {
+				size : std::mem::size_of::<dcam4_sys::DCAMDEV_OPEN>() as i32,
+				index : 0,
+				hdcam : std::ptr::null_mut()
+			};
+			match dcam::Error::try_from(dcam4_sys::dcamdev_open(&mut dev_open)) {
+				Ok(dcam::Error::Success) => (),
+				_ => unreachable!()
+			}
+			dev_open
 		};
         let ret = Self{
             handle : dev_open.hdcam,
-        //     // mode : CameraModel::CaptureMode::SingleShot,
-        //     // image_buffer :  unsafe{Box::<[u16]>::new_zeroed_slice(2048*2048).assume_init()}
-		// 	// unsafe{
-        //     //     let values = Box::<[u8]>::new_zeroed_slice(2048*2048*2+std::mem::size_of::<dcam4_sys::DCAMBUF_FRAME>());
-        //     //     unsafe {
-        //     //         let values = values.assume_init();
-        //     //         Box::from_raw(std::mem::transmute::<&mut [u8], &mut Image>(Box::leak(values)))
-        //     //     }
-        //     // }
         };
-		// unsafe{
-		// let attach = dcam4_sys::DCAMBUF_ATTACH{
-		// 	size : std::mem::size_of::<dcam4_sys::DCAMBUF_ATTACH>() as i32,
-		// 	iKind : DCAM_ATTACHKIND_DCAMBUF_ATTACHKIND_FRAME,
-		// 	buffer : &mut (std::mem::transmute::<&mut [u16], &mut [u8]>(&mut ret.image_buffer).as_mut_ptr_range().start as *mut _),
-		// 	buffercount : 1
-		// };
-		// dcam_check(dcambuf_attach(ret.handle, &attach)).unwrap();
-		// }
 		ret
     }
 
-    pub fn set_exposure(&mut self, exposure : std::time::Duration) -> Result<std::time::Duration, dcam::Error> { 
+    pub fn set_exposure(&mut self, exposure : std::time::Duration) -> Result<std::time::Duration, dcam::Error> {
 		//0.003020752 to 10.0
 		Ok(std::time::Duration::from_secs_f64(self.set_get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME, exposure.as_secs_f64())?))
     }
-    pub fn get_exposure(&self) -> Result<std::time::Duration, dcam::Error> { 
+    pub fn get_exposure(&self) -> Result<std::time::Duration, dcam::Error> {
         Ok(std::time::Duration::from_secs_f64(self.get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME)?))
     }
-	pub fn set_property(&self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
+
+	pub fn set_vsync_out(&mut self) -> Result<(), dcam::Error> {
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_OUTPUTTRIGGER_SOURCE, _DCAMPROPMODEVALUE_DCAMPROP_OUTPUTTRIGGER_SOURCE__VSYNC as f64)
+	}
+
+	pub fn set_property(&mut self, property_id : i32, val : f64) -> Result<(), dcam::Error>{
 		unsafe{dcam_check(dcam4_sys::dcamprop_setvalue(self.handle, property_id, val))}
 	}
 	pub fn set_get_property(&self, property_id : i32, mut val : f64) -> Result<f64, dcam::Error>{
@@ -412,7 +399,11 @@ impl Camera{
 	}
 	pub fn get_property(&self, property_id : i32) -> Result<f64, dcam::Error>{
 		let mut val = 0.0;
-		unsafe{dcam_check(dcam4_sys::dcamprop_getvalue(self.handle, property_id, &mut val))?;}
+		unsafe{
+		dcam_check(
+		        dcam4_sys::dcamprop_getvalue(self.handle, property_id, &mut val)
+		    )?
+		  ;}
 		Ok(val)
 	}
     pub fn set_region_of_interest(&mut self, x : (usize, usize), y: (usize, usize)) -> Result<(), dcam::Error>{
@@ -449,7 +440,7 @@ impl Camera{
     //     self.mode
     // }
     // pub fn snap(&self) -> &[u16]{
-		// unsafe{ 
+		// unsafe{
 		// dcam_check(dcam4_sys::dcamcap_start(self.handle, dcam4_sys::DCAMCAP_START_DCAMCAP_START_SNAP)).unwrap();
 		// let mut wait_open = dcam4_sys::DCAMWAIT_OPEN{
 		// 	size : std::mem::size_of::<dcam4_sys::DCAMWAIT_OPEN>() as i32,
@@ -477,7 +468,7 @@ impl Camera{
 	// 	// 		self.image_buffer.data.len()/2
 	// 	// 	)}
     // }
-	
+
 
 	pub fn snap_into(&mut self, data : &mut [u16]) -> Result<(), dcam::Error>{
 		unsafe{

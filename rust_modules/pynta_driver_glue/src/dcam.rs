@@ -41,7 +41,7 @@ impl FrameProcessor{
     //NOTE: if the buffer filler is too fast we get a race condition here. that also happens with real cameras unfortunately like the hamamatsu
     // the solution is to either use a camera whose API supports read-write locking frames like the Basler, or to copy the frame, check that it's 
 
-    pub fn run(mut self) -> () {
+    pub fn run(self) -> () {
         let handle : &dcam4::Camera = &self.dev;
         // let n_pixels = image_size[0]*image_size[1];
         let n_buffers = self.buffers.len();
@@ -76,7 +76,7 @@ impl FrameProcessor{
                          }
                      } 
                      //update the frames filled and processed count before retrying the loop
-                     let new_filled = (handle.frames_produced().unwrap() as usize);
+                     let new_filled = handle.frames_produced().unwrap() as usize;
                      if new_filled + 1 - frames_processed >= n_buffers {
                          eprintln!("possible overflow! filler caught up to processor while processing!")
                      }
@@ -103,7 +103,6 @@ impl DcamCamera{
 
     pub fn get_mut_handle(&mut self) -> PyResult<&mut dcam4::Camera> {
         Arc::get_mut(&mut self.dev).ok_or(exceptions::PyException::new_err("dcam camera can't be modified as it is already borrowed. (is a capture running?)"))
-
     }
 
     // pub fn get_handle(&self) -> PyResult<&mut dcam4::Camera> {
@@ -186,5 +185,9 @@ impl PyCamera for DcamCamera{
 
     fn is_streaming(&self) -> PyResult<bool> {
         Ok(self.processor_handle.is_some())
+    }
+
+    fn set_vsync_out(&mut self) -> PyResult<()> {
+        to_py_err(self.get_mut_handle()?.set_vsync_out())
     }
 }
