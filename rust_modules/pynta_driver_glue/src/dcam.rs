@@ -187,7 +187,7 @@ impl PyCamera for DcamCamera{
         Ok(self.processor_handle.is_some())
     }
 
-    fn set_vsync_out(&mut self) -> PyResult<()> {
-        to_py_err(self.get_mut_handle()?.set_vsync_out())
+    fn set_output_trigger(&mut self) -> PyResult<()> {
+        to_py_err(self.get_mut_handle()?.set_output_trigger())
     }
 }

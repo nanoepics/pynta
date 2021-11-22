@@ -386,7 +386,9 @@ impl Camera{
         Ok(std::time::Duration::from_secs_f64(self.get_property(_DCAMIDPROP_DCAM_IDPROP_EXPOSURETIME)?))
     }
 
-	pub fn set_vsync_out(&mut self) -> Result<(), dcam::Error> {
+	pub fn set_output_trigger(&mut self) -> Result<(), dcam::Error> {
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_OUTPUTTRIGGER_KIND, _DCAMPROPMODEVALUE_DCAMPROP_OUTPUTTRIGGER_KIND__PROGRAMABLE as f64);
+		self.set_property(_DCAMIDPROP_DCAM_IDPROP_OUTPUTTRIGGER_POLARITY, _DCAMPROPMODEVALUE_DCAMPROP_OUTPUTTRIGGER_POLARITY__POSITIVE as f64);
 		self.set_property(_DCAMIDPROP_DCAM_IDPROP_OUTPUTTRIGGER_SOURCE, _DCAMPROPMODEVALUE_DCAMPROP_OUTPUTTRIGGER_SOURCE__VSYNC as f64)
 	}
 

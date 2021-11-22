@@ -49,7 +49,7 @@ trait PyCamera{
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])>;
     fn set_exposure(&mut self, exposure_in_seconds: f64) -> PyResult<f64>;
     fn get_exposure(&self) -> PyResult<f64>;
-    fn set_vsync_out(&mut self) -> PyResult<()>;
+    fn set_output_trigger(&mut self) -> PyResult<()>;
 }
 
 #[pyclass]
@@ -119,8 +119,8 @@ impl Camera{
     fn is_streaming(&mut self, py: Python) -> PyResult<bool> {
         py.allow_threads(||{&mut self.device}.is_streaming())
     }
-    fn set_vsync_out(&mut self, py : Python) -> PyResult<()> {
-        py.allow_threads(|| {& mut self.device}.set_vsync_out())
+    fn set_output_trigger(&mut self, py : Python) -> PyResult<()> {
+        py.allow_threads(|| {& mut self.device}.set_output_trigger())
     }
     // fn hello_world(&mut self) -> PyResult<()> {
     //     println!("hello world");

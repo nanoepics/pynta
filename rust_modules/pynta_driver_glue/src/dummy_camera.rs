@@ -292,7 +292,7 @@ impl PyCamera for DummyCamera{
         Ok(0.0)
     }
 
-    fn set_vsync_out(&mut self) -> PyResult<()> {
+    fn set_output_trigger(&mut self) -> PyResult<()> {
         Ok(())
     }
 }

@@ -225,9 +225,9 @@ class Experiment(BaseExperiment):
         self.logger = get_logger(name=__name__)
         self.load_configuration(filename)
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
-        self.camera.set_vsync_out()
-        ham = self.camera.as_hamamatsu()
-        ham.set_prop(....);
+        self.camera.set_output_trigger()
+        # ham = self.camera.as_hamamatsu()
+        # ham.set_prop(....);
 
         self.camera.set_roi([int(self.config["camera"]["roi_x1"]), int(self.config["camera"]["roi_x2"])], [int(self.config["camera"]["roi_y1"]), int(self.config["camera"]["roi_y2"])])
         self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
