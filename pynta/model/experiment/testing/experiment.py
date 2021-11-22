@@ -236,7 +236,7 @@ class SaveTriggerToHDF5:
         trig = (np.array([self.previous_level] + data[1]) > 1.6).astype(int)
 
         # THIS LINE IS FOR TESTING WITHOUT ACTUAL TRIGGERS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
+        # trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
 
         self.previous_level = data[1][-1]  # store the last value for the next iteration
         trig_indices = np.where(np.diff(trig) == self.edge)[0] + self.daq_frame_count * self.device_size[0]  # The +1 is removed because one value is prepended to the array
