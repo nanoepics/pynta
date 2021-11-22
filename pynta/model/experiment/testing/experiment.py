@@ -15,7 +15,7 @@ from datetime import datetime
 import h5py as h5py
 import numpy as np
 # from multiprocessing import Queue, Process
-
+import pynta
 from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import BaseExperiment
 # from pynta.model.experiment.nanospring_tracking.decorators import (check_camera,
@@ -229,12 +229,12 @@ class SaveTriggerToHDF5:
         dsize_trigger = self.dataset_writer_trigger.shape
         self.dataset_writer_daq.resize((dsize_daq[0]+1,) + dsize_daq[1:])
         self.dataset_writer_daq[-1,:] = data[0]
-        
+
         if self.previous_level is None:
             self.previous_level = data[1][0]  # If it is the first "window", make up "previous level" (the same as the first datapoint, so it won't register as a value change)
         # Note, the last value of the previous window is prepended in order to catch state changes that might occur right at the edge of a window
         trig = (np.array([self.previous_level] + data[1]) > 1.6).astype(int)
-        
+
         # THIS LINE IS FOR TESTING WITHOUT ACTUAL TRIGGERS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         trig = (np.array([0,0,3,3,3,0,0,3,3,0,0]) > 1.6).astype(int)
 
@@ -253,8 +253,19 @@ class SaveTriggerToHDF5:
 
 class FileWrangler:
     def __init__(self, filename) -> None:
-        self.file = h5py.File(filename if filename.endswith('.hdf5') else filename + '.hdf5','w',  libver='latest')
+        if not filename.endswith('.hdf5'):
+            filename += '.hdf5'
+        if os.path.exists(filename):
+            base_name = filename[:-5].base_name.split('_')
+            if base_name[-1].isnumeric():
+                base_name[-1] = str(int(base_name[-1]) + 1)
+            else:
+                base_name += '1'
+            filename = '_'.join(base_name) + '.hdf5'
+        self.filename = filename
+        self.file = h5py.File(filename,'w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
+
 
     def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
@@ -288,7 +299,13 @@ class Experiment(BaseExperiment):
         super().__init__(filename)
         self.temp_image = None
         self.tracked_locations = ([],[],[])
-        self.hdf5 = FileWrangler("output")
+        save_path = self.config.get('saving', {}).get('directory', '')
+        if not os.path.exists(save_path):
+            self.logger.warning('save directory does not exist, falling back to parent directory')
+            save_path = pynta.parent_path
+        save_name = self.config.get('saving', {}).get('filename_tracks', 'output')
+        filename = os.path.join(save_path, save_name)
+        self.hdf5 = FileWrangler(filename)
 
     def gui_file(self):
         return "testing"
