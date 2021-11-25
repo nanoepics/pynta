@@ -256,7 +256,7 @@ class FileWrangler:
         if not filename.endswith('.hdf5'):
             filename += '.hdf5'
         if os.path.exists(filename):
-            base_name = filename[:-5].base_name.split('_')
+            base_name = filename[:-5].split('_')
             if base_name[-1].isnumeric():
                 base_name[-1] = str(int(base_name[-1]) + 1)
             else:
