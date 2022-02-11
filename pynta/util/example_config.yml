@@ -11,7 +11,7 @@ saving:
   auto_save: False
   auto_save_waterfall: True
   #todo: use OS specific tmp dir
-  directory: H:\data\debugging
+  directory: H:\data\experiment
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_tracks: Tracks
@@ -30,7 +30,7 @@ camera:
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this?
   model_camera: Orca Flash # To keep a registry of which camera was used in the experiment
-  exposure_time: 5ms # Initial exposure time (in ms)
+  exposure_time: 1ms # Initial exposure time (in ms)
   fps: 250  # Frames per second, should either be defined by the camera or within the model based on timing
   binning_x: 1 # Binning
   binning_y: 1
