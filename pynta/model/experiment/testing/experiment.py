@@ -35,23 +35,65 @@ from scipy import ndimage
 from pynta_drivers import Camera as NativeCamera;
 
 
+# class DataPipeline:
+#     def __init__(self, callables_list = []) -> None:
+#         self.callables_list = callables_list
+#
+#     def append_node(self, callable):
+#         self.callables_list.append(callable)
+#
+#     def apply(self, data):
+#         for c in self.callables_list:
+#             # print("applying {} to {}".format(c, data))
+#             data = c(data)
+#             if data is None:
+#                 return None
+#         return data
+#
+#     def __call__(self, data):
+#         self.apply(data)
+
 class DataPipeline:
-    def __init__(self, callables_list = []) -> None:
-        self.callables_list = callables_list
+    def __init__(self, parent) -> None:
+        self.parent = parent
+        self.clear_process_img_func_list()
 
-    def append_node(self, callable):
-        self.callables_list.append(callable)
+    def set_save_img_func(self, func):
+        self.save_img_func = func
+        self.save_img = True
 
-    def apply(self, data):
-        for c in self.callables_list:
-            # print("applying {} to {}".format(c, data))
-            data = c(data)
-            if data is None:
-                return None
-        return data
+    def unset_save_img_func(self):
+        self.save_img = False
+
+    def clear_process_img_func_list(self):
+        self.process_img_funcs = []
+        self.process_img_funcs_names = []
+
+    def add_process_img_func(self, funcs, name):
+        self.process_img_funcs.append(funcs)
+        self.process_img_funcs_names.append(name)
+
+    def remove_process_img_func(self, name):
+        try:
+            i = self.process_img_funcs_names.index(name)
+            self.process_img_funcs.pop(i)
+            self.process_img_funcs_names.pop(i)
+        except:
+            pass
 
     def __call__(self, data):
-        self.apply(data)
+        self.parent.temp_image = data
+        if self.save_img:
+            self.save_img_func(data)
+
+        for funcs in self.process_img_funcs:
+            if type(funcs) is list:
+                new_data = data.copy()
+                for func in funcs:
+                    new_data = func(new_data)
+            else:
+                func(data)
+
 
 class ImageBuffer:
     def __init__(self, buffer = None) -> None:
@@ -306,6 +348,7 @@ class Experiment(BaseExperiment):
         save_name = self.config.get('saving', {}).get('filename_tracks', 'output')
         filename = os.path.join(save_path, save_name)
         self.hdf5 = FileWrangler(filename)
+        self._pipeline = DataPipeline(self)
 
     def gui_file(self):
         return "testing"
@@ -350,7 +393,12 @@ class Experiment(BaseExperiment):
         of the program. While this method runs on its own thread, it will broadcast the images to be consumed by other
         methods. In this way it is possible to continuously save to hard drive, track particles, etc.
         """
-        return self.start_capture()
+        # return self.start_capture()
+        x, y = self.camera.get_size()
+        bytes_per_frame = x*y*2
+        bytes_to_buffer = 1024*1024*128
+        self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), self._pipeline)
+
 
     def start_capture(self):
     #   self.camera.stream_into(self.temp_image)
@@ -358,20 +406,18 @@ class Experiment(BaseExperiment):
         # self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
         self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
         self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
-        def update_img(img):
-            # print("updating temp image to ", img)
-            self.temp_image = img
-            return img
+
         # self.tracking = True
         # self.tracking = False
         # def update_trck(df):
         #     self.tracked_locations = df
         #     return df
+
         pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 10),update_img, ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)])
         x, y = self.camera.get_size()
         bytes_per_frame = x*y*2
         bytes_to_buffer = 1024*1024*128
-        self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), pipeline)
+    #     self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), pipeline)
 
     # @property
     # def temp_locations(self):
@@ -423,6 +469,9 @@ class Experiment(BaseExperiment):
         the stream. It relies on the multiprocess library. It uses a queue in order to get the data to be saved.
         In normal operation, it should be used together with ``add_to_stream_queue``.
         """
+        aqcuisition = self.hdf5.start_new_aquisition()
+        self._pipeline.save_img_func()
+
         # if self.save_stream_running:
         #     self.logger.warning('Tried to start a new instance of save stream')
         #     raise StreamSavingRunning('You tried to start a new process for stream saving')
@@ -555,6 +604,7 @@ class Experiment(BaseExperiment):
         # self.stop_save_stream()
         #self.location.finalize()
         self.camera.stop_stream()
+        self.daq_controller.stop_all()
         super().finalize()
 
     def sysexcept(self, exc_type, exc_value, exc_traceback):

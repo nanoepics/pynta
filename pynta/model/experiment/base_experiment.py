@@ -47,12 +47,12 @@ class BaseExperiment:
         if filename:
             self.load_configuration(filename)
         self.initialize_camera()
-    
+
     """which folder view to use for the GUI. Let's differen experiments use different files.
     """
     def gui_file(self):
         return None
-    
+
     def initialize_camera(self):
         print("init cam!!!")
         """ Initializes the camera to be used to acquire data. The information on the camera should be provided in the

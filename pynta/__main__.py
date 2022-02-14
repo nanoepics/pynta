@@ -32,7 +32,8 @@ def main():
         config_file = args.config_file
     exp = Experiment(config_file)
     if exp.gui_file() is None:
-        window_builder = import_module('pynta.view.main')
+        # window_builder = import_module('pynta.view.main')
+        import pynta.view.main as window_builder
     else:
         window_builder = import_module('pynta.view.'+ exp.gui_file())
 
