@@ -40,6 +40,8 @@ camera:
   roi_y2: 2047
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
+  zoom_width: 100
+  zoom_height: 100
 
 waterfall: # Parameters for calculating the waterfall plot
   length: 20  # The total length of the waterfall (lines)

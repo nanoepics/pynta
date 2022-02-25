@@ -1,3 +1,9 @@
+"""
+Equivalent of main.py which includes NI DAQ and does not use SubscriberThread)
+
+
+"""
+
 import os
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow
@@ -23,9 +29,21 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.setup_roi_lines([self.experiment.max_width, self.experiment.max_height])
         self.config_tracking_widget.update_config(self.experiment.config['tracking'])
         self.config_widget.update_config(self.experiment.config)
+        self.actionConfiguration.triggered.connect(self.show_config)
         # self.tracking = False
 
+        # self.actionAdd_Monitor_Point.triggered.connect(self.zoom)  # REMOVE THIS AGAIN !!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         self.camera_viewer_widget.setup_mouse_click()
+
+    # def zoom(self, x,y):
+    #     print(x)
+    #     print(y)
+    #     self.experiment.set_zoom(x,y)
+
+    def show_config(self):
+        self.config_widget.update_config(self.experiment.config)
+        self.config_widget.show()
 
     def add_monitor_point(self):
         self.logger.info('Click to add point.')

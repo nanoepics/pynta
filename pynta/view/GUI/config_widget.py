@@ -38,7 +38,7 @@ class ConfigWidget(QWidget):
         self.levels_logging = dict(zip(self.logging_levels.values(), self.logging_levels.keys()))
 
         self._config = None
-        self.apply_button.clicked.connect(self.get_config)
+        self.apply_button.clicked.connect(self.apply)
         self.cancel_button.clicked.connect(self.revert_changes)
 
         self.config_tabs.currentChanged.connect(self.tab_changed)
@@ -50,13 +50,15 @@ class ConfigWidget(QWidget):
         self.txt.setText("no config loaded")
         self.txt.textChanged.connect(self.txt_changed)
 
+
     def tab_changed(self, tab_indx):
         if self.config_tabs.tabText(tab_indx) == 'Advanced':
-            self._temp_conf.update(self.get_config(update=False))
+            self._temp_conf.update(self.apply(update=False))
             self.txt.setText(yaml.dump(self._temp_conf))
 
     def update_config(self, config):
         """
+        Updates gui values according to input. And stores input in _config and _temp_conf
         :param config: Dictionary with the new values
         :type config: dict
         """
@@ -86,7 +88,9 @@ class ConfigWidget(QWidget):
         self._config = config
         self._temp_conf = self._config.copy()
 
-    def get_config(self, update=True):
+    def apply(self, button_state=None, update=True):
+        """Connected to Apply button.
+        Puts values from gui into config dict"""
         config = dict(
             camera=dict(
                 model=self.camera_model.text(),
@@ -119,16 +123,26 @@ class ConfigWidget(QWidget):
                 logging_level=self.levels_logging[self.logging_level.currentIndex()]
             )
         )
-
         if update:
-            if self.valid_yaml(quiet=False):
-                if self.config_tabs.tabText(self.config_tabs.currentIndex()) == 'Advanced':
+            if self.config_tabs.tabText(self.config_tabs.currentIndex()) == 'Advanced':
+                if self.valid_yaml(quiet=False):
                     # When on the Advanced tab, the values there will overwrite those from the other tabs
                     config.update(self._temp_conf)
-                else:
-                    # When on the other tabs, those values will overwrite those of the Advanced tab
-                    self._temp_conf.update(config)
-                    config = self._temp_conf
+            else:
+                # When on the other tabs, those values will overwrite those of the Advanced tab
+                self._temp_conf.update(config)
+                config = self._temp_conf
+
+            # if update:
+        #     if self.valid_yaml(quiet=False):
+        #         if self.config_tabs.tabText(self.config_tabs.currentIndex()) == 'Advanced':
+        #             # When on the Advanced tab, the values there will overwrite those from the other tabs
+        #             config.update(self._temp_conf)
+        #         else:
+        #             # When on the other tabs, those values will overwrite those of the Advanced tab
+        #             print('2', type(self._temp_conf))
+        #             self._temp_conf.update(config)
+        #             config = self._temp_conf
 
             self._config = config
             self.apply_config.emit(config)
@@ -136,6 +150,7 @@ class ConfigWidget(QWidget):
         return config
 
     def revert_changes(self):
+        """Called by Cancel button"""
         self.update_config(self._config)
 
     def txt_changed(self):

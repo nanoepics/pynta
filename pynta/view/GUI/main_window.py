@@ -35,7 +35,7 @@ class MainWindowGUI(QMainWindow):
 
         self.central_layout = QHBoxLayout(self.centralwidget)
         self.widget_splitter = QSplitter()
-        
+
         self.camera_viewer_widget = CameraViewerWidget()
         self.analysis_dock_widget = AnalysisDockWidget(self)
         # self.daq_splitter = QSplitter(orientation = Qt.Vertical)
@@ -48,9 +48,9 @@ class MainWindowGUI(QMainWindow):
 
         self.widget_splitter.addWidget(self.camera_viewer_widget)
         self.widget_splitter.addWidget(self.analysis_dock_widget)
-        
+
         # self.widget_splitter.addWidget(self.daq_splitter)
-        
+
         self.widget_splitter.setSizes((750, 500))
         self.central_layout.addWidget(self.widget_splitter)
 
@@ -196,6 +196,7 @@ class MainWindowGUI(QMainWindow):
         self.logger.error('Update Tracking config method not defined')
 
     def update_config(self, config):
+        print('&&&&&&&&&&&&&&&&&&&&&&&&')
         self.logger.error('Update Config method not defined')
 
     def closeEvent(self, *args, **kwargs):

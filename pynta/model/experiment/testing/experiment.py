@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 
+
+
+
+TODO:
+- separate live view from saving
+  through modification of pipeline
+- change settings in pynta (like exposure time)
+- single snapshot option
+- click and zoom to fixed size (config defined), and a return to fullscreen button
+- live graph of image analysis data (see pyocv version), but not scrolling, but oscilloscope style
+- daq settings in config (maybe also keep a gui)
+- ...
+
+
+
+
 """
 import sys
 import copy
@@ -56,6 +72,7 @@ from pynta_drivers import Camera as NativeCamera;
 class DataPipeline:
     def __init__(self, parent) -> None:
         self.parent = parent
+        self.save_img = False
         self.clear_process_img_func_list()
 
     def set_save_img_func(self, func):
@@ -350,8 +367,27 @@ class Experiment(BaseExperiment):
         self.hdf5 = FileWrangler(filename)
         self._pipeline = DataPipeline(self)
 
+    def update_config(self, **kwargs):
+        old_camera_conf = self.config['camera'].copy()
+        self.logger.info('Updating config')
+        self.logger.debug('Config params: {}'.format(kwargs))
+        self.config.update(**kwargs)
+        if self.config['camera'] != old_camera_conf:
+            self.camera.set_roi([int(self.config["camera"]["roi_x1"]), int(self.config["camera"]["roi_x2"])],
+                                [int(self.config["camera"]["roi_y1"]), int(self.config["camera"]["roi_y2"])])
+            self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
+
     def gui_file(self):
         return "testing"
+
+    def set_zoom(self, x, y):
+        x = min(x, self.max_width - self.config['zoom_width']//2)
+        left = min(0, x - self.config['zoom_width']//2)
+        right = max(self.max_width, left + self.config['zoom_width'])
+        y = min(x, self.max_height - self.config['zoom_height'] // 2)
+        top = min(0, y - self.config['zoom_height'] // 2)
+        bottom = max(self.max_height, top + self.config['zoom_height'])
+        self.set_roi([left, right], [top, bottom])
 
     def set_roi(self, X, Y):
         """ Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
@@ -368,6 +404,11 @@ class Experiment(BaseExperiment):
         self.current_width, self.current_height = self.camera.get_size()
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
         self.temp_image = np.zeros((self.current_width, self.current_height), dtype=np.uint16)
+        self.config['camera']['roi_x1'] = X[0]
+        self.config['camera']['roi_x2'] = X[1]
+        self.config['camera']['roi_y1'] = Y[0]
+        self.config['camera']['roi_y2'] = Y[1]
+
 
     def clear_roi(self):
         """ Clears the region of interest and returns to the full frame of the camera.
@@ -377,7 +418,7 @@ class Experiment(BaseExperiment):
         Y = [0, self.max_height]
         self.set_roi(X, Y)
 
-    # @make_async_thread
+        # @make_async_thread
     def snap(self):
         """ Snap a single frame.
         """
