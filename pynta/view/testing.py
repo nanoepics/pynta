@@ -36,21 +36,29 @@ class MainWindow(MainWindowGUI):
 
         self.camera_viewer_widget.setup_mouse_click()
 
-    # def zoom(self, x,y):
-    #     print(x)
-    #     print(y)
-    #     self.experiment.set_zoom(x,y)
+    def zoom_ROI_prime(self):
+        """ method called by actionZoom, which primes viewer widget to call zoom_ROI_callback on next click"""
+        print('384p957340987532409758')
+        self.logger.info('Click to zoom ROI.')
+        self.camera_viewer_widget.connect_mouse_clicked(self.zoom_ROI_callback)
+
+    def zoom_ROI_callback(self, coords):
+        print('rrrrrrrrrrrrrrrrrrrrr')
+        self.logger.info("Zooming to coordinate", coords)
+        self.experiment.set_zoom(coords)
+        self.camera_viewer_widget.connect_mouse_clicked(None)
 
     def show_config(self):
         self.config_widget.update_config(self.experiment.config)
         self.config_widget.show()
 
     def add_monitor_point(self):
+        """prime viewer widget with add_monitor_point_callback on next click on screen"""
         self.logger.info('Click to add point.')
         self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
 
     def add_monitor_point_callback(self, coord):
-        print("Adding coordinate", coord)
+        self.logger.info("Adding coordinate", coord)
         self.experiment.add_monitor_coordinate(coord)
         self.camera_viewer_widget.connect_mouse_clicked(None)
         # print(self.experiment.config['monitor_coordinates'])
@@ -59,7 +67,7 @@ class MainWindow(MainWindowGUI):
         self.experiment.clear_monitor_coordinates()
 
     def initialize_camera(self):
-        print("initialiaze camera called")
+        print("initialize camera called")
         # self.experiment.initialize_camera()
 
     def snap(self):

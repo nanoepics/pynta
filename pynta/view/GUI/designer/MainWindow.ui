@@ -132,13 +132,15 @@
    <addaction name="actionStart_Movie"/>
    <addaction name="actionStart_Continuous_Saves"/>
    <addaction name="separator"/>
+   <addaction name="actionToggle_bg_reduction"/>
    <addaction name="actionStart_Tracking"/>
    <addaction name="actionStart_Linking"/>
    <addaction name="separator"/>
    <addaction name="actionConfiguration"/>
+   <addaction name="separator"/>
    <addaction name="actionSet_ROI"/>
    <addaction name="actionClear_ROI"/>
-   <addaction name="actionToggle_bg_reduction"/>
+   <addaction name="actionZoom"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_Monitor_Point"/>
    <addaction name="actionClear_All"/>
@@ -356,6 +358,21 @@
    </property>
    <property name="text">
     <string>Clear all</string>
+   </property>
+  </action>
+  <action name="actionZoom">
+   <property name="icon">
+    <iconset>
+     <normaloff>../Icons/sharp-corners_enlarge.svg</normaloff>../Icons/sharp-corners_enlarge.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom in region of interest</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+=</string>
    </property>
   </action>
  </widget>

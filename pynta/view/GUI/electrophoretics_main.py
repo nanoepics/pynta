@@ -117,6 +117,10 @@ class MainWindowGUI(QMainWindow):
         self.actionConfiguration.triggered.connect(self.config_widget.show)
         self.actionAdd_Monitor_Point.triggered.connect(self.add_monitor_point)
         self.actionClear_All.triggered.connect(self.clear_monitor_points)
+        self.actionZoom.triggered.connect(self.zoom_ROI_prime)
+
+    def zoom_ROI_prime(self):
+        self.logger.warnings('Zoom ROI method not implemented')
 
     def add_monitor_point(self):
         self.logger.debug('Add monitor point')

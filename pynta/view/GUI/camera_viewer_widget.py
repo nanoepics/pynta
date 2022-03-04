@@ -118,6 +118,7 @@ class CameraViewerWidget(QWidget):
 
     def mouseClicked(self, arg):
         coord = self.img.mapFromScene(arg.pos())
+        print(coord)
         self.click_callback([coord.x(), coord.y()])
 
     def keyPressEvent(self,key):

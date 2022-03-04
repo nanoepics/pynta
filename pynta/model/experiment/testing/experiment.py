@@ -12,6 +12,7 @@ TODO:
 - click and zoom to fixed size (config defined), and a return to fullscreen button
 - live graph of image analysis data (see pyocv version), but not scrolling, but oscilloscope style
 - daq settings in config (maybe also keep a gui)
+- perhaps it would be nice to show a crosshair when camera is primed to click (add point / zoom)
 - ...
 
 
@@ -380,13 +381,16 @@ class Experiment(BaseExperiment):
     def gui_file(self):
         return "testing"
 
-    def set_zoom(self, x, y):
-        x = min(x, self.max_width - self.config['zoom_width']//2)
-        left = min(0, x - self.config['zoom_width']//2)
-        right = max(self.max_width, left + self.config['zoom_width'])
-        y = min(x, self.max_height - self.config['zoom_height'] // 2)
-        top = min(0, y - self.config['zoom_height'] // 2)
-        bottom = max(self.max_height, top + self.config['zoom_height'])
+    def set_zoom(self, coords):
+        x, y = coords
+        print(x,y)
+        x = min(int(x), self.max_width - self.config['camera']['zoom_width']//2)
+        left = max(0, x - self.config['camera']['zoom_width']//2)
+        right = min(self.max_width, left + self.config['camera']['zoom_width'])
+        y = min(int(y), self.max_height - self.config['camera']['zoom_height'] // 2)
+        top = max(0, y - self.config['camera']['zoom_height'] // 2)
+        bottom = min(self.max_height, top + self.config['camera']['zoom_height'])
+        print("Zooming ROI to", left, right, top, bottom)
         self.set_roi([left, right], [top, bottom])
 
     def set_roi(self, X, Y):
