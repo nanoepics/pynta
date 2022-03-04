@@ -38,15 +38,25 @@ class MainWindow(MainWindowGUI):
 
     def zoom_ROI_prime(self):
         """ method called by actionZoom, which primes viewer widget to call zoom_ROI_callback on next click"""
-        print('384p957340987532409758')
         self.logger.info('Click to zoom ROI.')
         self.camera_viewer_widget.connect_mouse_clicked(self.zoom_ROI_callback)
 
     def zoom_ROI_callback(self, coords):
-        print('rrrrrrrrrrrrrrrrrrrrr')
         self.logger.info("Zooming to coordinate", coords)
+        # IDEA: stop camera if running
+        # FAILED ATTEMPT
+        # was_running = self.experiment.camera.is_streaming()
+        # print('was running', was_running)
+        # if was_running:
+        #     self.stop_movie()
+        #     sleep(1)
+
         self.experiment.set_zoom(coords)
         self.camera_viewer_widget.connect_mouse_clicked(None)
+        # IDEA; start camera if it was running before
+        # FAILED ATTEMPT:
+        # if was_running:
+        #     self.start_movie()
 
     def show_config(self):
         self.config_widget.update_config(self.experiment.config)

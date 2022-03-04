@@ -383,7 +383,6 @@ class Experiment(BaseExperiment):
 
     def set_zoom(self, coords):
         x, y = coords
-        print(x,y)
         x = min(int(x), self.max_width - self.config['camera']['zoom_width']//2)
         left = max(0, x - self.config['camera']['zoom_width']//2)
         right = min(self.max_width, left + self.config['camera']['zoom_width'])

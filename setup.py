@@ -25,11 +25,11 @@ setup(
         'Programming Language :: Python',
     ],
     include_package_data=True,
-    # install_requires=['pyqt5==5.9.2', 'numpy', 'pyqtgraph==0.10.0', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
-    #                   'pyzmq', 'numba', 'nidaqmx', 'setuptools_rust'],
+    install_requires=['pyqt5', 'numpy', 'pyqtgraph', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
+                      'pyzmq', 'numba', 'nidaqmx', 'setuptools_rust'],
     # install_requires=['pyqt==5.9.2', 'numpy', 'pyqtgraph==0.10.0', 'pint', 'h5py', 'trackpy', 'pandas', 'pyyaml',
     #                   'pyzmq', 'numba', 'nidaqmx', 'setuptools_rust'],
-    install_requires=['nidaqmx', 'setuptools_rust'],
+    # install_requires=['nidaqmx', 'setuptools_rust'],
 
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -43,7 +43,8 @@ setup(
 # experimental:
 try:
     import os
-    os.system('pip install -e rust_modules\pynta_driver_glue')
+    abs_driver_glue_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'rust_modules', 'pynta_driver_glue')
+    os.system('pip install -e '+abs_driver_glue_path)
     import pynta_drivers
 except:
     print('INSTALLING PYNTA_DRIVER_GLUE FAILED')
