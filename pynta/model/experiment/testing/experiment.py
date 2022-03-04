@@ -6,11 +6,13 @@ DONE:
 - change settings in pynta (like exposure time)
 - click and zoom to fixed size (config defined), and a return to fullscreen button
 
-NEXT TIME
+NEXT TIME:
+- test saving with real camera, because dummy caused errors
 
 TODO:
 - separate live view from saving
   through modification of pipeline
+- zoom/fullscreen/roi does not work while movie is running (implement stop movie, do action, start movie)
 - single snapshot option
 - live graph of image analysis data (see pyocv version), but not scrolling, but oscilloscope style
 - daq settings in config (maybe also keep a gui)
@@ -29,9 +31,9 @@ import os
 import time
 # from threading import Event
 
-from datetime import datetime
 
-import h5py as h5py
+
+
 import numpy as np
 # from multiprocessing import Queue, Process
 import pynta
