@@ -139,6 +139,20 @@ class Experiment(BaseExperiment):
         self.hdf5 = FileWrangler(filename)
         self._pipeline = DataPipeline(self)
 
+        self.measurement_methods = {'a': self.my_measurement,
+                                    'b': self.my_measurement_b,
+                                    }
+
+    def my_measurement(self):
+        # self.config['measurements']['a']
+        print('do awesome measurement')
+
+    def my_measurement_b(self):
+        print('do prepartion measurement')
+
+    # def run_measurement(self, name):
+    #     return self.measurement_methods[name]()
+
     def update_config(self, **kwargs):
         old_camera_conf = self.config['camera'].copy()
         self.logger.info('Updating config')

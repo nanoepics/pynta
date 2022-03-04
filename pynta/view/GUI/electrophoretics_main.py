@@ -13,7 +13,7 @@ from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216
 
 from PyQt5 import uic
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QSplitter
+from PyQt5.QtWidgets import QMainWindow, QHBoxLayout, QPushButton, QSplitter, QComboBox
 from pyqtgraph import PlotWidget, plot
 import pyqtgraph as pg
 import numpy as np
@@ -70,6 +70,13 @@ class MainWindowGUI(QMainWindow):
         self.connect_actions()
         self.connect_buttons()
         self.connect_signals()
+        self.addMeasurementSelector()
+
+    def addMeasurementSelector(self):
+        self.measurement_combo = QComboBox()
+        self.toolBar.addWidget(self.measurement_combo)
+        self.measurement_run = QPushButton('Run')
+        self.toolBar.addWidget(self.measurement_run)
 
     def update_gui(self):
         self.logger.error('Update gui not defined')
