@@ -315,8 +315,10 @@ class FileWrangler:
     def __init__(self, filename) -> None:
         if not filename.endswith('.hdf5'):
             filename += '.hdf5'
-        if os.path.exists(filename):
+        while os.path.exists(filename):
             base_name = filename[:-5].split('_')
+            print(base_name)
+            print(base_name[-1].isnumeric())
             if base_name[-1].isnumeric():
                 base_name[-1] = str(int(base_name[-1]) + 1)
             else:
@@ -451,16 +453,24 @@ class Experiment(BaseExperiment):
         self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
         self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
 
+        # def temp(img_data):
+        #     return SaveImageToHDF5(aqcuisition, img_data, self.config['camera']['save_every_Nth_frame'])
+        #
+        # self._pipeline.set_save_img_func(temp)
+
+        # Equivalent of the code above, but using a lambda-function:
+        self._pipeline.set_save_img_func(lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
+
         # self.tracking = True
         # self.tracking = False
         # def update_trck(df):
         #     self.tracked_locations = df
         #     return df
 
-        pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 10),update_img, ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)])
-        x, y = self.camera.get_size()
-        bytes_per_frame = x*y*2
-        bytes_to_buffer = 1024*1024*128
+        # pipeline = DataPipeline([SaveImageToHDF5(aqcuisition, self.camera, 10),update_img, ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)])
+        # x, y = self.camera.get_size()
+        # bytes_per_frame = x*y*2
+        # bytes_to_buffer = 1024*1024*128
     #     self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), pipeline)
 
     # @property

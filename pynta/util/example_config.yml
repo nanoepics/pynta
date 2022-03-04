@@ -42,6 +42,7 @@ camera:
   background_method: [Method1, Method2]
   zoom_width: 100
   zoom_height: 100
+  save_every_Nth_frame: 10
 
 waterfall: # Parameters for calculating the waterfall plot
   length: 20  # The total length of the waterfall (lines)
