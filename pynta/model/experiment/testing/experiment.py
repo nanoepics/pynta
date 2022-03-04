@@ -317,8 +317,6 @@ class FileWrangler:
             filename += '.hdf5'
         while os.path.exists(filename):
             base_name = filename[:-5].split('_')
-            print(base_name)
-            print(base_name[-1].isnumeric())
             if base_name[-1].isnumeric():
                 base_name[-1] = str(int(base_name[-1]) + 1)
             else:
@@ -327,7 +325,6 @@ class FileWrangler:
         self.filename = filename
         self.file = h5py.File(filename,'w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
-
 
     def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
@@ -482,9 +479,9 @@ class Experiment(BaseExperiment):
         having users dealing with somewhat lower level threading options.
         """
         self.camera.stop_stream()
-        self.daq_controller.set_trigger_processing_function(lambda x: None)
-        self.daq_controller.set_processing_function(lambda x: None)
-        self.save_trigger_object.add_finished_timestamp()
+        self.daq_controller.set_trigger_processing_function(None)
+        self.daq_controller.set_processing_function(None)
+        # self.save_trigger_object.add_finished_timestamp() ########################################################################################
         print("stream stopped in python!")
 
     def save_image(self):
@@ -524,7 +521,17 @@ class Experiment(BaseExperiment):
         In normal operation, it should be used together with ``add_to_stream_queue``.
         """
         aqcuisition = self.hdf5.start_new_aquisition()
-        self._pipeline.save_img_func()
+        # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
+        # self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
+
+        # def temp(img_data):
+        #     return SaveImageToHDF5(aqcuisition, img_data, self.config['camera']['save_every_Nth_frame'])
+        #
+        # self._pipeline.set_save_img_func(temp)
+
+        # Equivalent of the code above, but using a lambda-function:
+        self._pipeline.set_save_img_func(
+            lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
 
         # if self.save_stream_running:
         #     self.logger.warning('Tried to start a new instance of save stream')
@@ -548,6 +555,9 @@ class Experiment(BaseExperiment):
     def stop_save_stream(self):
         """ Stops saving the stream.
         """
+        self._pipeline.set_save_img_func(None)
+        self.daq_controller.set_trigger_processing_function(None)
+
         # if self.save_stream_running:
         #     self.logger.info('Stopping the saving stream process')
         #     self.saver_queue.put('Exit')
