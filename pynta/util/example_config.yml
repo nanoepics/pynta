@@ -11,7 +11,7 @@ saving:
   auto_save: False
   auto_save_waterfall: True
   #todo: use OS specific tmp dir
-  directory: H:\data\experiment
+  directory: C:\Temp
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_tracks: Tracks
@@ -25,7 +25,7 @@ GUI:
   refresh_time: 50 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: dummy # dcam # Should be a python file in model/cameras
+  model: dcam # dummy # dcam # Should be a python file in model/cameras
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this?

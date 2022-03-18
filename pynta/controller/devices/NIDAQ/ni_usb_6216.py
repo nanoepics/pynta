@@ -116,3 +116,54 @@ class NiUsb6216:
         self.in_task.stop()
         self.out_task.stop()
 
+
+
+
+class DummyNiUsb6216:
+    def __init__(self, out_channel = 'Dev1/ao0', in_channel = 'Dev1/ai0', trigger_channel= 'Dev1/ai1'):
+        pass
+
+    def __del__(self):
+       pass
+
+    def get_size(self):
+        pass
+
+    def start_sine_task(self, frequency, amplitude, offset, n_points = 250):
+        pass
+
+
+    def start_square_task(self, frequency, amplitude, offset, duty_cycle, n_points = 250):
+        pass
+
+
+    def start_arbitrary_task(self, data, repetition_frequency):
+        pass
+
+    def capture_once(self, frequency, points):
+        return [0]
+
+    def set_display_function(self, fnc):
+        if fnc is None:
+            self.display_fnc = lambda *args, **kwargs: None
+        else:
+            self.display_fnc = fnc
+
+    def set_processing_function(self, fnc):
+        if fnc is None:
+            self.processing_fnc = lambda *args, **kwargs: None
+        else:
+            self.processing_fnc = fnc
+
+    def set_trigger_processing_function(self, fnc):
+        if fnc is None:
+            self.trigger_processing_fnc = lambda *args, **kwargs: None
+        else:
+            self.trigger_processing_fnc = fnc
+
+    def capture_stream(self, frequency, points):
+        pass
+
+    def stop_all(self):
+        pass
+

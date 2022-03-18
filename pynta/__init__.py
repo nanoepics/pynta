@@ -1,4 +1,4 @@
-__version__ = '0.1.4'
+__version__ = '0.1.6'
 import os
 from pint import UnitRegistry
 from multiprocessing import Event

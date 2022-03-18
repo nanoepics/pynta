@@ -22,7 +22,8 @@ pyo3 = {version = "0.14", features = ["extension-module"]}
 # numpy = {version = "0.14"}
 # ndarray = {version =  "0.15"}
 # tokio = {version="1", features=["time", "rt-multi-thread", "macros"]}
-mcl-stagedrive = {path = "../mcl-stagedrive"}
+# // REMOVED MCL STUFF::::::::::::::
+# mcl-stagedrive = {path = "../mcl-stagedrive"}
 dcam4 = {path = "../dcam4"}
 numpy = "0.14"
 

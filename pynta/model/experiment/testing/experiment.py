@@ -50,6 +50,8 @@ from pynta.util import get_logger
 from pynta import Q_
 
 from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
+from pynta.controller.devices.NIDAQ.ni_usb_6216 import DummyNiUsb6216 as DaqController
+
 
 # import trackpy as tp
 from scipy import ndimage
