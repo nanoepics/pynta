@@ -318,8 +318,18 @@ class Experiment(BaseExperiment):
         the stream. It relies on the multiprocess library. It uses a queue in order to get the data to be saved.
         In normal operation, it should be used together with ``add_to_stream_queue``.
         """
+        # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+        # aqcuisition = self.hdf5.start_new_aquisition()
+        # self._pipeline.set_save_img_func(
+        #     lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
+
         print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
         aqcuisition = self.hdf5.start_new_aquisition()
+        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
+        self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
+        self._pipeline.set_save_img_func(SaveImageToHDF5(aqcuisition, self.camera, 10))
+
+
         # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
         # self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
 
@@ -335,8 +345,7 @@ class Experiment(BaseExperiment):
         # self._pipeline.set_save_img_func(temp)
 
         # Equivalent of the code above, but using a lambda-function:
-        self._pipeline.set_save_img_func(
-            lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
+
 
         # if self.save_stream_running:
         #     self.logger.warning('Tried to start a new instance of save stream')
@@ -360,8 +369,10 @@ class Experiment(BaseExperiment):
     def stop_save_stream(self):
         """ Stops saving the stream.
         """
-        self._pipeline.set_save_img_func(None)
+        self.logger.info('Stop saving stream')
         self.daq_controller.set_trigger_processing_function(None)
+        self._pipeline.unset_save_img_func()
+
 
         # if self.save_stream_running:
         #     self.logger.info('Stopping the saving stream process')
@@ -474,6 +485,7 @@ class Experiment(BaseExperiment):
         #self.location.finalize()
         self.camera.stop_stream()
         self.daq_controller.stop_all()
+        self.hdf5.close()
         super().finalize()
 
     def sysexcept(self, exc_type, exc_value, exc_traceback):

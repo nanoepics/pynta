@@ -323,7 +323,8 @@ class SaveImageToHDF5:
         self.stride = stride-1
         self.counter = 0
         size = tuple(device.get_size())
-        self.dataset_writer = aqcuisition_grp.create_dataset("Image", shape=(0,)+size, dtype=np.uint16, maxshape=(None,)+size, chunks=(1,)+size, compression='gzip')
+        # self.dataset_writer = aqcuisition_grp.create_dataset("Image", shape=(0,)+size, dtype=np.uint16, maxshape=(None,)+size, chunks=(1,)+size, compression='gzip')
+        self.dataset_writer = aqcuisition_grp.create_dataset("Image", shape=size + (0,), dtype=np.uint16, maxshape=size + (None,), chunks=size + (1,), compression='gzip')
         self.dataset_writer.attrs["stride"] = stride
         self.dataset_writer.attrs["creation"]  = str(datetime.utcnow())
     def __call__(self, image):
@@ -331,8 +332,10 @@ class SaveImageToHDF5:
             # print("writting image to file..")
             #self.dataset_writer.send(image)
             dsize = self.dataset_writer.shape
-            self.dataset_writer.resize((dsize[0]+1,) + image.shape)
-            self.dataset_writer[-1,:] = image
+            # self.dataset_writer.resize((dsize[0]+1,) + image.shape)
+            # self.dataset_writer[-1,:] = image
+            self.dataset_writer.resize(image.shape + (dsize[2] + 1,))
+            self.dataset_writer[:, :, -1] = image
         # else:
         #     print("Skipping image writting..")
         self.counter = self.counter + 1 if self.counter < self.stride else 0
@@ -416,6 +419,8 @@ class FileWrangler:
         self.filename = filename
         self.file = h5py.File(filename,'w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
+
+        self.close = self.file.close
 
     def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
