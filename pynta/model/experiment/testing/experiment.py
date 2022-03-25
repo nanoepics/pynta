@@ -2,7 +2,8 @@
 """
 
 
-
+CHEKCLIST:
+- test "live" roi adjustment with real camera
 
 TODO:
 - separate live view from saving
@@ -382,6 +383,10 @@ class Experiment(BaseExperiment):
         return "testing"
 
     def set_zoom(self, coords):
+        """
+        Sets ROI to area around cursor. Size determined in config.
+        Takes care of region exceeding camera frame by moving area inside.
+        """
         x, y = coords
         print(x,y)
         x = min(int(x), self.max_width - self.config['camera']['zoom_width']//2)
@@ -394,6 +399,7 @@ class Experiment(BaseExperiment):
         self.set_roi([left, right], [top, bottom])
 
     def set_roi(self, X, Y):
+        # PERHAPS WE NEED TO DISABLE THIS WHILE ALSO CAPTURING
         """ Sets the region of interest of the camera, provided that the camera supports cropping. All the technicalities
         should be addressed on the camera model, not in this method.
 
@@ -404,6 +410,9 @@ class Experiment(BaseExperiment):
         """
 
         # self.logger.debug('Setting new camera ROI to x={},y={}'.format(X, Y))
+        was_running = self.camera.is_streaming()
+        if was_running:
+            self.stop_free_run()
         self.camera.set_roi(X, Y)
         self.current_width, self.current_height = self.camera.get_size()
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
@@ -412,6 +421,8 @@ class Experiment(BaseExperiment):
         self.config['camera']['roi_x2'] = X[1]
         self.config['camera']['roi_y1'] = Y[0]
         self.config['camera']['roi_y2'] = Y[1]
+        if was_running:
+            self.start_free_run()
 
 
     def clear_roi(self):
@@ -443,6 +454,7 @@ class Experiment(BaseExperiment):
         bytes_per_frame = x*y*2
         bytes_to_buffer = 1024*1024*128
         self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), self._pipeline)
+        print('is_streaming:', self.camera.is_streaming())
 
 
     def start_capture(self):
@@ -469,14 +481,17 @@ class Experiment(BaseExperiment):
     #     return self.localize_particles_image(self.temp_image)
 
     def stop_free_run(self):
+        # I THINK WE NEED TO SPLIT IT IN STOP_CAPTURE AND STOP_FREE_RUN
         """ Stops the free run by setting the ``_stop_event``. It is basically a convenience method to avoid
         having users dealing with somewhat lower level threading options.
         """
         self.camera.stop_stream()
         self.daq_controller.set_trigger_processing_function(lambda x: None)
         self.daq_controller.set_processing_function(lambda x: None)
-        self.save_trigger_object.add_finished_timestamp()
+        if hasattr(self, 'save_trigger_object'):
+            self.save_trigger_object.add_finished_timestamp()
         print("stream stopped in python!")
+        print('is_streaming:', self.camera.is_streaming())
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
