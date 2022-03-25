@@ -100,12 +100,12 @@ class MainWindowGUI(QMainWindow):
         self.actionSave_Image.triggered.connect(self.save_image)
         self.actionLoad_Data.triggered.connect(self.load_data)
         self.actionSnap_Photo.triggered.connect(self.snap)
-        self.actionStart_Movie.triggered.connect(self.start_movie)
-        self.actionStop_Movie.triggered.connect(self.stop_movie)
+        self.actionStart_Movie.triggered.connect(self.toggle_movie)
+        self.actionStop_Movie.triggered.connect(self.toggle_movie)
         self.actionStart_Continuous_Saves.triggered.connect(
-            self.start_continuous_saves)
+            self.toggle_saving)
         self.actionStop_Continuous_Saves.triggered.connect(
-            self.stop_continuous_saves)
+            self.toggle_saving)
         self.actionSet_ROI.triggered.connect(self.set_roi)
         self.actionClear_ROI.triggered.connect(self.clear_roi)
         self.actionConfiguration.triggered.connect(self.configure)
@@ -128,7 +128,7 @@ class MainWindowGUI(QMainWindow):
         self.actionZoom.triggered.connect(self.zoom_ROI_prime)
 
     def zoom_ROI_prime(self):
-        self.logger.warnings('Zoom ROI method not implemented')
+        self.logger.warnings('Zoom ROI method not implemented in child class')
 
     def add_monitor_point(self):
         self.logger.debug('Add monitor point')
@@ -151,17 +151,11 @@ class MainWindowGUI(QMainWindow):
     def save_image(self):
         self.logger.debug('Saved an image')
 
-    def start_movie(self):
-        self.logger.debug('Start a movie')
+    def toggle_movie(self):
+        self.logger.warning('Toggle movie method not implemented in child class')
 
-    def stop_movie(self):
-        self.logger.error('Stop movie not defined')
-
-    def start_continuous_saves(self):
-        self.logger.debug('Started continuous saves')
-
-    def stop_continuous_saves(self):
-        self.logger.error('Stop continuous Saves not implemented')
+    def toggle_saving(self):
+        self.logger.warning('Toggle saving method not implemented in child class')
 
     def start_tracking(self):
         self.logger.debug('Started tracking particles')

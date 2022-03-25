@@ -132,18 +132,18 @@
    <addaction name="actionStart_Movie"/>
    <addaction name="actionStart_Continuous_Saves"/>
    <addaction name="separator"/>
-   <addaction name="actionToggle_bg_reduction"/>
    <addaction name="actionStart_Tracking"/>
    <addaction name="actionStart_Linking"/>
    <addaction name="separator"/>
    <addaction name="actionConfiguration"/>
-   <addaction name="separator"/>
    <addaction name="actionSet_ROI"/>
    <addaction name="actionClear_ROI"/>
    <addaction name="actionZoom"/>
+   <addaction name="actionToggle_bg_reduction"/>
    <addaction name="separator"/>
    <addaction name="actionAdd_Monitor_Point"/>
    <addaction name="actionClear_All"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionLoad_Config">
@@ -183,6 +183,9 @@
    </property>
   </action>
   <action name="actionStart_Movie">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/icon_/Icons/pictogram_record.svg</normaloff>:/icon_/Icons/pictogram_record.svg</iconset>
@@ -201,6 +204,9 @@
    </property>
   </action>
   <action name="actionStart_Continuous_Saves">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/icon_/Icons/hatch_download.svg</normaloff>:/icon_/Icons/hatch_download.svg</iconset>
@@ -369,7 +375,7 @@
     <string>Zoom</string>
    </property>
    <property name="toolTip">
-    <string>Zoom in region of interest</string>
+    <string>Zoom in on cursor</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+=</string>

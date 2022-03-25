@@ -35,6 +35,16 @@ class MainWindow(MainWindowGUI):
         # self.actionAdd_Monitor_Point.triggered.connect(self.zoom)  # REMOVE THIS AGAIN !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         self.camera_viewer_widget.setup_mouse_click()
+        self.load_measument_methods()
+
+    def load_measument_methods(self):
+        for name in self.experiment.measurement_methods:
+            self.measurement_combo.addItem(name)
+        def runmeas():
+            name = self.measurement_combo.currentText()
+            return self.experiment.measurement_methods[name]()
+        self.measurement_run.clicked.connect(runmeas)
+
 
         self.load_measument_methods()
 
@@ -51,15 +61,25 @@ class MainWindow(MainWindowGUI):
 
     def zoom_ROI_prime(self):
         """ method called by actionZoom, which primes viewer widget to call zoom_ROI_callback on next click"""
-        print('384p957340987532409758')
         self.logger.info('Click to zoom ROI.')
         self.camera_viewer_widget.connect_mouse_clicked(self.zoom_ROI_callback)
 
     def zoom_ROI_callback(self, coords):
-        print('rrrrrrrrrrrrrrrrrrrrr')
         self.logger.info("Zooming to coordinate", coords)
+        # IDEA: stop camera if running
+        # FAILED ATTEMPT
+        # was_running = self.experiment.camera.is_streaming()
+        # print('was running', was_running)
+        # if was_running:
+        #     self.stop_movie()
+        #     sleep(1)
+
         self.experiment.set_zoom(coords)
         self.camera_viewer_widget.connect_mouse_clicked(None)
+        # IDEA; start camera if it was running before
+        # FAILED ATTEMPT:
+        # if was_running:
+        #     self.start_movie()
 
     def show_config(self):
         self.config_widget.update_config(self.experiment.config)
@@ -98,16 +118,23 @@ class MainWindow(MainWindowGUI):
                     # monitor_values = self.experiment.temp_monitor_values
                     # self.analysis_dock_widget.intensities_widget.update_graph(monitor_values)
 
-    def start_movie(self):
-        if self.experiment.camera.is_streaming():
-            self.stop_movie()
-        else:
+    def toggle_movie(self, state):
+        if state:
             self.experiment.start_free_run()
             self.actionStart_Movie.setToolTip('Stop Movie')
+        else:
+            self.experiment.stop_free_run()
+            self.actionStart_Movie.setToolTip('Start Movie')
+            self.actionStart_Movie.setChecked(False)
 
-    def stop_movie(self):
-        self.experiment.stop_free_run()
-        self.actionStart_Movie.setToolTip('Start Movie')
+    def toggle_saving(self, state):
+        if state:
+            self.experiment.save_stream()
+            self.actionStart_Continuous_Saves.setToolTip('Stop Saving')
+        else:
+            self.experiment.stop_save_stream()
+            self.actionStart_Continuous_Saves.setToolTip('Start Saving')
+            self.actionStart_Continuous_Saves.setChecked(False)
 
     def set_roi(self):
         self.refresh_timer.stop()
@@ -125,18 +152,6 @@ class MainWindow(MainWindowGUI):
 
     def save_image(self):
         self.experiment.save_image()
-
-    def start_continuous_saves(self):
-        if self.experiment.save_stream_running:
-            self.stop_continuous_saves()
-            return
-
-        self.experiment.save_stream()
-        self.actionStart_Continuous_Saves.setToolTip('Stop Continuous Saves')
-
-    def stop_continuous_saves(self):
-        self.experiment.stop_save_stream()
-        self.actionStart_Continuous_Saves.setToolTip('Start Continuous Saves')
 
     def start_tracking(self):
         self.experiment.start_tracking()

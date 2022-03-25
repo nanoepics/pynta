@@ -76,13 +76,22 @@ class NiUsb6216:
         return self.in_task.read(points)
 
     def set_display_function(self, fnc):
-        self.display_fnc = fnc
+        if fnc is None:
+            self.display_fnc = lambda *args, **kwargs: None
+        else:
+            self.display_fnc = fnc
 
     def set_processing_function(self, fnc):
-        self.processing_fnc = fnc
+        if fnc is None:
+            self.processing_fnc = lambda *args, **kwargs: None
+        else:
+            self.processing_fnc = fnc
 
     def set_trigger_processing_function(self, fnc):
-        self.trigger_processing_fnc = fnc
+        if fnc is None:
+            self.trigger_processing_fnc = lambda *args, **kwargs: None
+        else:
+            self.trigger_processing_fnc = fnc
 
     def capture_stream(self, frequency, points):
         self._sample_freq = frequency
