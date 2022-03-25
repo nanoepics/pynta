@@ -36,6 +36,19 @@ class MainWindow(MainWindowGUI):
 
         self.camera_viewer_widget.setup_mouse_click()
 
+        self.load_measument_methods()
+
+    def load_measument_methods(self):
+        """
+        Add the "measurement"-methods defined in the experiment class to the dropdown box and link the Run-button to call those methods
+        """
+        for name in self.experiment.measurement_methods:
+            self.measurement_combo.addItem(name)
+        def runmeas():
+            name = self.measurement_combo.currentText()
+            return self.experiment.measurement_methods[name]()
+        self.measurement_run.clicked.connect(runmeas)
+
     def zoom_ROI_prime(self):
         """ method called by actionZoom, which primes viewer widget to call zoom_ROI_callback on next click"""
         print('384p957340987532409758')

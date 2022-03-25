@@ -48,8 +48,13 @@ class BaseExperiment:
             self.load_configuration(filename)
         self.initialize_camera()
 
+        self.measurement_methods = {'no measurments defined': self.no_measurments_defined}
+
     """which folder view to use for the GUI. Let's differen experiments use different files.
     """
+    def no_measurments_defined(self):
+        self.logger.warning('No measurement methods in your experiment class')
+
     def gui_file(self):
         return None
 
