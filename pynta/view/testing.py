@@ -6,6 +6,7 @@ Equivalent of main.py which includes NI DAQ and does not use SubscriberThread)
 
 import os
 from PyQt5 import uic
+from pynta.tools.QWorkerThread import WorkThread
 from PyQt5.QtWidgets import QMainWindow
 from pynta.util.log import get_logger
 from time import sleep
@@ -37,16 +38,14 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.setup_mouse_click()
         self.load_measument_methods()
 
-    def load_measument_methods(self):
-        for name in self.experiment.measurement_methods:
-            self.measurement_combo.addItem(name)
-        def runmeas():
-            name = self.measurement_combo.currentText()
-            return self.experiment.measurement_methods[name]()
-        self.measurement_run.clicked.connect(runmeas)
-
-
-        self.load_measument_methods()
+    # def load_measument_methods(self):
+    #     for name in self.experiment.measurement_methods:
+    #         self.measurement_combo.addItem(name)
+    #     def runmeas():
+    #         name = self.measurement_combo.currentText()
+    #         return self.experiment.measurement_methods[name]()
+    #     self.measurement_run.clicked.connect(runmeas)
+    #     self.load_measument_methods()
 
     def load_measument_methods(self):
         """
@@ -56,7 +55,9 @@ class MainWindow(MainWindowGUI):
             self.measurement_combo.addItem(name)
         def runmeas():
             name = self.measurement_combo.currentText()
-            return self.experiment.measurement_methods[name]()
+            measurement_method = self.experiment.measurement_methods[name]
+            thread = WorkThread(measurement_method)
+            thread.start()
         self.measurement_run.clicked.connect(runmeas)
 
     def zoom_ROI_prime(self):

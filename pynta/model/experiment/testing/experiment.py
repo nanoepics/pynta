@@ -1,29 +1,36 @@
 # -*- coding: utf-8 -*-
 """
 
+ONGOING ISSUES:
+- snap() doesn't work
+- run measurment functionality doesn't update GUI and breaks "monitor mode" (threading?)
+  We need to think about how we want to use the software:
+  - what operating with human interaction
+  - what operating "scripted"
+  - which things to visualise
+  - how to store all of this
 
-CHEKCLIST:
-- test "live" roi adjustment with real camera
 
 DONE:
 - change settings in pynta (like exposure time)
 - click and zoom to fixed size (config defined), and a return to fullscreen button
+- separate live view from saving
+  through modification of pipeline
+- LIVE REGION OF INTEREST UPDATING
+
 
 NEXT TIME:
 - test saving with real camera, because dummy caused errors
 
 TODO:
-- separate live view from saving
-  through modification of pipeline
-- zoom/fullscreen/roi does not work while movie is running (implement stop movie, do action, start movie)
-- single snapshot option
+- single snapshot option: HOW TO SAVE?
 - live graph of image analysis data (see pyocv version), but not scrolling, but oscilloscope style
 - daq settings in config (maybe also keep a gui)
 - perhaps it would be nice to show a crosshair when camera is primed to click (add point / zoom)
 - ...
 
 SUGGESTION:
-- button: toggle live view on/off
+- button: toggle live view on/off   DONE FOR stream and save stream, but not yet for tracking
 - button: toggle save (part of) frames to file
 - ? live image analysis
 - button: toggle save live image analysis
@@ -36,6 +43,8 @@ import sys
 
 
 # from multiprocessing import Queue, Process
+import time
+
 import pynta
 from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import *
@@ -132,12 +141,12 @@ class Experiment(BaseExperiment):
         super().__init__(filename)
         self.temp_image = None
         self.tracked_locations = ([],[],[])
-        save_path = self.config.get('saving', {}).get('directory', '')
-        if not os.path.exists(save_path):
+        self.save_path = self.config.get('saving', {}).get('directory', '')
+        if not os.path.exists(self.save_path):
             self.logger.warning('save directory does not exist, falling back to parent directory')
-            save_path = pynta.parent_path
+            self.save_path = pynta.parent_path
         save_name = self.config.get('saving', {}).get('filename_tracks', 'output')
-        filename = os.path.join(save_path, save_name)
+        filename = os.path.join(self.save_path, save_name)
         self.hdf5 = FileWrangler(filename)
         self._pipeline = DataPipeline(self)
 
@@ -148,6 +157,20 @@ class Experiment(BaseExperiment):
     def my_measurement(self):
         # self.config['measurements']['a']
         print('do awesome measurement')
+        if not self.hdf5.is_closed:
+            self.hdf5.close()
+        self._pipeline = DataPipeline(self)
+        filename = os.path.join(self.save_path, 'a')
+        self.hdf5 = FileWrangler(filename)
+        self.start_free_run()
+        self.save_stream()
+        for k in range(20):
+            time.sleep(0.2)
+            print(self.temp_image[90,90])
+        self.stop_save_stream()
+        self.stop_free_run()
+        self.hdf5.close()
+
 
     def my_measurement_b(self):
         print('do prepartion measurement')
@@ -221,9 +244,34 @@ class Experiment(BaseExperiment):
     def snap(self):
         """ Snap a single frame.
         """
-        img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
-        self.camera.snap_into(img)
-        self.temp_image = img
+        if not self.camera.is_streaming:
+            img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
+            self.camera.snap_into(img)
+            self.temp_image = img
+
+    def save_image(self):
+        """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
+        """
+
+        # if self.temp_image:
+        #     self.logger.info('Saving last acquired image')
+        #     # Data will be appended to existing file
+        #     file_name = self.config['saving']['filename_photo'] + '.hdf5'
+        #     file_dir = self.config['saving']['directory']
+        #     if not os.path.exists(file_dir):
+        #         os.makedirs(file_dir)
+        #         self.logger.debug('Created directory {}'.format(file_dir))
+
+        #     with h5py.File(os.path.join(file_dir, file_name), "a") as f:
+        #         now = str(datetime.now())
+        #         g = f.create_group(now)
+        #         g.create_dataset('image', data=self.temp_image)
+        #         g.create_dataset('metadata', data=json.dumps(self.config))
+        #         f.flush()
+        #     self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
+        # else:
+        #     self.logger.warning('Tried to save an image, but no image was acquired yet.')
+
 
     #@make_async_thread
     # @check_not_acquiring
@@ -279,30 +327,7 @@ class Experiment(BaseExperiment):
         self.camera.stop_stream()
         self.daq_controller.set_trigger_processing_function(None)
         self.daq_controller.set_processing_function(None)
-        # self.save_trigger_object.add_finished_timestamp() ########################################################################################
         print("stream stopped in python!")
-
-    def save_image(self):
-        """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
-        """
-        # if self.temp_image:
-        #     self.logger.info('Saving last acquired image')
-        #     # Data will be appended to existing file
-        #     file_name = self.config['saving']['filename_photo'] + '.hdf5'
-        #     file_dir = self.config['saving']['directory']
-        #     if not os.path.exists(file_dir):
-        #         os.makedirs(file_dir)
-        #         self.logger.debug('Created directory {}'.format(file_dir))
-
-        #     with h5py.File(os.path.join(file_dir, file_name), "a") as f:
-        #         now = str(datetime.now())
-        #         g = f.create_group(now)
-        #         g.create_dataset('image', data=self.temp_image)
-        #         g.create_dataset('metadata', data=json.dumps(self.config))
-        #         f.flush()
-        #     self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
-        # else:
-        #     self.logger.warning('Tried to save an image, but no image was acquired yet.')
 
     def add_monitor_coordinate(self, coord):
         self.tracked_locations[0].append(coord[0])
@@ -370,8 +395,10 @@ class Experiment(BaseExperiment):
         """ Stops saving the stream.
         """
         self.logger.info('Stop saving stream')
+        self.save_trigger_object.add_finished_timestamp()  ########################################################################################
         self.daq_controller.set_trigger_processing_function(None)
         self._pipeline.unset_save_img_func()
+
 
 
         # if self.save_stream_running:

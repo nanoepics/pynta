@@ -374,10 +374,12 @@ class SaveTriggerToHDF5:
         self.edge = edge
         self.daq_frame_count = 0
         self.previous_level = None
+
     def add_finished_timestamp(self):
         t_end = str(datetime.utcnow())
         self.dataset_writer_daq.attrs["finished"]  = t_end
         self.dataset_writer_trigger.attrs["finished"]  = t_end
+
     def __call__(self, data):
         dsize_daq = self.dataset_writer_daq.shape
         dsize_trigger = self.dataset_writer_trigger.shape
@@ -419,8 +421,7 @@ class FileWrangler:
         self.filename = filename
         self.file = h5py.File(filename,'w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
-
-        self.close = self.file.close
+        self.is_closed = False
 
     def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
@@ -428,3 +429,7 @@ class FileWrangler:
         aquisition_nr = len(device_grp.keys())
         grp = device_grp.create_group("Acquisition_{}".format(aquisition_nr))
         return grp
+
+    def close(self):
+        self.file.close()
+        self.is_closed = True
