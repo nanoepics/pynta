@@ -252,6 +252,20 @@ class DataPipeline:
         self.process_img_funcs_names = []
 
     def add_process_img_func(self, funcs, name):
+        """
+        Calls either a single function with the frame as input.
+        Or calls a sequence of functions where each function
+        takes the output of the previous one as input.
+
+        Parameters
+        ----------
+        funcs : list of functions or a single function
+        name : a name for the (sequence of) function(s)
+
+        Returns
+        -------
+
+        """
         self.process_img_funcs.append(funcs)
         self.process_img_funcs_names.append(name)
 
@@ -268,13 +282,17 @@ class DataPipeline:
         if self.save_img:
             self.save_img_func(data)
 
+        # temp_data = data.copy()
+        # for func in self.process_img_funcs:
+        #     temp_data = func(temp_data)
+
         for funcs in self.process_img_funcs:
             if type(funcs) is list:
                 new_data = data.copy()
                 for func in funcs:
                     new_data = func(new_data)
             else:
-                func(data)
+                funcs(data)
 
 
 class SaveTracksToHDF5:

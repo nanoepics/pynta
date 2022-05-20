@@ -8,7 +8,7 @@ class NiUsb6216:
         self.in_task = nidaq.Task()
         #zero on start and stop
         self.out_task.ao_channels.add_ao_voltage_chan(out_channel, min_val=-10, max_val=10)
-        self.in_task.ai_channels.add_ai_voltage_chan(in_channel, min_val=-10, max_val=10)
+        self.in_task.ai_channels.add_ai_voltage_chan(in_channel, min_val=-1, max_val=1)
         self.in_task.ai_channels.add_ai_voltage_chan(trigger_channel, min_val=-10, max_val=10)
         self.out_task.out_stream.output_buf_size = 2
 

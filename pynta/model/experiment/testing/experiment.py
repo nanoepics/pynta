@@ -23,6 +23,7 @@ NEXT TIME:
 - test saving with real camera, because dummy caused errors
 
 TODO:
+- change tracking marker from standard cross to box of actual size that is used (i.e. (rad*2+1) by (rad*2+1) )
 - single snapshot option: HOW TO SAVE?
 - live graph of image analysis data (see pyocv version), but not scrolling, but oscilloscope style
 - daq settings in config (maybe also keep a gui)
@@ -111,10 +112,10 @@ class ContinousTracker2:
             local = img[ymin:ymax, xmin:xmax]
             if local.sum() > 0:
                 (y,x) = ndimage.measurements.center_of_mass(local)
-                print("offsets are {}, {}, summed intenity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
+                print("offsets are {}, {}, max intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.max(local)))
                 self.to_track[1][i] -= self.rad-y-0.5
                 self.to_track[0][i] -= self.rad-x-0.5
-                self.to_track[2][i] = np.sum(local)
+                self.to_track[2][i] = np.max(local)
         return self.to_track
 
 
@@ -288,21 +289,21 @@ class Experiment(BaseExperiment):
         self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), self._pipeline)
 
 
-    def start_capture(self):
-    #   self.camera.stream_into(self.temp_image)
-        aqcuisition = self.hdf5.start_new_aquisition()
-        # self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
-        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
-        self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
-
-        # def temp(img_data):
-        #     return SaveImageToHDF5(aqcuisition, img_data, self.config['camera']['save_every_Nth_frame'])
-        #
-        # self._pipeline.set_save_img_func(temp)
-
-        # Equivalent of the code above, but using a lambda-function:
-        self._pipeline.set_save_img_func(lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
-
+    # def start_capture(self):
+    # #   self.camera.stream_into(self.temp_image)
+    #     aqcuisition = self.hdf5.start_new_aquisition()
+    #     # self.daq_controller.set_processing_function(SaveDaqToHDF5(aqcuisition, self.daq_controller))
+    #     self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
+    #     self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
+    #
+    #     # def temp(img_data):
+    #     #     return SaveImageToHDF5(aqcuisition, img_data, self.config['camera']['save_every_Nth_frame'])
+    #     #
+    #     # self._pipeline.set_save_img_func(temp)
+    #
+    #     # Equivalent of the code above, but using a lambda-function:
+    #     self._pipeline.set_save_img_func(lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
+    #     print('aaaaaaaaaaaaaaaaaa')
         # self.tracking = True
         # self.tracking = False
         # def update_trck(df):
@@ -354,11 +355,7 @@ class Experiment(BaseExperiment):
         self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
         self._pipeline.set_save_img_func(SaveImageToHDF5(aqcuisition, self.camera, 10))
 
-
-        # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
-        # self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
-
-        # self._pipeline.add_process_img_func(ContinousTracker2(self.tracked_locations), 'track')
+        self._pipeline.add_process_img_func([ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)], 'track')
         # self._pipeline.add_process_img_func(SaveTracksToHDF5(aqcuisition), 'save_track')
 
         # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
@@ -398,6 +395,7 @@ class Experiment(BaseExperiment):
         self.save_trigger_object.add_finished_timestamp()  ########################################################################################
         self.daq_controller.set_trigger_processing_function(None)
         self._pipeline.unset_save_img_func()
+        self._pipeline.clear_process_img_func_list()
 
 
 
