@@ -7,7 +7,7 @@ Equivalent of main.py which includes NI DAQ and does not use SubscriberThread)
 import os
 from PyQt5 import uic
 from pynta.tools.QWorkerThread import WorkThread
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QStatusBar
 from pynta.util.log import get_logger
 from time import sleep
 
@@ -37,6 +37,9 @@ class MainWindow(MainWindowGUI):
 
         self.camera_viewer_widget.setup_mouse_click()
         self.load_measument_methods()
+
+        self.statusbar = QStatusBar()
+        self.statusbar.showMessage('Message in statusbar.')
 
     # def load_measument_methods(self):
     #     for name in self.experiment.measurement_methods:
@@ -109,7 +112,10 @@ class MainWindow(MainWindowGUI):
 
     def update_gui(self):
         if self.experiment.temp_image is not None:
-            self.camera_viewer_widget.update_image(self.experiment.temp_image)
+            if self.experiment.bg_correction:
+                self.camera_viewer_widget.update_image(self.experiment.temp_image.astype(np.int16) - self.experiment.bg_image)
+            else:
+                self.camera_viewer_widget.update_image(self.experiment.temp_image)
             self.experiment.temp_image = None
         # if self.experiment.tracked_locations[0]:
                 # locations = self.experiment.temp_locations
@@ -127,6 +133,15 @@ class MainWindow(MainWindowGUI):
             self.experiment.stop_free_run()
             self.actionStart_Movie.setToolTip('Start Movie')
             self.actionStart_Movie.setChecked(False)
+
+    def toggle_background(self, state):
+        if state is True:
+            self.logger.info('Turning BG reduction on')
+            self.experiment.bg_image = self.experiment.snap_image
+            self.experiment.bg_correction = True
+        else:
+            self.experiment.bg_correction = False
+            self.logger.info('Turning BG reduction off')
 
     def toggle_saving(self, state):
         if state:

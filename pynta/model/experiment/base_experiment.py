@@ -51,9 +51,9 @@ class BaseExperiment:
             self.load_configuration(filename)
         self.initialize_camera()
 
-        self.measurement_methods = {'no measurments defined': self.no_measurments_defined}
+        self.measurement_methods = {'no measurements defined': self.no_measurments_defined}
 
-    """which folder view to use for the GUI. Let's differen experiments use different files.
+    """which folder view to use for the GUI. Let's different experiments use different files.
     """
     def no_measurments_defined(self):
         self.logger.warning('No measurement methods in your experiment class')
@@ -274,6 +274,8 @@ class DataPipeline:
             i = self.process_img_funcs_names.index(name)
             self.process_img_funcs.pop(i)
             self.process_img_funcs_names.pop(i)
+            self.i_dataset.attrs["finished"] = str(datetime.utcnow())
+
         except:
             pass
 
@@ -305,11 +307,16 @@ class SaveTracksToHDF5:
         #self.grp.attrs["diameter"] = self.diameter
         self.grp.attrs["creation"]  = str(datetime.utcnow())
 
+
         #self.locations_dataset = aqcuisition_grp.create_dataset("locations", shape=(8,self.batching), dtype=np.float32, maxshape=(8,None), chunks=(8, self.batching), compression='gzip')
         self.x_dataset = self.grp.create_dataset("x", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.y_dataset = self.grp.create_dataset("y", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.i_dataset = self.grp.create_dataset("intensities", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
         self.frame_dataset = self.grp.create_dataset("frames", shape=(self.batching,), dtype=np.uint64, maxshape=(None,), chunks=(self.batching,), compression='gzip')
+
+    def add_finished_timestamp(self):
+        t_end = str(datetime.utcnow())
+        self.grp.attrs["finished"]  = t_end
 
     def __call__(self, locations):
         row_count = len(locations[0])
@@ -345,6 +352,21 @@ class SaveImageToHDF5:
         self.dataset_writer = aqcuisition_grp.create_dataset("Image", shape=size + (0,), dtype=np.uint16, maxshape=size + (None,), chunks=size + (1,), compression='gzip')
         self.dataset_writer.attrs["stride"] = stride
         self.dataset_writer.attrs["creation"]  = str(datetime.utcnow())
+        self.grp = aqcuisition_grp
+        self._snaps_acquired = 0
+
+    def add_finished_timestamp_images(self):
+        finish = str(datetime.utcnow())
+        self.dataset_writer.attrs["finished"]  = finish
+
+    def save_single_snap(self, snap_image):
+        size = snap_image.shape
+        self._snaps_acquired += 1
+        self.dataset_writer = self.grp.create_dataset("Snap_{}".format(self._snaps_acquired), shape=size, dtype=np.uint16,
+                                                             maxshape=size, chunks=size,
+                                                             compression='gzip')
+        self.dataset_writer[:, :] = snap_image
+
     def __call__(self, image):
         if self.counter == 0:
             # print("writting image to file..")
@@ -432,7 +454,8 @@ class FileWrangler:
         while os.path.exists(filename):
             base_name = filename[:-len(ext)].split('_')
             if base_name[-1].isnumeric():
-                base_name[-1] = str(int(base_name[-1]) + 1)
+                self.number = str(int(base_name[-1]) + 1)
+                base_name[-1] = self.number
             else:
                 base_name += '1'
             filename = '_'.join(base_name) + ext
@@ -446,6 +469,7 @@ class FileWrangler:
         device_grp = self.file.require_group('data')
         aquisition_nr = len(device_grp.keys())
         grp = device_grp.create_group("Acquisition_{}".format(aquisition_nr))
+        self._current_group = grp
         return grp
 
     def close(self):

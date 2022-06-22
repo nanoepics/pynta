@@ -110,7 +110,7 @@ class MainWindowGUI(QMainWindow):
         self.actionClear_ROI.triggered.connect(self.clear_roi)
         self.actionConfiguration.triggered.connect(self.configure)
         self.actionToggle_bg_reduction.triggered.connect(
-            self.background_reduction)
+            self.toggle_background)
         self.actionStart_Tracking.triggered.connect(self.start_tracking)
         self.actionStop_Tracking.triggered.connect(self.stop_tracking)
         self.actionStart_Linking.triggered.connect(self.start_linking)

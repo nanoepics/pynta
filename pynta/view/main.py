@@ -41,7 +41,7 @@ class MainWindow(MainWindowGUI):
         self.experiment.initialize_camera()
 
     def snap(self):
-        self.experiment.snap()
+        self.experiment.snap_image()
 
     def update_gui(self):
         if self.experiment.temp_image is not None:

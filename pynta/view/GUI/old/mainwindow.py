@@ -206,7 +206,7 @@ class MainWindow(QMainWindow):
         self.showHelpAction.setShortcut(QtCore.Qt.Key_F1)
         self.showHelpAction.setStatusTip('Show Cheatsheet')
         self.showHelpAction.triggered.connect(self.showHelp)
-           
+
         self.saveWaterfallAction = QtGui.QAction("Save Waterfall", self)
         self.saveWaterfallAction.setShortcut('Ctrl+Shift+W')
         self.saveWaterfallAction.setStatusTip('Save waterfall data to new file')
@@ -404,7 +404,7 @@ class MainWindow(QMainWindow):
             retval = msgBox.exec_()
             self.messageWidget.appendLog('e', 'Tried to snap while in free run')
         else:
-            self.experiment.snap()
+            self.experiment.snap_image()
             # self.messageWidget.appendLog('i', 'Snapped photo')
 
     def toggleBGReduction(self):

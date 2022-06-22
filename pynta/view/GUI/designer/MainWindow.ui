@@ -16,6 +16,9 @@
     <height>800</height>
    </size>
   </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
   <property name="windowTitle">
    <string>PyNTA: Python Nanoparticle Tracking Analysis</string>
   </property>
@@ -115,6 +118,9 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -252,12 +258,18 @@
    </property>
   </action>
   <action name="actionToggle_bg_reduction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
      <normaloff>:/icon_/Icons/duotone_edit.svg</normaloff>:/icon_/Icons/duotone_edit.svg</iconset>
    </property>
    <property name="text">
-    <string>Toggle bg reduction</string>
+    <string>bg reduction</string>
+   </property>
+   <property name="toolTip">
+    <string>bg reduction</string>
    </property>
   </action>
   <action name="actionStart_Tracking">

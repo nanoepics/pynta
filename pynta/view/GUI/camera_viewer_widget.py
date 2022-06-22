@@ -175,6 +175,8 @@ class CameraViewerWidget(QWidget):
         # locations = locations[['y', 'x']].values
         brush = pg.mkBrush(color=(255, 0, 0))
         self.marker.setData(locations[0], locations[1], symbol='x', symbolBrush=brush)
+        # COMMENT: change this from plotting a marker, to an actual box by drawing lines or a curve of the true shape
+        #this is called all the time
 
     def update_image(self, image):
         self.img.setImage(image, autoLevels=False, autoRange=False, autoHistogramRange=False, axisOrder="row-major")
@@ -189,11 +191,13 @@ class CameraViewerWidget(QWidget):
         self.crosshair.append(pg.InfiniteLine(angle=90, movable=False, pen={'color': 124, 'width': 4}))
         self.crosshair[0].setBounds((1, max_size[1] - 1))
         self.crosshair[1].setBounds((1, max_size[0] - 1))
+        #print("setup_cross_hair")
 
     def setup_cross_cut(self, max_size):
         """Set ups the horizontal line for the cross cut."""
         self.crossCut = pg.InfiniteLine(angle=0, movable=False, pen={'color': 'g', 'width': 2})
         self.crossCut.setBounds((1, max_size))
+        #print("setup_cross_cut")
 
 
 if __name__ == "__main__":

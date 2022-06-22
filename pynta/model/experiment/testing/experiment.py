@@ -71,30 +71,30 @@ from scipy import ndimage
 from pynta_drivers import Camera as NativeCamera;
 
 
-class ContinousTracker:
-    def __init__(self, to_track) -> None:
-        self.to_track = to_track
-    def __call__(self, img):
-        for i in range(0, len(self.to_track[0])):
-            x = self.to_track[0][i]
-            y = self.to_track[1][i]
-            rad = 30
-            xmin = int(max(0, x - rad))
-            xmax = int(min(x + rad, img.shape[1]))
-            ymin = int(max(0, y - rad))
-            ymax = int(min(y + rad, img.shape[0]))
-            # print("{}, {} in image of size {}".format(x,y,img.shape))
-            local = img[ymin:ymax, xmin:xmax]
-            # print(local)
-            amax = np.argmax(local, axis=None)
-            # print(amax)
-            y_, x_ = np.unravel_index(amax, local.shape)
-            # print("offsets are {}, {}, position {}, {}, intenity {}".format(x_,y_, x, y, np.max(local)))
-            # Update the coordinate to the (new) location of the maximum
-            #if local[(x_,y_)] > 1:
-            self.to_track[1][i] = ymin + y_
-            self.to_track[0][i] = xmin + x_
-        return self.to_track
+# class ContinousTracker:
+#     def __init__(self, to_track) -> None:
+#         self.to_track = to_track
+#     def __call__(self, img):
+#         for i in range(0, len(self.to_track[0])):
+#             x = self.to_track[0][i]
+#             y = self.to_track[1][i]
+#             rad = 30
+#             xmin = int(max(0, x - rad))
+#             xmax = int(min(x + rad, img.shape[1]))
+#             ymin = int(max(0, y - rad))
+#             ymax = int(min(y + rad, img.shape[0]))
+#             # print("{}, {} in image of size {}".format(x,y,img.shape))
+#             local = img[ymin:ymax, xmin:xmax]
+#             # print(local)
+#             amax = np.argmax(local, axis=None)
+#             # print(amax)
+#             y_, x_ = np.unravel_index(amax, local.shape)
+#             # print("offsets are {}, {}, position {}, {}, intenity {}".format(x_,y_, x, y, np.max(local)))
+#             # Update the coordinate to the (new) location of the maximum
+#             #if local[(x_,y_)] > 1:
+#             self.to_track[1][i] = ymin + y_
+#             self.to_track[0][i] = xmin + x_
+#         return self.to_track
 
 class ContinousTracker2:
     def __init__(self, to_track, rad=32) -> None:
@@ -112,10 +112,10 @@ class ContinousTracker2:
             local = img[ymin:ymax, xmin:xmax]
             if local.sum() > 0:
                 (y,x) = ndimage.measurements.center_of_mass(local)
-                print("offsets are {}, {}, max intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.max(local)))
+                print("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
                 self.to_track[1][i] -= self.rad-y-0.5
                 self.to_track[0][i] -= self.rad-x-0.5
-                self.to_track[2][i] = np.max(local)
+                self.to_track[2][i] = np.sum(local)
         return self.to_track
 
 
@@ -129,6 +129,7 @@ class Experiment(BaseExperiment):
         self.load_configuration(filename)
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
         self.camera.set_output_trigger()
+        self.bg_correction = False
         # ham = self.camera.as_hamamatsu()
         # ham.set_prop(....);
 
@@ -141,6 +142,7 @@ class Experiment(BaseExperiment):
         # self.max_height = None
         super().__init__(filename)
         self.temp_image = None
+        self.snap_image = None
         self.tracked_locations = ([],[],[])
         self.save_path = self.config.get('saving', {}).get('directory', '')
         if not os.path.exists(self.save_path):
@@ -151,8 +153,8 @@ class Experiment(BaseExperiment):
         self.hdf5 = FileWrangler(filename)
         self._pipeline = DataPipeline(self)
 
-        self.measurement_methods = {'a': self.my_measurement,
-                                    'b': self.my_measurement_b,
+        self.measurement_methods = {'acquire BG video AVG': self.bg_video,
+                                    'b': self.my_measurement,
                                     }
 
     def my_measurement(self):
@@ -173,8 +175,27 @@ class Experiment(BaseExperiment):
         self.hdf5.close()
 
 
-    def my_measurement_b(self):
-        print('do prepartion measurement')
+    def bg_video(self):
+        bg_correction_state = self.bg_correction
+        self.bg_correction = False
+        if self.camera.is_streaming:
+            self.stop_free_run()
+        x, y = self.camera.get_size()
+        bytes_per_frame = x*y*2
+        bytes_to_buffer = 1024*1024*128
+        bg_array = []
+        def process_img(arr):
+            bg_array.append(arr)
+            self.temp_image = arr
+        self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), process_img)
+        t0 = time.time() ######try QtTest.QTest.qWait(msecs)
+        while time.time() < t0 + 2:
+            pass
+        self.camera.stop_stream()
+        bg_array = np.array(bg_array)
+        self.bg_image = bg_array.mean(axis=0).astype(np.uint16)
+        self.snap_image = self.bg_image
+        self.bg_correction = bg_correction_state
 
     def update_config(self, **kwargs):
         old_camera_conf = self.config['camera'].copy()
@@ -245,33 +266,35 @@ class Experiment(BaseExperiment):
     def snap(self):
         """ Snap a single frame.
         """
-        if not self.camera.is_streaming:
+        if not self.camera.is_streaming():
             img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
             self.camera.snap_into(img)
             self.temp_image = img
+            self.snap_image = img
+            if hasattr(self, 'save_image_object'):
+                self.save_image_object.save_single_snap(img)
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
         """
+        if self.snap_image is None:
+            self.logger.warning('Take a snapshot first')
+        else:
+            self.logger.info('Saving last acquired image')
+            if not hasattr(self, 'hdf5_snaps'):
+                self.hdf5_snaps = FileWrangler(os.path.join(self.save_path, self.config['saving']['filename_photo'])+'_'+self.hdf5.number)
+            # Data will be appended to existing file
 
-        # if self.temp_image:
-        #     self.logger.info('Saving last acquired image')
-        #     # Data will be appended to existing file
-        #     file_name = self.config['saving']['filename_photo'] + '.hdf5'
-        #     file_dir = self.config['saving']['directory']
-        #     if not os.path.exists(file_dir):
-        #         os.makedirs(file_dir)
-        #         self.logger.debug('Created directory {}'.format(file_dir))
+            now = str(datetime.now())
+            device_grp = self.hdf5_snaps.file.require_group('data')
+            aquisition_nr = len(device_grp.keys())
 
-        #     with h5py.File(os.path.join(file_dir, file_name), "a") as f:
-        #         now = str(datetime.now())
-        #         g = f.create_group(now)
-        #         g.create_dataset('image', data=self.temp_image)
-        #         g.create_dataset('metadata', data=json.dumps(self.config))
-        #         f.flush()
-        #     self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
-        # else:
-        #     self.logger.warning('Tried to save an image, but no image was acquired yet.')
+            device_grp.create_dataset('image_{}'.format(aquisition_nr+1), data=self.snap_image)
+            # device_grp.create_dataset('metadata', data=yaml.dump(self.config))
+            # device_grp.flush()
+            self.hdf5_snaps.file.flush()
+            # self.logger.debug('Saved image to {}'.format(os.path.join(file_dir, file_name)))
+            self.snap_image = None
 
 
     #@make_async_thread
@@ -351,11 +374,15 @@ class Experiment(BaseExperiment):
 
         print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
         aqcuisition = self.hdf5.start_new_aquisition()
+        self.aqcuisition = aqcuisition
         self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
         self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
-        self._pipeline.set_save_img_func(SaveImageToHDF5(aqcuisition, self.camera, 10))
 
-        self._pipeline.add_process_img_func([ContinousTracker2(self.tracked_locations), SaveTracksToHDF5(aqcuisition)], 'track')
+        self.save_image_object = SaveImageToHDF5(aqcuisition, self.camera, 10)
+        self._pipeline.set_save_img_func(self.save_image_object)
+
+        self.save_tracks_object = SaveTracksToHDF5(aqcuisition)
+        self._pipeline.add_process_img_func([ContinousTracker2(self.tracked_locations), self.save_tracks_object], 'track')
         # self._pipeline.add_process_img_func(SaveTracksToHDF5(aqcuisition), 'save_track')
 
         # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
@@ -392,7 +419,8 @@ class Experiment(BaseExperiment):
         """ Stops saving the stream.
         """
         self.logger.info('Stop saving stream')
-        self.save_trigger_object.add_finished_timestamp()  ########################################################################################
+        self.save_trigger_object.add_finished_timestamp()########################################################################################
+        self.save_tracks_object.add_finished_timestamp() #Note: trigger and DAQ finish process earlier than save_tracks by a couple of milliseconds
         self.daq_controller.set_trigger_processing_function(None)
         self._pipeline.unset_save_img_func()
         self._pipeline.clear_process_img_func_list()
@@ -511,6 +539,10 @@ class Experiment(BaseExperiment):
         self.camera.stop_stream()
         self.daq_controller.stop_all()
         self.hdf5.close()
+        try:
+            self.hdf5_snaps.close()
+        except:
+            pass
         super().finalize()
 
     def sysexcept(self, exc_type, exc_value, exc_traceback):
