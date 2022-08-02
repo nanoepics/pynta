@@ -10,7 +10,7 @@ class Ni6216Generator(BaseSignalGenerator):
 
     # actually more complex, dependent upon how many points you want to use in the waveform
     def supported_frequencies(self) -> SupportedValues:
-        return SupportedValues.from_range(0.1, 100)
+        return SupportedValues.from_range(0.1, 1000)
 
     # offsets+amplitudes have to be within +-10V.
     def supported_amplitudes(self) -> SupportedValues:
@@ -21,7 +21,7 @@ class Ni6216Generator(BaseSignalGenerator):
 
     def set_square_wave(self, frequency, amplitude, offset, duty_cycle):
         self.controller.start_square_task(frequency, amplitude, offset, duty_cycle)
-    
+
     def set_sine_wave(self, frequency, amplitude, offset):
         self.controller.start_sine_task(frequency, amplitude, offset)
 

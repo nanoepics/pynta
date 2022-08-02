@@ -29,7 +29,7 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
 
     def add_monitor_point_callback(self, coord):
-        print("Adding coordinate", coord)
+        self.logger.info("Adding coordinate", coord)
         self.experiment.add_monitor_coordinate(coord)
         self.camera_viewer_widget.connect_mouse_clicked(None)
         print(self.experiment.config['monitor_coordinates'])
@@ -41,7 +41,7 @@ class MainWindow(MainWindowGUI):
         self.experiment.initialize_camera()
 
     def snap(self):
-        self.experiment.snap()
+        self.experiment.snap_image()
 
     def update_gui(self):
         if self.experiment.temp_image is not None:

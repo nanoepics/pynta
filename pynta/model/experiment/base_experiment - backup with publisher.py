@@ -30,8 +30,8 @@ import os
 import h5py as h5py
 from datetime import datetime
 from pynta.util import get_logger
-# from pynta.model.experiment.publisher import Publisher
-# from pynta.model.experiment.subscriber import subscriber
+from pynta.model.experiment.publisher import Publisher
+from pynta.model.experiment.subscriber import subscriber
 
 
 class BaseExperiment:
@@ -41,13 +41,13 @@ class BaseExperiment:
     def __init__(self, filename=None):
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
-        self.clear_statusbar = lambda :None
+        self.clear_statusbar = lambda :print('"clear_statusbar" is not implemented')
         self._threads = []
-        # self.publisher = Publisher()
-        # self.publisher.start()
+        self.publisher = Publisher()
+        self.publisher.start()
 
         self._connections = []
-        # self.subscriber_events = []
+        self.subscriber_events = []
         if filename:
             self.load_configuration(filename)
         self.initialize_camera()
@@ -100,49 +100,49 @@ class BaseExperiment:
         self.max_width, self.max_height = self.camera.get_max_size()
         self.logger.info('Camera sensor size: {}px X {}px'.format(self.max_width, self.max_height))
 
-    # def stop_publisher(self):
-    #     """ Puts the proper data to the queue in order to stop the running publisher process
-    #     """
-    #     self.logger.info('Stopping the publisher')
-    #     self.publisher.stop()
-    #     self.stop_subscribers()
+    def stop_publisher(self):
+        """ Puts the proper data to the queue in order to stop the running publisher process
+        """
+        self.logger.info('Stopping the publisher')
+        self.publisher.stop()
+        self.stop_subscribers()
 
-    # def stop_subscribers(self):
-    #     """ Puts the proper data into every alive subscriber in order to stop it.
-    #     """
-    #     self.logger.info('Stopping the subscribers')
-    #     for event in self.subscriber_events:
-    #         event.set()
-    #
-    #     for connection in self._connections:
-    #         if connection['process'].is_alive():
-    #             self.logger.info('Stopping {}'.format(connection['method']))
-    #             connection['event'].set()
+    def stop_subscribers(self):
+        """ Puts the proper data into every alive subscriber in order to stop it.
+        """
+        self.logger.info('Stopping the subscribers')
+        for event in self.subscriber_events:
+            event.set()
 
-    # def connect(self, method, topic, *args, **kwargs):
-    #     """ Async method that connects the running publisher to the given method on a specific topic.
-    #
-    #     :param method: method that will be connected on a given topic
-    #     :param str topic: the topic that will be used by the subscriber to discriminate what information to collect.
-    #     :param args: extra arguments will be passed to the subscriber, which in turn will pass them to the function
-    #     :param kwargs: extra keyword arguments will be passed to the subscriber, which in turn will pass them to the function
-    #     """
-    #     event = Event()
-    #     self.logger.debug('Arguments: {}'.format(args))
-    #     arguments = [method, topic, event]
-    #     for arg in args:
-    #         arguments.append(arg)
-    #
-    #     self.logger.info('Connecting {} on topic {}'.format(method.__name__, topic))
-    #     self.logger.debug('Arguments: {}'.format(args))
-    #     self.logger.debug('KWarguments: {}'.format(kwargs))
-    #     self._connections.append({
-    #         'method':method.__name__,
-    #         'topic': topic,
-    #         'process': Process(target=subscriber, args=arguments, kwargs=kwargs),
-    #         'event': event,
-    #     })
-    #     self._connections[-1]['process'].start()
+        for connection in self._connections:
+            if connection['process'].is_alive():
+                self.logger.info('Stopping {}'.format(connection['method']))
+                connection['event'].set()
+
+    def connect(self, method, topic, *args, **kwargs):
+        """ Async method that connects the running publisher to the given method on a specific topic.
+
+        :param method: method that will be connected on a given topic
+        :param str topic: the topic that will be used by the subscriber to discriminate what information to collect.
+        :param args: extra arguments will be passed to the subscriber, which in turn will pass them to the function
+        :param kwargs: extra keyword arguments will be passed to the subscriber, which in turn will pass them to the function
+        """
+        event = Event()
+        self.logger.debug('Arguments: {}'.format(args))
+        arguments = [method, topic, event]
+        for arg in args:
+            arguments.append(arg)
+
+        self.logger.info('Connecting {} on topic {}'.format(method.__name__, topic))
+        self.logger.debug('Arguments: {}'.format(args))
+        self.logger.debug('KWarguments: {}'.format(kwargs))
+        self._connections.append({
+            'method':method.__name__,
+            'topic': topic,
+            'process': Process(target=subscriber, args=arguments, kwargs=kwargs),
+            'event': event,
+        })
+        self._connections[-1]['process'].start()
 
     def load_configuration(self, filename):
         """ Loads the configuration file in YAML format.
@@ -200,7 +200,7 @@ class BaseExperiment:
     def finalize(self):
         """ Needs to be overridden by child classes.
         """
-        # self.publisher.stop()
+        self.publisher.stop()
 
     def update_config(self, **kwargs):
         self.logger.info('Updating config')
@@ -216,8 +216,8 @@ class BaseExperiment:
         self.finalize()
 
         self.logger.debug('Number of open connections: {}'.format(len(self.connections)))
-        # for event in self.subscriber_events:
-        #     event.set()
+        for event in self.subscriber_events:
+            event.set()
 
         for conn in self.connections:
             self.logger.debug('Waiting for {} to finish'.format(conn['method']))
@@ -225,7 +225,7 @@ class BaseExperiment:
 
         self.logger.info('Finished the base experiment')
 
-        # self.publisher.stop()
+        self.publisher.stop()
 
 
 class DataPipeline:
@@ -241,10 +241,6 @@ class DataPipeline:
         self.save_img = False
         self.clear_process_img_func_list()
         self.save_img_func = None
-        self.collect_N_frames_in_snap_list = 0
-        self.snap_list = []
-        self.bg_used_list = []
-        self.frame_count = 0
 
     def set_save_img_func(self, func):
         self.save_img_func = func
@@ -291,18 +287,9 @@ class DataPipeline:
         if self.parent.bg_correction:
             data -= self.parent.bg_image
 
-
-        self.frame_count += 1
-
         self.parent.temp_image = data
-        if self.collect_N_frames_in_snap_list:
-            self.snap_list.append(data)
-            self.collect_N_frames_in_snap_list -= 1
-            return
-        elif self.save_img:
+        if self.save_img:
             self.save_img_func(data)
-
-
 
         # temp_data = data.copy()
         # for func in self.process_img_funcs:
@@ -316,12 +303,9 @@ class DataPipeline:
             else:
                 funcs(data)
 
-def _add_meta_dict(set_or_group, meta={}):
-    for key, value in meta.items():
-        set_or_group.attrs[key] = value
 
 class SaveTracksToHDF5:
-    def __init__(self, aqcuisition_grp, meta_data={}):
+    def __init__(self, aqcuisition_grp):
         self.batching = 1024
         self.write_index = 0
         self.frame = 0
@@ -329,7 +313,7 @@ class SaveTracksToHDF5:
         self.grp = aqcuisition_grp.create_group("Tracks")
         #self.grp.attrs["diameter"] = self.diameter
         self.grp.attrs["creation"]  = str(datetime.utcnow())
-        _add_meta_dict(self.grp, meta_data)
+
 
         #self.locations_dataset = aqcuisition_grp.create_dataset("locations", shape=(8,self.batching), dtype=np.float32, maxshape=(8,None), chunks=(8, self.batching), compression='gzip')
         self.x_dataset = self.grp.create_dataset("x", shape=(self.batching,), dtype=np.float32, maxshape=(None,), chunks=(self.batching,))
@@ -366,7 +350,7 @@ class SaveTracksToHDF5:
 
 
 class SaveImageToHDF5:
-    def __init__(self, aqcuisition_grp, device, stride=1, meta_data={}):
+    def __init__(self, aqcuisition_grp, device, stride = 1):
         #self.dataset_writer = dataset_writer
         self.stride = stride-1
         self.counter = 0
@@ -376,28 +360,23 @@ class SaveImageToHDF5:
         # self.bg_bool_writer = aqcuisition_grp.create_dataset("Background_corrected", (0,), dtype=bool,
         #                                                      maxshape=(None,), compression='gzip')
         self.dataset_writer.attrs["stride"] = stride
-        self.dataset_writer.attrs["creation"] = str(datetime.utcnow())
-        _add_meta_dict(self.dataset_writer, meta_data)
+        self.dataset_writer.attrs["creation"]  = str(datetime.utcnow())
         self.grp = aqcuisition_grp
         self._snaps_acquired = 0
 
-
     def add_finished_timestamp_images(self):
         finish = str(datetime.utcnow())
-        self.dataset_writer.attrs["finished"] = finish
+        self.dataset_writer.attrs["finished"]  = finish
 
-    def save_single_snap(self, snap_image, base_name='Snap_', meta_data={}):
+    def save_single_snap(self, snap_image, base_name='Snap_'):
         if not snap_image.dtype == np.int16:
             snap_image = snap_image.astype(np.int16)
         size = snap_image.shape
         self._snaps_acquired += 1
-        snap_dataset = self.grp.create_dataset("{}{}".format(base_name, self._snaps_acquired), shape=size, dtype=np.int16,
+        self.dataset_writer = self.grp.create_dataset("{}{}".format(base_name, self._snaps_acquired), shape=size, dtype=np.int16,
                                                              # maxshape=size, chunks=size,
                                                       compression='gzip')
-        snap_dataset[:, :] = snap_image
-        snap_dataset.attrs["creation"] = str(datetime.utcnow())
-        _add_meta_dict(snap_dataset, meta_data)
-        return self._snaps_acquired
+        self.dataset_writer[:, :] = snap_image
 
     def __call__(self, image):
         if self.counter == 0:
@@ -432,7 +411,7 @@ class SaveDaqToHDF5:
         return data
 
 class SaveTriggerToHDF5:
-    def __init__(self, aqcuisition_grp, device, edge=1, meta_data_trigger={}, meta_data_daq={}):
+    def __init__(self, aqcuisition_grp, device, edge=1):
         #self.dataset_writer = dataset_writer
         self.counter = 0
         self.device_size = device.get_size()
@@ -446,8 +425,6 @@ class SaveTriggerToHDF5:
         self.dataset_writer_trigger.attrs["creation"]  = t0
         self.dataset_writer_daq.attrs["frequency"]  = device._sample_freq
         self.dataset_writer_trigger.attrs["frequency"]  = device._sample_freq
-        _add_meta_dict(self.dataset_writer_trigger, meta_data_trigger)
-        _add_meta_dict(self.dataset_writer_daq, meta_data_daq)
         self.edge = edge
         self.daq_frame_count = 0
         self.previous_level = None
@@ -485,7 +462,7 @@ class SaveTriggerToHDF5:
         return data[0]
 
 class FileWrangler:
-    def __init__(self, filename, ext='.hdf5', meta_data={}) -> None:
+    def __init__(self, filename, ext='.hdf5') -> None:
         if not filename.endswith(ext):
             filename += ext
         while os.path.exists(filename):
@@ -499,16 +476,14 @@ class FileWrangler:
         self.filename = filename
         self.file = h5py.File(filename,'w',  libver='latest')
         self.file.attrs["creation"] = str(datetime.utcnow())
-        _add_meta_dict(self.file, meta_data)
         self.is_closed = False
 
-    def start_new_aquisition(self, meta_data={}):
+    def start_new_aquisition(self):
         #print("starting aq of {}".format(device))
         device_grp = self.file.require_group('data')
         aquisition_nr = len(device_grp.keys())
         grp = device_grp.create_group("Acquisition_{}".format(aquisition_nr))
         self._current_group = grp
-        _add_meta_dict(self._current_group, meta_data)
         return grp
 
     def close(self):

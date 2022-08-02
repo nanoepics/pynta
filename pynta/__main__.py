@@ -6,6 +6,10 @@ from PyQt5.QtWidgets import QApplication
 #from pynta.model.experiment.nanospring_tracking.ns_tracking import NSTracking as Experiment
 from pynta.model.experiment.testing.experiment import Experiment
 
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger('PyQt5').setLevel(logging.INFO)  # to prevent PyQt5 from flooding the console, set that logger to INFO
+
+
 from pynta.util.log import get_logger
 #from pynta.view.main import MainWindow
 from importlib import import_module

@@ -17,7 +17,7 @@ use std::thread::JoinHandle;
 #[pyclass(name="DcamCamera")]
 pub struct DcamCamera {
     //the handle is wrapped in an Arc (Atomic reference counter) as we want to clone it to another thread for the frame processor
-    //normal borrowing rules via references don't play nicely with python interop and the handle itself is neither clone not copy as it needs to call dcamdev_close 
+    //normal borrowing rules via references don't play nicely with python interop and the handle itself is neither clone not copy as it needs to call dcamdev_close
     dev : Arc<dcam4::Camera>,
     buffers: Vec<Py<PyArray2<u16>>>,
     processor_handle : Option<JoinHandle<()>>,
@@ -39,7 +39,7 @@ pub struct FrameProcessor{
 
 impl FrameProcessor{
     //NOTE: if the buffer filler is too fast we get a race condition here. that also happens with real cameras unfortunately like the hamamatsu
-    // the solution is to either use a camera whose API supports read-write locking frames like the Basler, or to copy the frame, check that it's 
+    // the solution is to either use a camera whose API supports read-write locking frames like the Basler, or to copy the frame, check that it's
 
     pub fn run(self) -> () {
         let handle : &dcam4::Camera = &self.dev;
@@ -74,7 +74,7 @@ impl FrameProcessor{
                                  self.callable.call1(py, (&self.buffers[idx],)).unwrap();
                              }
                          }
-                     } 
+                     }
                      //update the frames filled and processed count before retrying the loop
                      let new_filled = handle.frames_produced().unwrap() as usize;
                      if new_filled + 1 - frames_processed >= n_buffers {
@@ -122,11 +122,11 @@ impl PyCamera for DcamCamera{
         } else {
             self.stop_signal.store(false, Ordering::Release);
             let image_size = self.get_size()?;
-            let mut raw_buffers : Vec<&'static mut [u16]> = Python::with_gil(|py| { 
+            let mut raw_buffers : Vec<&'static mut [u16]> = Python::with_gil(|py| {
                 self.buffers = vec![PyArray2::zeros(py, [image_size[1], image_size[0]], false).to_owned(); n_buffers];
                 self.buffers.iter().map(|arr| unsafe {
                     std::mem::transmute(arr.as_ref(py).as_slice_mut().unwrap())
-                }).collect() 
+                }).collect()
             });
             to_py_err(self.get_mut_handle()?.start_streaming_into(raw_buffers.as_mut_slice()))?;
             let processor = FrameProcessor {
@@ -156,12 +156,12 @@ impl PyCamera for DcamCamera{
         } else {
             Ok(())
         }
-        
+
     }
     fn set_roi(&mut self, x : [usize;2], y : [usize;2]) -> PyResult<([usize;2], [usize;2])>{
         to_py_err(self.get_mut_handle()?.set_region_of_interest((x[0], x[1]), (y[0], y[1])))?;
         self.get_roi()
-    }    
+    }
 
     fn get_roi(&self) -> PyResult<([usize;2], [usize;2])> {
         let (x,y) =  to_py_err(self.dev.get_region_of_interest())?;
@@ -173,7 +173,7 @@ impl PyCamera for DcamCamera{
             self.get_mut_handle()?
             .set_exposure(std::time::Duration::from_secs_f64(exposure_in_seconds))
             .map(|duration|{duration.as_secs_f64()})
-        )  
+        )
     }
     fn get_exposure(&self) -> PyResult<f64> {
         to_py_err(self.dev.get_exposure().map(|duration|{duration.as_secs_f64()}))

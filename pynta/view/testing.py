@@ -3,12 +3,13 @@ Equivalent of main.py which includes NI DAQ and does not use SubscriberThread)
 
 
 """
-
+import logging
 import os
 from PyQt5 import uic
-from PyQt5.QtWidgets import QMainWindow
+from pynta.tools.QWorkerThread import WorkThread
+from PyQt5.QtWidgets import QMainWindow, QStatusBar
 from pynta.util.log import get_logger
-from time import sleep
+import time
 
 import numpy as np
 
@@ -37,14 +38,30 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.setup_mouse_click()
         self.load_measument_methods()
 
+        self.experiment.clear_statusbar = self.statusBar.clearMessage
+
+
+    # def load_measument_methods(self):
+    #     for name in self.experiment.measurement_methods:
+    #         self.measurement_combo.addItem(name)
+    #     def runmeas():
+    #         name = self.measurement_combo.currentText()
+    #         return self.experiment.measurement_methods[name]()
+    #     self.measurement_run.clicked.connect(runmeas)
+    #     self.load_measument_methods()
+
     def load_measument_methods(self):
+        """
+        Add the "measurement"-methods defined in the experiment class to the dropdown box and link the Run-button to call those methods
+        """
         for name in self.experiment.measurement_methods:
             self.measurement_combo.addItem(name)
         def runmeas():
             name = self.measurement_combo.currentText()
-            return self.experiment.measurement_methods[name]()
+            measurement_method = self.experiment.measurement_methods[name]
+            thread = WorkThread(measurement_method)
+            thread.start()
         self.measurement_run.clicked.connect(runmeas)
-
 
     def zoom_ROI_prime(self):
         """ method called by actionZoom, which primes viewer widget to call zoom_ROI_callback on next click"""
@@ -59,7 +76,7 @@ class MainWindow(MainWindowGUI):
         # print('was running', was_running)
         # if was_running:
         #     self.stop_movie()
-        #     sleep(1)
+        #     time.sleep(1)
 
         self.experiment.set_zoom(coords)
         self.camera_viewer_widget.connect_mouse_clicked(None)
@@ -78,7 +95,7 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
 
     def add_monitor_point_callback(self, coord):
-        self.logger.info("Adding coordinate", coord)
+        self.logger.info("Adding coordinate {}".format(coord))
         self.experiment.add_monitor_coordinate(coord)
         self.camera_viewer_widget.connect_mouse_clicked(None)
         # print(self.experiment.config['monitor_coordinates'])
@@ -87,16 +104,26 @@ class MainWindow(MainWindowGUI):
         self.experiment.clear_monitor_coordinates()
 
     def initialize_camera(self):
-        print("initialize camera called")
+        self.logger.debug("initialize camera called")
         # self.experiment.initialize_camera()
 
     def snap(self):
         self.experiment.snap()
 
     def update_gui(self):
+        # if self.experiment.temp_image is not None:
+        #     if self.experiment.bg_correction:
+        #         self.camera_viewer_widget.update_image(self.experiment.temp_image.astype(np.int16) - self.experiment.bg_image)
+        #     else:
+        #         self.camera_viewer_widget.update_image(self.experiment.temp_image)
+        #     self.experiment.temp_image = None
+        if self.experiment._show_snap:
+            self.camera_viewer_widget.update_image(self.experiment.snap_image)
+            return
+
         if self.experiment.temp_image is not None:
             self.camera_viewer_widget.update_image(self.experiment.temp_image)
-            self.experiment.temp_image = None
+
         # if self.experiment.tracked_locations[0]:
                 # locations = self.experiment.temp_locations
         self.camera_viewer_widget.draw_target_pointer(self.experiment.tracked_locations)
@@ -113,6 +140,17 @@ class MainWindow(MainWindowGUI):
             self.experiment.stop_free_run()
             self.actionStart_Movie.setToolTip('Start Movie')
             self.actionStart_Movie.setChecked(False)
+
+    def toggle_background(self, state):
+        if state is True:
+            self.logger.info('Turning BG reduction on')
+            self.experiment.bg_image = self.experiment.snap_image
+            self.experiment.bg_correction = True
+            # if hasattr(self.experiment, 'save_image_object'):
+            #     self.experiment.save_image_object.save_single_snap(self.experiment.bg_image, 'background_')
+        else:
+            self.experiment.bg_correction = False
+            self.logger.info('Turning BG reduction off')
 
     def toggle_saving(self, state):
         if state:
@@ -188,6 +226,6 @@ class MainWindow(MainWindowGUI):
 
     def closeEvent(self, *args, **kwargs):
         self.experiment.finalize()
-        #sleep(1)
+        #time.sleep(1)
         super().closeEvent(*args, **kwargs)
 
