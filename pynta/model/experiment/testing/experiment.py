@@ -538,8 +538,8 @@ class Experiment(BaseExperiment):
 
         aqcuisition = self.hdf5.start_new_aquisition(meta_data={'config':yaml.safe_dump(self.config)})
         self.aqcuisition = aqcuisition
-        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller, meta_data_trigger={'example':'trigger meta'}, meta_data_daq={'example':'daq meta'})
-        self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
+        # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller, meta_data_trigger={'example':'trigger meta'}, meta_data_daq={'example':'daq meta'})
+        # self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
 
         self.save_image_object = SaveImageToHDF5(aqcuisition, self.camera, 10, meta_data={'example':'image meta'})  # adding meta is optional
         self._pipeline.set_save_img_func(self.save_image_object) # TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING     TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING
@@ -582,7 +582,7 @@ class Experiment(BaseExperiment):
         """ Stops saving the stream.
         """
         self.logger.info('Stop saving stream')
-        if hasattr(self.save_trigger_object, 'add_finished_timestamp'):
+        if hasattr(self, 'save_trigger_object'):
             self.save_trigger_object.add_finished_timestamp()
         self.save_tracks_object.add_finished_timestamp() #Note: trigger and DAQ finish process earlier than save_tracks by a couple of milliseconds
         self.save_image_object = None

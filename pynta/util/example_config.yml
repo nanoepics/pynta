@@ -11,7 +11,7 @@ saving:
   auto_save: False
   auto_save_waterfall: True
   #todo: use OS specific tmp dir
-  directory: C:\Temp
+  directory: C:\data\itir\pynta
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_tracks: Tracks
@@ -40,8 +40,8 @@ camera:
   roi_y2: 2047
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
-  zoom_width: 300
-  zoom_height: 100
+  zoom_width: 200
+  zoom_height: 200
   save_every_Nth_frame: 10
   snap_avg_N_frames: 20
 

@@ -69,7 +69,7 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.connect_mouse_clicked(self.zoom_ROI_callback)
 
     def zoom_ROI_callback(self, coords):
-        self.logger.info("Zooming to coordinate", coords)
+        self.logger.info("Zooming to coordinate {}".format(coords))
         # IDEA: stop camera if running
         # FAILED ATTEMPT
         # was_running = self.experiment.camera.is_streaming()

@@ -436,6 +436,7 @@ class SaveTriggerToHDF5:
         #self.dataset_writer = dataset_writer
         self.counter = 0
         self.device_size = device.get_size()
+        print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%', type(self.device_size), self.device_size)
         self.dataset_writer_daq = aqcuisition_grp.create_dataset("DAQ-input", shape=(0,)+self.device_size, dtype=device.data_type, maxshape=(None,)+self.device_size, chunks=(1,)+self.device_size, compression='gzip')
         # self.dataset_writer_trigger = aqcuisition_grp.create_dataset("trigger", shape=(0,)+device.get_size(), dtype=device.data_type, maxshape=(None,)+device.get_size(), chunks=(1,)+device.get_size(), compression='gzip')
         self.dataset_writer_trigger = aqcuisition_grp.create_dataset("trigger", shape=(0,), dtype=np.int64, maxshape=(None,), compression='gzip')
