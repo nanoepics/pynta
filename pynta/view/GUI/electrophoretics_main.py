@@ -26,7 +26,8 @@ from pynta.view.GUI.config_widget import ConfigWidget
 from pynta.view.GUI.analysis_dock_widget import AnalysisDockWidget
 from pynta.view.GUI.signal_generator_widget import SignalGeneratorWidget
 from pynta.view.GUI.adc_capture_widget import AdcCaptureWidget
-
+import logging
+import time
 # from pynta.model.daqs.signal_generator.stm_signal_generator import StmSignalGenerator
 
 
@@ -37,10 +38,24 @@ class MainWindowGUI(QMainWindow):
             __file__)), 'designer', 'MainWindow.ui'), self)
         self.logger = get_logger(name=__name__)
 
+        # class LogInStatusBar(logging.Handler):
+        #     def __init__(self, statusbar, parent):
+        #         super().__init__()
+        #         self.bar = statusbar
+        #
+        #     def emit(self, record):
+        #         msg = '{:<7} {}    [{}: {}: {}] ({})'.format(record.levelname + ': ', record.msg, record.module,
+        #                                                      record.lineno, record.funcName, record.name)
+        #         duration = record.levelno * 300 if record.levelno < 40 else 0
+        #         self.bar.showMessage(msg, duration)
+
+        # root_logger = logging.getLogger()
+        # root_logger.addHandler(LogInStatusBar(self.statusBar, self))
+
         self.central_layout = QHBoxLayout(self.centralwidget)
         self.widget_splitter = QSplitter()
 
-        self.camera_viewer_widget = CameraViewerWidget()
+        self.camera_viewer_widget = CameraViewerWidget(self)
         #self.analysis_dock_widget = AnalysisDockWidget(self)
         self.daq_splitter = QSplitter(orientation = Qt.Vertical)
 
@@ -71,6 +86,8 @@ class MainWindowGUI(QMainWindow):
         self.connect_buttons()
         self.connect_signals()
         self.addMeasurementSelector()
+
+        self.statusBar.clearMessage()
 
     def addMeasurementSelector(self):
         """ Adds the GUI elements to run measurement methods """
@@ -207,7 +224,7 @@ class MainWindowGUI(QMainWindow):
         self.logger.error('Update Tracking config method not defined')
 
     def update_config(self, config):
-        print('actually update config')
+        # print('actually update config')
         self.logger.error('Update Config method not defined')
 
     def closeEvent(self, *args, **kwargs):

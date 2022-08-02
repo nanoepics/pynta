@@ -25,7 +25,9 @@ GUI:
   refresh_time: 50 # Refresh rate of the GUI (in ms)
 
 camera:
-  model: dcam # dummy # dcam # Should be a python file in model/cameras
+  # model: dummy # dcam # Should be a python file in model/cameras
+  model: dcam # dcam # Should be a python file in model/cameras
+
   init: 0 # Initial arguments to pass when creating the camera
   #extra_args: [extra, arguments] # Extra arguments that can be passed when constructing the model
   #todo: note this can be an anti-pattern if it's not updated when the camera is switched? some way to force check this?
@@ -40,9 +42,10 @@ camera:
   roi_y2: 2047
   background: '' # Full path to background file, or empty for none.
   background_method: [Method1, Method2]
-  zoom_width: 100
+  zoom_width: 300
   zoom_height: 100
   save_every_Nth_frame: 10
+  snap_avg_N_frames: 20
 
 waterfall: # Parameters for calculating the waterfall plot
   length: 20  # The total length of the waterfall (lines)
@@ -78,4 +81,7 @@ debug:
   logging_level: Debug # One of Nothing, Debug, Info, Warning, Error
   queue_memory: False
   to_screen: True
+
+analysis:
+    box_half_size: 8
 

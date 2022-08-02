@@ -46,6 +46,8 @@ import sys
 # from multiprocessing import Queue, Process
 import time
 
+from PyQt5.QtTest import QTest   # use QTest.qWait(ms) as a sleep that doesn't freeze the GUI
+
 import pynta
 from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import *
@@ -100,6 +102,10 @@ class ContinousTracker2:
     def __init__(self, to_track, rad=32) -> None:
         self.to_track = to_track
         self.rad = rad
+        self.logger = get_logger(__name__)
+        self.reduce_logging_frequency = 50
+        self._reduce_logging_frequency = self.reduce_logging_frequency
+
     def __call__(self, img):
         for i in range(0, len(self.to_track[0])):
             x = self.to_track[0][i]
@@ -108,11 +114,15 @@ class ContinousTracker2:
             xmax = int(min(x + self.rad, img.shape[1]))
             ymin = int(max(0, y - self.rad))
             ymax = int(min(y + self.rad, img.shape[0]))
-            # print("{}, {} in image of size {}".format(x,y,img.shape))
+            self._reduce_logging_frequency -= 1
+            if self._reduce_logging_frequency == 0:
+                self.logger.debug("{}, {} in image of size {}".format(x,y,img.shape))
+                self._reduce_logging_frequency = self.reduce_logging_frequency
             local = img[ymin:ymax, xmin:xmax]
+
             if local.sum() > 0:
                 (y,x) = ndimage.measurements.center_of_mass(local)
-                print("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
+                # self.logger.debug("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
                 self.to_track[1][i] -= self.rad-y-0.5
                 self.to_track[0][i] -= self.rad-x-0.5
                 self.to_track[2][i] = np.sum(local)
@@ -126,10 +136,12 @@ class Experiment(BaseExperiment):
     def __init__(self, filename=None):
         self.config = {}  # Dictionary storing the configuration of the experiment
         self.logger = get_logger(name=__name__)
+        # self.logger.setLevel(10)
         self.load_configuration(filename)
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
         self.camera.set_output_trigger()
-        self.bg_correction = False
+        self.bg_correction = 0
+        self._show_snap = False
         # ham = self.camera.as_hamamatsu()
         # ham.set_prop(....);
 
@@ -141,8 +153,7 @@ class Experiment(BaseExperiment):
         # self.max_width = None
         # self.max_height = None
         super().__init__(filename)
-        self.temp_image = None
-        self.snap_image = None
+        self.save_image_object = None
         self.tracked_locations = ([],[],[])
         self.save_path = self.config.get('saving', {}).get('directory', '')
         if not os.path.exists(self.save_path):
@@ -150,16 +161,20 @@ class Experiment(BaseExperiment):
             self.save_path = pynta.parent_path
         save_name = self.config.get('saving', {}).get('filename_tracks', 'output')
         filename = os.path.join(self.save_path, save_name)
-        self.hdf5 = FileWrangler(filename)
+        self.hdf5 = FileWrangler(filename, meta_data={'example': 'file meta'})
         self._pipeline = DataPipeline(self)
+        self.snap()
+        self.snap_number = 0
+        # self.temp_image = None
+        # self.snap_image = None
+        self.bg_image = self.snap_image
 
-        self.measurement_methods = {'acquire BG video AVG': self.bg_video,
-                                    'b': self.my_measurement,
+        self.measurement_methods = {'Example measurement method': self.my_measurement,
                                     }
 
     def my_measurement(self):
         # self.config['measurements']['a']
-        print('do awesome measurement')
+        self.logger.info('do awesome measurement')
         if not self.hdf5.is_closed:
             self.hdf5.close()
         self._pipeline = DataPipeline(self)
@@ -175,27 +190,28 @@ class Experiment(BaseExperiment):
         self.hdf5.close()
 
 
-    def bg_video(self):
-        bg_correction_state = self.bg_correction
-        self.bg_correction = False
-        if self.camera.is_streaming:
-            self.stop_free_run()
-        x, y = self.camera.get_size()
-        bytes_per_frame = x*y*2
-        bytes_to_buffer = 1024*1024*128
-        bg_array = []
-        def process_img(arr):
-            bg_array.append(arr)
-            self.temp_image = arr
-        self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), process_img)
-        t0 = time.time() ######try QtTest.QTest.qWait(msecs)
-        while time.time() < t0 + 2:
-            pass
-        self.camera.stop_stream()
-        bg_array = np.array(bg_array)
-        self.bg_image = bg_array.mean(axis=0).astype(np.uint16)
-        self.snap_image = self.bg_image
-        self.bg_correction = bg_correction_state
+    # def bg_video(self):
+    #     """This is redundant. This can now be done by Snap (and setting camera:snap_avg_N_frames in the config"""
+    #     bg_correction_state = self.bg_correction
+    #     self.bg_correction = False
+    #     if self.camera.is_streaming:
+    #         self.stop_free_run()
+    #     x, y = self.camera.get_size()
+    #     bytes_per_frame = x*y*2
+    #     bytes_to_buffer = 1024*1024*128
+    #     bg_array = []
+    #     def process_img(arr):
+    #         bg_array.append(arr)
+    #         self.temp_image = arr
+    #     self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), process_img)
+    #     t0 = time.time() ######try QtTest.QTest.qWait(msecs)
+    #     while time.time() < t0 + 2:
+    #         pass
+    #     self.camera.stop_stream()
+    #     bg_array = np.array(bg_array)
+    #     self.bg_image = bg_array.mean(axis=0).astype(np.int16)
+    #     self.snap_image = self.bg_image
+    #     self.bg_correction = bg_correction_state
 
     def update_config(self, **kwargs):
         old_camera_conf = self.config['camera'].copy()
@@ -222,7 +238,7 @@ class Experiment(BaseExperiment):
         y = min(int(y), self.max_height - self.config['camera']['zoom_height'] // 2)
         top = max(0, y - self.config['camera']['zoom_height'] // 2)
         bottom = min(self.max_height, top + self.config['camera']['zoom_height'])
-        print("Zooming ROI to", left, right, top, bottom)
+        self.logger.info("Zooming ROI to {}, {}, {}, {}".format(left, right, top, bottom))
         self.set_roi([left, right], [top, bottom])
 
     def set_roi(self, X, Y):
@@ -244,10 +260,10 @@ class Experiment(BaseExperiment):
         self.current_width, self.current_height = self.camera.get_size()
         self.logger.debug('New camera width: {}px, height: {}px'.format(self.current_width, self.current_height))
         self.temp_image = np.zeros((self.current_width, self.current_height), dtype=np.uint16)
-        self.config['camera']['roi_x1'] = X[0]
-        self.config['camera']['roi_x2'] = X[1]
-        self.config['camera']['roi_y1'] = Y[0]
-        self.config['camera']['roi_y2'] = Y[1]
+        self.config['camera']['roi_x1'] = int(X[0])
+        self.config['camera']['roi_x2'] = int(X[1])
+        self.config['camera']['roi_y1'] = int(Y[0])
+        self.config['camera']['roi_y2'] = int(Y[1])
         if was_running:
             self.start_free_run()
 
@@ -262,17 +278,157 @@ class Experiment(BaseExperiment):
 
         # @make_async_thread
 
+    def BG_from_snap(self, state=True):
+        # UNDER CONSTRUCTION
+        """
+        Sets the current snap as bg_array and enables bg reduction.
+        To disable bg reduction, pass state=False argument.
+
+        It will save the BG file as a separate array in the file: backgound_##. With the same number as the Snap.
+
+
+        """
+        pass
 
     def snap(self):
-        """ Snap a single frame.
         """
-        if not self.camera.is_streaming():
+        New implementation of snap.
+        It uses the continuous acquisition mode to avoid some buffer error in the rust code (when snap is called after a callback function has been "attached")
+        It actually averages over several images. The amount is set in the config   camera: snap_avg_N_frames
+        # When the camera is not acquiring yet, it runs it briefly.
+        # If the camera is already acquiring, it replaces the save_img function of the pipeline briefly with one that stores the images.
+        If the camera is already acquiring, it won't run
+        """
+        if self.camera.is_streaming():
+            self.logger.warning('Stop live view before starting "snap acquisition"')
+            return
+        N = self.config['camera']['snap_avg_N_frames']
+        if N <= 1:
+            self.logger.info('Snap')
             img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
             self.camera.snap_into(img)
-            self.temp_image = img
-            self.snap_image = img
-            if hasattr(self, 'save_image_object'):
-                self.save_image_object.save_single_snap(img)
+            self.snap_image = img.astype(np.int16)
+            self.temp_image = self.snap_image
+        else:
+            self.logger.info('Averaging {} frames for Snap'.format(N))
+            self._pipeline.snap_list = []
+            self._pipeline.collect_N_frames_in_snap_list = N
+            self.start_free_run()
+            while self._pipeline.collect_N_frames_in_snap_list:
+                QTest.qWait(1)
+            self.stop_free_run()
+            self.snap_image = np.median(np.array(self._pipeline.snap_list[:N]), axis=0).astype(np.int16)
+            self.temp_image = self.snap_image
+            self.clear_statusbar()
+        meta = {'exposure_time': self.config['camera']['exposure_time'],
+                'averaged_over_N_frames': N}
+        if self.save_image_object is not None:
+            self.snap_number = self.save_image_object.save_single_snap(self.snap_image, meta_data=meta)
+            self.logger.debug('restored ')
+
+        # prev_img_save_callback = self._pipeline.save_img_func
+        # prev_img_save_state = self._pipeline.save_img
+        # # was_streaming = self.camera.is_streaming()
+        # # if was_streaming:
+        # #     self.stop_free_run()
+        # class callback:
+        #     def __init__(self):
+        #         self.snap_list = []
+        #         self.snap_count = 0
+        #     def __call__(self, frame):
+        #         self.snap_list.append(frame)
+        #         self.snap_count += 1
+        # #
+        # # def callback(frame):
+        # #     nonlocal snap_list, snap_count
+        # #     snap_list.append(frame)
+        # #     snap_count += 1
+        # func = callback()
+        # self._pipeline.set_save_img_func(func)
+        # self.start_free_run()
+        # while func.snap_count < N:
+        #     QTest.qWait(1)
+        # self.stop_free_run()
+        # self._pipeline.unset_save_img_func()
+        # # self.snap_image = np.round(np.mean(np.array(snap_list[:N]), axis=0)).astype(np.int16)
+        # self.snap_image = np.median(np.array(func.snap_list[:N]), axis=0).astype(np.int16)
+        # self.temp_image = self.snap_image
+        # self._show_snap = True
+        # if self.save_image_object is not None:
+        #     self.save_image_object.save_single_snap(self.snap_image)
+        #     self.logger.debug('restored ')
+        # if prev_img_save_callback:
+        #     self._pipeline.set_save_img_func(prev_img_save_callback)
+        # self._pipeline.save_img = prev_img_save_state
+
+        # if was_streaming:
+        #     self.start_free_run()
+        # show_avg_snap_ms = self.config['camera']['show_avg_snap_ms']
+        # if was_streaming and show_avg_snap_ms > 0:
+        #     QTest.qWait(show_avg_snap_ms)
+        self._show_snap = False
+        self.clear_statusbar()
+
+
+    # def snap(self):
+    #     """ Snap frames and average. Number of frames is defined in config.
+    #     """
+    #     # if not self.camera.is_streaming():
+    #     #     img = np.zeros(self.camera.get_size(), dtype=np.uint16, order='C')
+    #     #     self.camera.snap_into(img)
+    #     #     self.snap_image = img.astype(np.int16)
+    #     #     self.temp_image = self.snap_image
+    #     #     if self.save_image_object is not None:
+    #     #         self.save_image_object.save_single_snap(self.snap_image)
+    #     N = self.config['camera']['snap_avg_N_frames']
+    #     snap_list = []
+    #     snap_count = 0
+    #     if self.camera.is_streaming():  # while already acquiring
+    #         while snap_count < N:
+    #             self.snap_image = None
+    #             while self.snap_image is None:  # wait until snap_imge
+    #                 self.snap_image = self.temp_image
+    #             snap_list.append(self.snap_image)
+    #             snap_count += 1
+    #     else:  # when not yet acquiring
+    #         def callback(frame):
+    #             nonlocal snap_list, snap_count
+    #             # self.temp_image = frame
+    #             # print('self.temp_image is updated', snap_count)
+    #             snap_list.append(frame)
+    #             snap_count += 1
+    #         prev_img_save_callback = self._pipeline.save_img_func
+    #         prev_img_save_state = self._pipeline.save_img
+    #         self._pipeline.set_save_img_func(callback)
+    #         self.start_free_run()
+    #         while snap_count < N:
+    #             QTest.qWait(2)
+    #         self.stop_free_run()
+    #         self._pipeline.unset_save_img_func()
+    #         if prev_img_save_state:
+    #             self._pipeline.set_save_img_func(prev_img_save_callback)
+    #
+    #         # x, y = self.camera.get_size()
+    #         # bytes_per_frame = x*y*2
+    #         # bytes_to_buffer = 1024*1024*128
+    #         #
+    #         # def callback(frame):
+    #         #     nonlocal snap_list, snap_count
+    #         #     self.temp_image = frame
+    #         #     # print('self.temp_image is updated', snap_count)
+    #         #     snap_list.append(frame)
+    #         #     snap_count += 1
+    #         #     # QTest.qWait(10)
+    #         # self.camera.start_stream(int(bytes_to_buffer/bytes_per_frame), callback)
+    #         # while snap_count < N:
+    #         #     pass
+    #         # self.camera.stop_stream()
+    #     tmp = np.array(snap_list[:N])
+    #     self.snap_image = np.round(np.mean(np.array(snap_list), axis=0)).astype(np.int16)
+    #     t0 = time.time()
+    #     while time.time() < t0 + 0.5:
+    #         self.temp_image = self.snap_image
+
 
     def save_image(self):
         """ Saves the last acquired image. The file to which it is going to be saved is defined in the config.
@@ -289,7 +445,7 @@ class Experiment(BaseExperiment):
             device_grp = self.hdf5_snaps.file.require_group('data')
             aquisition_nr = len(device_grp.keys())
 
-            device_grp.create_dataset('image_{}'.format(aquisition_nr+1), data=self.snap_image)
+            device_grp.create_dataset('image_{}'.format(aquisition_nr+1), data=self.snap_image, meta_data={'example': 'snap meta'})
             # device_grp.create_dataset('metadata', data=yaml.dump(self.config))
             # device_grp.flush()
             self.hdf5_snaps.file.flush()
@@ -351,7 +507,7 @@ class Experiment(BaseExperiment):
         self.camera.stop_stream()
         self.daq_controller.set_trigger_processing_function(None)
         self.daq_controller.set_processing_function(None)
-        print("stream stopped in python!")
+        self.logger.debug("stream stopped in python!")
 
     def add_monitor_coordinate(self, coord):
         self.tracked_locations[0].append(coord[0])
@@ -372,17 +528,22 @@ class Experiment(BaseExperiment):
         # self._pipeline.set_save_img_func(
         #     lambda img: SaveImageToHDF5(aqcuisition, img, self.config['camera']['save_every_Nth_frame']))
 
-        print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-        aqcuisition = self.hdf5.start_new_aquisition()
+        # print('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+
+        # Example of dumping the entire config as meta_data using yaml.
+        # Note that after reading the hdf5 file (as f, this can be retrieved with:
+        # d = yaml.safe_load(f['data']['Acquisition_0'].attrs['config'])
+
+        aqcuisition = self.hdf5.start_new_aquisition(meta_data={'config':yaml.safe_dump(self.config)})
         self.aqcuisition = aqcuisition
-        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
+        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller, meta_data_trigger={'example':'trigger meta'}, meta_data_daq={'example':'daq meta'})
         self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
 
-        self.save_image_object = SaveImageToHDF5(aqcuisition, self.camera, 10)
-        self._pipeline.set_save_img_func(self.save_image_object)
+        self.save_image_object = SaveImageToHDF5(aqcuisition, self.camera, 10, meta_data={'example':'image meta'})  # adding meta is optional
+        self._pipeline.set_save_img_func(self.save_image_object) # TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING     TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING
 
-        self.save_tracks_object = SaveTracksToHDF5(aqcuisition)
-        self._pipeline.add_process_img_func([ContinousTracker2(self.tracked_locations), self.save_tracks_object], 'track')
+        self.save_tracks_object = SaveTracksToHDF5(aqcuisition, meta_data={'example': 'track meta'})
+        self._pipeline.add_process_img_func([ContinousTracker2(self.tracked_locations, self.config['analysis']['box_half_size']), self.save_tracks_object], 'track')
         # self._pipeline.add_process_img_func(SaveTracksToHDF5(aqcuisition), 'save_track')
 
         # self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller)
@@ -419,8 +580,12 @@ class Experiment(BaseExperiment):
         """ Stops saving the stream.
         """
         self.logger.info('Stop saving stream')
-        self.save_trigger_object.add_finished_timestamp()########################################################################################
+        if hasattr(self.save_trigger_object, 'add_finished_timestamp'):
+            self.save_trigger_object.add_finished_timestamp()
         self.save_tracks_object.add_finished_timestamp() #Note: trigger and DAQ finish process earlier than save_tracks by a couple of milliseconds
+        self.save_image_object = None
+        self.save_tracks_object = None
+
         self.daq_controller.set_trigger_processing_function(None)
         self._pipeline.unset_save_img_func()
         self._pipeline.clear_process_img_func_list()

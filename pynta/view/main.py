@@ -29,7 +29,7 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.connect_mouse_clicked(self.add_monitor_point_callback)
 
     def add_monitor_point_callback(self, coord):
-        print("Adding coordinate", coord)
+        self.logger.info("Adding coordinate", coord)
         self.experiment.add_monitor_coordinate(coord)
         self.camera_viewer_widget.connect_mouse_clicked(None)
         print(self.experiment.config['monitor_coordinates'])
