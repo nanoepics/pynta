@@ -245,6 +245,15 @@ class DataPipeline:
         self.snap_list = []
         self.bg_used_list = []
         self.frame_count = 0
+        self.unset_pre_process_func()
+
+    def set_pre_process_func(self, func):
+        """ Set a function that is called on a frame before anything else.
+        This function is required to return something of the same shape as the original frame"""
+        self.pre_process_func = func
+
+    def unset_pre_process_func(self):
+        self.pre_process_func = lambda inp: inp
 
     def set_save_img_func(self, func):
         self.save_img_func = func
@@ -285,11 +294,15 @@ class DataPipeline:
         except:
             pass
 
+    # EVERYTIME A FRAME IS PRODUCED BY THE CAMERA, THIS METHOD/FUNCTION IS CALLED:
     def __call__(self, data):
         data = data.astype(np.int16)
+
+        data = self.pre_process_func(data)
+
         # print(self.parent.bg_correction, self.save_img, len(self.process_img_funcs))
-        if self.parent.bg_correction:
-            data -= self.parent.bg_image
+        # if self.parent.bg_correction:
+        #     data -= self.parent.bg_image
 
 
         self.frame_count += 1

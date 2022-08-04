@@ -142,15 +142,8 @@ class MainWindow(MainWindowGUI):
             self.actionStart_Movie.setChecked(False)
 
     def toggle_background(self, state):
-        if state is True:
-            self.logger.info('Turning BG reduction on')
-            self.experiment.bg_image = self.experiment.snap_image
-            self.experiment.bg_correction = True
-            # if hasattr(self.experiment, 'save_image_object'):
-            #     self.experiment.save_image_object.save_single_snap(self.experiment.bg_image, 'background_')
-        else:
-            self.experiment.bg_correction = False
-            self.logger.info('Turning BG reduction off')
+        self.logger.info('Turning BG reduction ' + ['off', 'on'][state])
+        self.experiment.toggle_background(state)
 
     def toggle_saving(self, state):
         if state:

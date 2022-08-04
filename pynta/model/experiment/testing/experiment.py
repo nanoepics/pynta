@@ -131,6 +131,31 @@ class ContinousTracker2:
         return self.to_track
 
 
+class PreProcessFrame:
+    """
+    A class that takes in frames, keeps them in a buffer to calculate the variance and sprit this out.
+    Intended to be used in the Pipeline object as a pre_process_function
+    """
+    def __init__(self, start_frame, Nframes=10):
+        """
+        When creating the PreProcessFrame object it requires a example frame, and the number of frames to store in the buffer
+        :param start_frame:
+        :param Nframes:
+        """
+        self.N = Nframes
+        self.buffer = np.repeat(start_frame[:, :, np.newaxis], Nframes, axis=2)
+        self.i = -1
+
+    def __call__(self, new_frame):
+        """
+        Takes a new frame as input, adds it to the buffer and returns the variance of the buffer
+        :param new_frame:
+        :return:
+        """
+        self.i = (self.i + 1) % self.N
+        self.buffer[:, :, self.i] = new_frame
+        return np.var(self.buffer, axis=2)
+
 class Experiment(BaseExperiment):
     BACKGROUND_NO_CORRECTION = 0  # No background correction
     BACKGROUND_SINGLE_SNAP = 1
@@ -143,6 +168,7 @@ class Experiment(BaseExperiment):
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
         self.camera.set_output_trigger()
         self.bg_correction = 0
+        self._variance = False
         self._show_snap = False
         # ham = self.camera.as_hamamatsu()
         # ham.set_prop(....);
@@ -172,6 +198,7 @@ class Experiment(BaseExperiment):
         self.bg_image = self.snap_image
 
         self.measurement_methods = {'Example measurement method': self.my_measurement,
+                                    'Bakis': self.say_hello,
                                     }
 
     def my_measurement(self):
@@ -190,6 +217,10 @@ class Experiment(BaseExperiment):
         self.stop_save_stream()
         self.stop_free_run()
         self.hdf5.close()
+
+    def say_hello(self):
+        print('hello Bakis')
+
 
 
     # def bg_video(self):
@@ -214,6 +245,28 @@ class Experiment(BaseExperiment):
     #     self.bg_image = bg_array.mean(axis=0).astype(np.int16)
     #     self.snap_image = self.bg_image
     #     self.bg_correction = bg_correction_state
+
+    def toggle_background(self, state=None):
+        """Turns BG subtraction on and off"""
+        if state is None:
+            state = not self.bg_correction
+        if state:
+            self.bg_image = self.snap_image
+            self._pipeline.set_pre_process_func(lambda arr: arr-self.bg_image)
+        else:
+            self._pipeline.unset_pre_process_func()
+        self.bg_correction = state
+
+    # There's no button for this yet. REMARK: think about how to deal with Bg flag and variance flag !!!!
+    def toggle_variance(self, state=None):
+        """Turns variance-mode on and off"""
+        if state is None:
+            state = not self._variance
+        if state:
+            self._pipeline.set_pre_process_func(PreProcessFrame(self.temp_image))
+        else:
+            self._pipeline.unset_pre_process_func()
+        self._variance = state
 
     def update_config(self, **kwargs):
         old_camera_conf = self.config['camera'].copy()
