@@ -103,8 +103,8 @@ class ContinousTracker2:
         self.to_track = to_track
         self.rad = rad
         self.logger = get_logger(__name__)
-        self.reduce_logging_frequency = 50
-        self._reduce_logging_frequency = self.reduce_logging_frequency
+        # self.reduce_logging_frequency = 50
+        # self._reduce_logging_frequency = self.reduce_logging_frequency
 
     def __call__(self, img):
         for i in range(0, len(self.to_track[0])):
@@ -114,15 +114,15 @@ class ContinousTracker2:
             xmax = int(min(x + self.rad, img.shape[1]))
             ymin = int(max(0, y - self.rad))
             ymax = int(min(y + self.rad, img.shape[0]))
-            self._reduce_logging_frequency -= 1
-            if self._reduce_logging_frequency == 0:
-                self.logger.debug("{}, {} in image of size {}".format(x,y,img.shape))
-                self._reduce_logging_frequency = self.reduce_logging_frequency
+            # self._reduce_logging_frequency -= 1
+            # if self._reduce_logging_frequency == 0:
+            #     self.logger.debug("{}, {} in image of size {}".format(x,y,img.shape))
+            #     self._reduce_logging_frequency = self.reduce_logging_frequency
             local = img[ymin:ymax, xmin:xmax]
 
             if local.sum() > 0:
                 (y,x) = ndimage.measurements.center_of_mass(local)
-                # self.logger.debug("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
+                self.logger.debug("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
                 self.to_track[1][i] -= self.rad-y-0.5
                 self.to_track[0][i] -= self.rad-x-0.5
                 self.to_track[2][i] = np.sum(local)
