@@ -1,3 +1,4 @@
+user/*
 .project
 .pydevproject
 .pyc
@@ -20,7 +21,6 @@ _build/
 pyo3-test
 *.hdf5
 fpsdata.txt
-.vscode/settings.json
 .vscode/settings.json
 rust_modules/*/target
 *.pyd

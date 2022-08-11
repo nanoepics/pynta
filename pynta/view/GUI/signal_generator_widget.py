@@ -23,7 +23,7 @@ class SignalGeneratorWidget(QWidget):
         self.logger = get_logger(name=__name__)
         self.model = None
         self.connectSignals()
-    
+
     def set_model(self, model : BaseSignalGenerator):
         self.model = model
         (min_f, max_f) = model.supported_frequencies().get_range()
@@ -44,8 +44,8 @@ class SignalGeneratorWidget(QWidget):
     def connectSignals(self):
         self.WaveformSelector.currentTextChanged.connect(self.set_waveform)
         self.UpdateButton.clicked.connect(self.flush_settings)
-    
-    
+
+
     def set_waveform(self):
          self.DutyCycleSpinbox.setEnabled(self.WaveformSelector.currentData() == Waveform.Square)
 

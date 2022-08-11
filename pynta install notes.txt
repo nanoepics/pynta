@@ -1,0 +1,64 @@
+
+When creating a virtual environment it's important to realize that not all pyton versions will work.
+One version that does work is 3.6.8
+
+
+
+_______________________________________________
+Extra install requirements for the rust modules
+
+You could try to start with step 2. If it warns about C++ Build Tools, abort and do step 1 first.
+
+1)
+Install Microsoft Visual C++ Build Tools 2019
+https://visualstudio.microsoft.com/visual-cpp-build-tools/
+(When prompted with many checkboxes, I think the C++ bit is enough) (i.e. first choice top left)
+
+Make sure that the following optional tools are selected (on the right):
+- MSVC
+- Windows 10 SDK
+- C++ CMake tools
+Other optional options may be deselected
+
+Reboot required
+
+2)
+Install rust compiler
+https://www.rust-lang.org/tools/install
+
+(Note: you may need to restart your "shell/terminal" )
+
+3)
+Install rust_setuptools in the virtual environment:
+pip install rust_setuptools
+
+4)	newly added::::::::::::::
+
+https://rust-lang.github.io/rust-bindgen/requirements.html
+Points to this page:
+https://releases.llvm.org/download.html
+Which points to github for pre-built binaries:
+https://github.com/llvm/llvm-project/releases/tag/llvmorg-13.0.0
+LLVM-13.0.0-win64.exe
+
+While installing, I selected "Add LLVM to the system PATH for current user"
+
+5)
+# Install rust_modules/pynta_drive_glue/pynta_drivers:
+# navigate to rust_modules\pynta_drive_glue\
+python setup.py install
+
+
+
+
+6) dcam stuff
+
+
+When #![feature] error occurs during compiling rust code, switch to nightly:
+rustup default nightly
+
+___________________________________
+
+(to update: rustup update)
+(to use stable: rustup default stable)
+

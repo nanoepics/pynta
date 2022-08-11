@@ -70,7 +70,11 @@ from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqControlle
 
 # import trackpy as tp
 from scipy import ndimage
-from pynta_drivers import Camera as NativeCamera;
+
+try:
+    from pynta_drivers import Camera as NativeCamera;
+except:
+    raise Exception("\n\nYou need to install pynta drivers rust code. \nSee the textfile 'pynta install notes.txt' in the root of the repository for instructions.")
 
 
 # class ContinousTracker:
