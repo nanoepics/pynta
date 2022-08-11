@@ -13,6 +13,6 @@
     :copyright:  Aquiles Carattino <aquiles@uetke.com>
     :license: GPLv3, see LICENSE for more details
 """
-from pynta.model.experiment.config import Config
-
-config = Config()
+# from pynta.model.experiment.config import Config
+#
+# config = Config()

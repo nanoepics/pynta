@@ -26,14 +26,14 @@ class GraphMonitorWidget(QWidget):
         self.release_pen(-1)  # initializes
         self._data = {}
 
-        # For testing purposes:
+        # For example purposes:
         self.k = 1
         self.c = 50
         self.test_timer = pg.QtCore.QTimer()
         self.test_timer.timeout.connect(self.fake_plot)
         # self.test_timer.start(100)
 
-    # For testing purposes:
+    # For example purposes:
     def fake_plot(self):
         self.c -= 1
         if self.c<=0:

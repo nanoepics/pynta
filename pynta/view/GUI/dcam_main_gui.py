@@ -4,12 +4,12 @@ Equivalent of view GUI main_window.py modified
 
 import os
 
-from pyqtgraph.dockarea.DockArea import DockArea
+# from pyqtgraph.dockarea.DockArea import DockArea
 
-from pynta.model.daqs.signal_generator.dummy_signal_generator import DummySignalGenerator
+# from pynta.model.daqs.signal_generator.dummy_signal_generator import DummySignalGenerator
 
 
-from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216
+# from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216
 
 from PyQt5 import uic
 from PyQt5.QtCore import QTimer, Qt
@@ -21,9 +21,9 @@ import numpy as np
 from pynta.view.GUI import resources
 from pynta.util.log import get_logger
 from pynta.view.GUI.camera_viewer_widget import CameraViewerWidget
-from pynta.view.GUI.config_tracking_widget import ConfigTrackingWidget
+# from pynta.view.GUI.config_tracking_widget import ConfigTrackingWidget
 from pynta.view.GUI.config_widget import ConfigWidget
-from pynta.view.GUI.analysis_dock_widget import AnalysisDockWidget
+# from pynta.view.GUI.analysis_dock_widget import AnalysisDockWidget
 from pynta.view.GUI.signal_generator_widget import SignalGeneratorWidget
 from pynta.view.GUI.adc_capture_widget import AdcCaptureWidget
 import logging
@@ -74,7 +74,7 @@ class MainWindowGUI(QMainWindow):
         self.central_layout.addWidget(self.widget_splitter)
 
         self.config_widget = ConfigWidget()
-        self.config_tracking_widget = ConfigTrackingWidget()
+        # self.config_tracking_widget = ConfigTrackingWidget()
 
         self.refresh_timer = QTimer()
         self.refresh_timer.timeout.connect(self.update_gui)
@@ -100,8 +100,8 @@ class MainWindowGUI(QMainWindow):
         self.logger.error('Update gui not defined')
 
     def connect_signals(self):
-        self.config_tracking_widget.apply_config.connect(
-            self.update_tracking_config)
+        # self.config_tracking_widget.apply_config.connect(
+        #     self.update_tracking_config)
         self.config_widget.apply_config.connect(self.update_config)
 
     def connect_buttons(self):
@@ -137,8 +137,7 @@ class MainWindowGUI(QMainWindow):
         self.actionAbout.triggered.connect(self.show_about)
         self.actionInitialize_Camera.triggered.connect(self.initialize_camera)
         self.actionUpdate_Histogram.triggered.connect(self.calculate_histogram)
-        self.actionTracking_Config.triggered.connect(
-            self.config_tracking_widget.show)
+        # self.actionTracking_Config.triggered.connect(self.config_tracking_widget.show)
         self.actionConfiguration.triggered.connect(self.config_widget.show)
         self.actionAdd_Monitor_Point.triggered.connect(self.add_monitor_point)
         self.actionClear_All.triggered.connect(self.clear_monitor_points)
@@ -229,7 +228,7 @@ class MainWindowGUI(QMainWindow):
 
     def closeEvent(self, *args, **kwargs):
         self.config_widget.close()
-        self.config_tracking_widget.close()
+        # self.config_tracking_widget.close()
         super(MainWindowGUI, self).closeEvent(*args, **kwargs)
 
 

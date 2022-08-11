@@ -4,10 +4,10 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget, QPushButton
 from numpy import square
 
-from pynta.view.GUI.histogram_widget import HistogramWidget
-from pynta.view.GUI.tracks_widget import TracksWidget
+# from pynta.view.GUI.histogram_widget import HistogramWidget
+# from pynta.view.GUI.tracks_widget import TracksWidget
 from pynta.view.GUI.graph_monitor_widget import GraphMonitorWidget
-from pyqtgraph.dockarea import DockArea, Dock
+# from pyqtgraph.dockarea import DockArea, Dock
 from pynta.util.log import get_logger
 
 from pynta.model.daqs.signal_generator.base_signal_generator import BaseSignalGenerator, Waveform

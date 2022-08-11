@@ -48,14 +48,12 @@ import time
 
 from PyQt5.QtTest import QTest   # use QTest.qWait(ms) as a sleep that doesn't freeze the GUI
 
-import pynta
-from pynta import general_stop_event
 from pynta.model.experiment.base_experiment import *
 import numpy as np
 # from multiprocessing import Queue, Process
 import pynta
-from pynta import general_stop_event
-from pynta.model.experiment.base_experiment import BaseExperiment, DataPipeline, SaveTracksToHDF5, SaveImageToHDF5, SaveDaqToHDF5, SaveTriggerToHDF5, FileWrangler
+from pynta.model.experiment.base_experiment import BaseExperiment, DataPipeline, SaveTracksToHDF5, SaveImageToHDF5, \
+    SaveTriggerToHDF5, FileWrangler
 # from pynta.model.experiment.nanospring_tracking.decorators import (check_camera,
 #                                                                      check_not_acquiring,
 #                                                                      make_async_thread)
@@ -66,7 +64,7 @@ from pynta.model.experiment.base_experiment import BaseExperiment, DataPipeline,
 from pynta.util import get_logger
 from pynta import Q_
 
-from pynta.controller.devices.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
+from pynta.controller.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
 
 # import trackpy as tp
 from scipy import ndimage
@@ -228,7 +226,7 @@ class Experiment(BaseExperiment):
             self.camera.set_exposure(float(Q_(self.config["camera"]["exposure_time"]).m_as("seconds")))
 
     def gui_file(self):
-        return "testing"
+        return "example"
 
     def set_zoom(self, coords):
         """

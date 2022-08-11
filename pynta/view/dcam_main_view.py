@@ -6,14 +6,14 @@ Equivalent of main.py which includes NI DAQ and does not use SubscriberThread)
 import logging
 import os
 from PyQt5 import uic
-from pynta.tools.QWorkerThread import WorkThread
+from pynta.util.QWorkerThread import WorkThread
 from PyQt5.QtWidgets import QMainWindow, QStatusBar
 from pynta.util.log import get_logger
 import time
 
 import numpy as np
 
-from pynta.view.GUI.electrophoretics_main import MainWindowGUI
+from pynta.view.GUI.dcam_main_gui import MainWindowGUI
 from pynta.model.daqs.signal_generator.ni import Ni6216Generator
 
 class MainWindow(MainWindowGUI):
@@ -28,7 +28,7 @@ class MainWindow(MainWindowGUI):
         self.plot_widget.flush_settings()
         self.signal_gen_widget.set_model(Ni6216Generator(experiment.daq_controller))
         self.camera_viewer_widget.setup_roi_lines([self.experiment.max_width, self.experiment.max_height])
-        self.config_tracking_widget.update_config(self.experiment.config['tracking'])
+        # self.config_tracking_widget.update_config(self.experiment.config['tracking'])
         self.config_widget.update_config(self.experiment.config)
         self.actionConfiguration.triggered.connect(self.show_config)
         # self.tracking = False

@@ -4,16 +4,14 @@ import logging
 from PyQt5.QtWidgets import QApplication
 
 #from pynta.model.experiment.nanospring_tracking.ns_tracking import NSTracking as Experiment
-from pynta.model.experiment.testing.experiment import Experiment
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('PyQt5').setLevel(logging.INFO)  # to prevent PyQt5 from flooding the console, set that logger to INFO
+logging.getLogger('h5py').setLevel(logging.INFO)  # to prevent PyQt5 from flooding the console, set that logger to INFO
 
-
+import pynta
 from pynta.util.log import get_logger
 #from pynta.view.main import MainWindow
-from importlib import import_module
-
 
 def main():
     logger = get_logger()  # 'nanoparticle_tracking.model.experiment.nanoparticle_tracking.saver'
@@ -24,25 +22,43 @@ def main():
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     parser = ArgumentParser(description='Start the pyNTA software')
     parser.add_argument("-c", dest="config_file", required=False,
                         help="Path to the configuration file")
     args = parser.parse_args()
 
     if args.config_file is None:
-        config_file = os.path.join(BASE_DIR, 'util', 'example_config.yml')
+        config_file = os.path.join(pynta.package_path, 'user', 'user_config.yml')
+        if not os.path.exists(config_file):
+            import shutil
+            shutil.copy(os.path.join(pynta.package_path, 'util', 'example_config.yml'), config_file)
+            print('\n\n******************************\n\nA user config file was created in {}\nThis file is ignored by git. \nIt will be loaded by default.\nPlease only modify that config file. \nMake sure to change the saving path.\n\n******************************\n\n'.format(config_file))
     else:
         config_file = args.config_file
-    exp = Experiment(config_file)
-    if exp.gui_file() is None:
-        # window_builder = import_module('pynta.view.main')
-        import pynta.view.main as window_builder
-    else:
-        window_builder = import_module('pynta.view.'+ exp.gui_file())
+
+    try:
+        from pynta.user import software_config
+    except:
+        software_config_file = os.path.join(pynta.package_path, 'user', 'software_config.py')
+        if not os.path.exists(software_config_file):
+            import shutil
+            shutil.copy(os.path.join(pynta.package_path, 'util', 'software_config.py'), software_config_file)
+            print('\n\n******************************\n\nA software config file was created in {}\nThis file is ignored by git. \nIt will be loaded by default.\nPlease only modify that software config file.\n\n******************************\n\n'.format(software_config_file))
+
+        from pynta.user import software_config
+    exp = software_config.Experiment(config_file)
+
+    # exp = Experiment(config_file)
+    # if exp.gui_file() is None:
+    #     # window_builder = import_module('pynta.view.main')
+    #     import pynta.view.main as window_builder
+    # else:
+    #     window_builder = import_module('pynta.view.'+ exp.gui_file())
+
 
     app = QApplication([])
-    window = window_builder.MainWindow(exp)
+    window = software_config.MainWindow(exp)
+    # window = window_builder.MainWindow(exp)
     window.show()
     app.exec()
 
