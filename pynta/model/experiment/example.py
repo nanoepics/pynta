@@ -64,7 +64,13 @@ from pynta.model.experiment.base_experiment import BaseExperiment, DataPipeline,
 from pynta.util import get_logger
 from pynta import Q_
 
-from pynta.controller.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
+from pynta.user.software_config import DaqController
+
+# if use_daq:
+#     from pynta.controller.NIDAQ.ni_usb_6216 import NiUsb6216 as DaqController
+# else:
+#     from pynta.controller.NIDAQ.ni_usb_6216 import DummyNiUsb6216 as DaqController
+
 
 # import trackpy as tp
 from scipy import ndimage
@@ -105,8 +111,8 @@ class ContinousTracker2:
         self.to_track = to_track
         self.rad = rad
         self.logger = get_logger(__name__)
-        # self.reduce_logging_frequency = 50
-        # self._reduce_logging_frequency = self.reduce_logging_frequency
+        self.reduce_logging_frequency = 50
+        self._reduce_logging_frequency = self.reduce_logging_frequency
 
     def __call__(self, img):
         for i in range(0, len(self.to_track[0])):
@@ -116,20 +122,45 @@ class ContinousTracker2:
             xmax = int(min(x + self.rad, img.shape[1]))
             ymin = int(max(0, y - self.rad))
             ymax = int(min(y + self.rad, img.shape[0]))
-            # self._reduce_logging_frequency -= 1
-            # if self._reduce_logging_frequency == 0:
-            #     self.logger.debug("{}, {} in image of size {}".format(x,y,img.shape))
-            #     self._reduce_logging_frequency = self.reduce_logging_frequency
+            self._reduce_logging_frequency -= 1
+            if self._reduce_logging_frequency == 0:
+                self.logger.debug("{}, {} in image of size {}".format(x,y,img.shape))
+                self._reduce_logging_frequency = self.reduce_logging_frequency
             local = img[ymin:ymax, xmin:xmax]
 
             if local.sum() > 0:
                 (y,x) = ndimage.measurements.center_of_mass(local)
-                self.logger.debug("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
+                # self.logger.debug("offsets are {}, {}, sum intensity {}".format(self.rad-x-0.5, self.rad-y-0.5, np.sum(local)))
                 self.to_track[1][i] -= self.rad-y-0.5
                 self.to_track[0][i] -= self.rad-x-0.5
                 self.to_track[2][i] = np.sum(local)
         return self.to_track
 
+
+class PreProcessFrame:
+    """
+    A class that takes in frames, keeps them in a buffer to calculate the variance and sprit this out.
+    Intended to be used in the Pipeline object as a pre_process_function
+    """
+    def __init__(self, start_frame, Nframes=10):
+        """
+        When creating the PreProcessFrame object it requires a example frame, and the number of frames to store in the buffer
+        :param start_frame:
+        :param Nframes:
+        """
+        self.N = Nframes
+        self.buffer = np.repeat(start_frame[:, :, np.newaxis], Nframes, axis=2)
+        self.i = -1
+
+    def __call__(self, new_frame):
+        """
+        Takes a new frame as input, adds it to the buffer and returns the variance of the buffer
+        :param new_frame:
+        :return:
+        """
+        self.i = (self.i + 1) % self.N
+        self.buffer[:, :, self.i] = new_frame
+        return np.var(self.buffer, axis=2)
 
 class Experiment(BaseExperiment):
     BACKGROUND_NO_CORRECTION = 0  # No background correction
@@ -143,6 +174,7 @@ class Experiment(BaseExperiment):
         self.camera = NativeCamera(self.config["camera"]['model'])  # This will hold the model for the camera
         self.camera.set_output_trigger()
         self.bg_correction = 0
+        self._variance = False
         self._show_snap = False
         # ham = self.camera.as_hamamatsu()
         # ham.set_prop(....);
@@ -170,6 +202,8 @@ class Experiment(BaseExperiment):
         # self.temp_image = None
         # self.snap_image = None
         self.bg_image = self.snap_image
+
+        self.toggle_live_image_processing_method = self.toggle_variance  # Change this to another method to have the GUI button link to it
 
         self.measurement_methods = {'Example measurement method': self.my_measurement,
                                     }
@@ -214,6 +248,28 @@ class Experiment(BaseExperiment):
     #     self.bg_image = bg_array.mean(axis=0).astype(np.int16)
     #     self.snap_image = self.bg_image
     #     self.bg_correction = bg_correction_state
+
+    def toggle_background(self, state=None):
+        """Turns BG subtraction on and off"""
+        if state is None:
+            state = not self.bg_correction
+        if state:
+            self.bg_image = self.snap_image
+            self._pipeline.set_pre_process_func(lambda arr: arr-self.bg_image)
+        else:
+            self._pipeline.unset_pre_process_func()
+        self.bg_correction = state
+
+    # There's no button for this yet. REMARK: think about how to deal with Bg flag and variance flag !!!!
+    def toggle_variance(self, state=None):
+        """Turns variance-mode on and off"""
+        if state is None:
+            state = not self._variance
+        if state:
+            self._pipeline.set_pre_process_func(PreProcessFrame(self.temp_image))
+        else:
+            self._pipeline.unset_pre_process_func()
+        self._variance = state
 
     def update_config(self, **kwargs):
         old_camera_conf = self.config['camera'].copy()
@@ -538,8 +594,10 @@ class Experiment(BaseExperiment):
 
         aqcuisition = self.hdf5.start_new_aquisition(meta_data={'config':yaml.safe_dump(self.config)})
         self.aqcuisition = aqcuisition
-        self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller, meta_data_trigger={'example':'trigger meta'}, meta_data_daq={'example':'daq meta'})
-        self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
+        # If daq_controller class is replaced with a "simulated" version with 'Dummy' in the name of the class, then the trigger object is not necessary and will not be created
+        if not 'dummy' in self.daq_controller.__class__.__name__.lower():
+            self.save_trigger_object = SaveTriggerToHDF5(aqcuisition, self.daq_controller, meta_data_trigger={'example':'trigger meta'}, meta_data_daq={'example':'daq meta'})
+            self.daq_controller.set_trigger_processing_function(self.save_trigger_object)
 
         self.save_image_object = SaveImageToHDF5(aqcuisition, self.camera, 10, meta_data={'example':'image meta'})  # adding meta is optional
         self._pipeline.set_save_img_func(self.save_image_object) # TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING    TEMPRARILY DISABLED FOR DEBUGGING     TEMPRARILY DISABLED FOR DEBUGGING   TEMPRARILY DISABLED FOR DEBUGGING
@@ -582,7 +640,7 @@ class Experiment(BaseExperiment):
         """ Stops saving the stream.
         """
         self.logger.info('Stop saving stream')
-        if hasattr(self.save_trigger_object, 'add_finished_timestamp'):
+        if hasattr(self, 'save_trigger_object'):
             self.save_trigger_object.add_finished_timestamp()
         self.save_tracks_object.add_finished_timestamp() #Note: trigger and DAQ finish process earlier than save_tracks by a couple of milliseconds
         self.save_image_object = None

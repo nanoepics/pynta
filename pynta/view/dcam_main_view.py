@@ -69,7 +69,7 @@ class MainWindow(MainWindowGUI):
         self.camera_viewer_widget.connect_mouse_clicked(self.zoom_ROI_callback)
 
     def zoom_ROI_callback(self, coords):
-        self.logger.info("Zooming to coordinate", coords)
+        self.logger.info("Zooming to coordinate {}".format(coords))
         # IDEA: stop camera if running
         # FAILED ATTEMPT
         # was_running = self.experiment.camera.is_streaming()
@@ -141,16 +141,17 @@ class MainWindow(MainWindowGUI):
             self.actionStart_Movie.setToolTip('Start Movie')
             self.actionStart_Movie.setChecked(False)
 
+    # We make sure that out of the next two methods only one can be active at the same time
+
     def toggle_background(self, state):
-        if state is True:
-            self.logger.info('Turning BG reduction on')
-            self.experiment.bg_image = self.experiment.snap_image
-            self.experiment.bg_correction = True
-            # if hasattr(self.experiment, 'save_image_object'):
-            #     self.experiment.save_image_object.save_single_snap(self.experiment.bg_image, 'background_')
-        else:
-            self.experiment.bg_correction = False
-            self.logger.info('Turning BG reduction off')
+        self.logger.info('Turning BG reduction ' + ['off', 'on'][state])
+        self.experiment.toggle_background(state)
+        self.actionToggleLiveImageProcessing.setEnabled(not state)  # disable toggle_live_img_process while toggle_background is ON
+
+    def toggle_live_img_process(self, state):
+        self.logger.info('Turning Live Image Processing ' + ['off', 'on'][state])
+        self.experiment.toggle_live_image_processing_method(state)
+        self.actionToggle_bg_reduction.setEnabled(not state)  # disable toggle_background while toggle_live_img_process is ON
 
     def toggle_saving(self, state):
         if state:

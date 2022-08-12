@@ -5,13 +5,13 @@
 # All parameters can be changed at runtime with the appropriate config window
 user:
   #TODO: who is this, not who is Aquiles but what does 'user.name' do?
-  name: Aquiles
+  name: User
 
 saving:
   auto_save: False
   auto_save_waterfall: True
   #todo: use OS specific tmp dir
-  directory: H:\data\experiment
+  directory: C:\Temp  # you should change this folder
   filename_video: Video # Can be the same filename for video and photo
   filename_photo: Snap
   filename_tracks: Tracks

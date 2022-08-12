@@ -89,6 +89,12 @@ class MainWindowGUI(QMainWindow):
 
         self.statusBar.clearMessage()
 
+        self.actionStop_Tracking.setEnabled(False)
+        self.actionStart_Tracking.setEnabled(False)
+        self.actionStop_Linking.setEnabled(False)
+        self.actionStart_Linking.setEnabled(False)
+
+
     def addMeasurementSelector(self):
         """ Adds the GUI elements to run measurement methods """
         self.measurement_combo = QComboBox()
@@ -142,6 +148,10 @@ class MainWindowGUI(QMainWindow):
         self.actionAdd_Monitor_Point.triggered.connect(self.add_monitor_point)
         self.actionClear_All.triggered.connect(self.clear_monitor_points)
         self.actionZoom.triggered.connect(self.zoom_ROI_prime)
+        self.actionToggleLiveImageProcessing.triggered.connect(self.toggle_live_img_process)
+
+    def toggle_live_img_process(self):
+        self.logger.warnings('live_img_process method not implemented in child class')
 
     def zoom_ROI_prime(self):
         self.logger.warnings('Zoom ROI method not implemented in child class')
