@@ -1,4 +1,5 @@
 import os
+import time
 from argparse import ArgumentParser
 import logging
 from PyQt5.QtWidgets import QApplication
@@ -44,6 +45,11 @@ def main():
             import shutil
             shutil.copy(os.path.join(pynta.package_path, 'util', 'software_config.py'), software_config_file)
             print('\n\n******************************\n\nA software config file was created in {}\nThis file is ignored by git. \nIt will be loaded by default.\nPlease only modify that software config file.\n\n******************************\n\n'.format(software_config_file))
+            time.sleep(1)
+            import imp, sys
+            imp.reload(sys.modules['pynta'])
+            # from importlib import import_module
+            # software_config = import_module('pynta.user.software_config')
 
         from pynta.user import software_config
     exp = software_config.Experiment(config_file)
